@@ -1,30 +1,48 @@
 <template>
-  <view class="content">
+  <view class="personal-content">
     <view class="setting">
-      <image class="setting-icon" src="/static/imgs/setting.png" mode="scaleToFill" />
+      <image
+        class="setting-icon"
+        src="/static/imgs/setting.png"
+        mode="scaleToFill"
+      />
       <text>设置</text>
     </view>
     <view class="card">
       <view class="personal-info">
         <view class="avatar">
-          <image class="avatar-img"
+          <image
+            class="avatar-img"
             src="https://p9-passport.byteacctimg.com/img/mosaic-legacy/3796/2975850990~120x256.image"
-            mode="scaleToFill" />
+            mode="scaleToFill"
+          />
         </view>
         <view class="info">
           <view class="name-sex">
-            <image class="sex" src="/static/imgs/male.png" mode="scaleToFill" />
-            <text class="name">账户名</text>
+            <view>
+              <text class="name">账户名</text>
+              <image
+                class="sex"
+                src="/static/imgs/male.png"
+                mode="scaleToFill"
+              />
+            </view>
             <button size="mini" plain="true" class="info-setting">
               编辑资料
             </button>
           </view>
-          <text class="sign">个性签名: 月下柳梢头，人约黄昏后。月下柳梢头，人约黄昏后。</text>
+          <text class="sign"
+            >个性签名: 月下柳梢头，人约黄昏后。月下柳梢头，人约黄昏后。</text
+          >
           <view class="birth">
             <text>生日: 2004-04-03</text>
           </view>
           <view class="gold">
-            <image class="gold-icon" src="/static/imgs/financing.png" mode="scaleToFill" />
+            <image
+              class="gold-icon"
+              src="/static/imgs/financing.png"
+              mode="scaleToFill"
+            />
             <text>金币：$1300</text>
           </view>
         </view>
@@ -62,19 +80,25 @@
             <view class="exp-now"></view>
           </view>
         </view>
-        <view class="exp-value">
-          1200/2000
-        </view>
+        <view class="exp-value"> 1200/2000 </view>
       </view>
     </view>
     <view class="other-entry">
       <view class="entry-item achieve">
         <text>个人成就</text>
-        <image class="entry-icon" src="/static/imgs/trophy.png" mode="scaleToFill" />
+        <image
+          class="entry-icon"
+          src="/static/imgs/trophy.png"
+          mode="scaleToFill"
+        />
       </view>
       <view class="entry-item bag">
         <text>道具背包</text>
-        <image class="entry-icon" src="/static/imgs/backpack.png" mode="scaleToFill" />
+        <image
+          class="entry-icon"
+          src="/static/imgs/backpack.png"
+          mode="scaleToFill"
+        />
       </view>
     </view>
     <view class="card pet-entry">
@@ -111,17 +135,30 @@
 </template>
 
 <script setup lang="ts">
+import { onLoad } from "@dcloudio/uni-app";
+import http from "@/utils/http";
 
+onLoad(async () => {
+  await http({
+    url: "/api/auth/register",
+    method: "POST",
+    data: {
+      account: "testuser",
+      password: "testpassword",
+      email: "testuser@example.com",
+    },
+  });
+});
 </script>
 
-<style>
+<style scoped lang="scss">
 * {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
 }
 
-.content {
+.personal-content {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -133,11 +170,12 @@
 
 .card {
   background-color: #fff;
-  width: calc(100% - 60rpx);
+  // width: calc(100% - 100rpx);
+  width: 85vw;
   border-radius: 20rpx;
   box-shadow: 0 6rpx 10rpx #ccc;
   padding: 30rpx;
-  margin: 30rpx 0;
+  margin: 40rpx 0;
 }
 
 .setting {
@@ -197,26 +235,29 @@
     .name-sex {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       color: #000;
       margin-bottom: 8rpx;
 
       .sex {
         width: 35rpx;
         height: 35rpx;
-        margin-right: 16rpx;
-        vertical-align: middle;
+        margin-left: 16rpx;
+        // vertical-align: middle;
       }
 
       .name {
         font-size: 36rpx;
-        font-weight: bold;
+        // font-weight: bold;
       }
 
       .info-setting {
+        margin-right: 30rpx;
         height: 50rpx;
         padding: 0 0.5em;
         border: 2rpx solid #888;
         display: flex;
+        font-size: 24rpx;
         align-items: center;
       }
     }
@@ -247,8 +288,6 @@
       }
     }
   }
-
-
 }
 
 .personal-data {
@@ -269,13 +308,13 @@
 
     .attr-name {
       font-size: 24rpx;
-      font-weight: bold;
+      // font-weight: bold;
       color: #a98;
     }
 
     .attr-value {
       font-size: 32rpx;
-      font-weight: bold;
+      // font-weight: bold;
       color: #100;
       margin-top: 5rpx;
     }
@@ -295,7 +334,7 @@
     .level-value {
       font-size: 32rpx;
       color: #100;
-      font-weight: bold;
+      // font-weight: bold;
     }
 
     .level-name {
@@ -352,13 +391,13 @@
 
     .title {
       font-size: 40rpx;
-      font-weight: bold;
+      // font-weight: bold;
       margin-bottom: 20rpx;
     }
 
     .name {
       font-size: 32rpx;
-      font-weight: bold;
+      // font-weight: bold;
     }
 
     .state {
@@ -386,7 +425,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: calc(100% - 60rpx);
+  // width: calc(100% - 70rpx);
+  width: 85vw;
   margin: 10rpx 0;
 
   .entry-item {
@@ -399,14 +439,13 @@
     justify-content: space-between;
     align-items: center;
     font-size: 36rpx;
-    font-weight: bold;
+    // font-weight: bold;
 
     .entry-icon {
-      width: 80rpx;
-      height: 80rpx;
+      width: 60rpx;
+      height: 60rpx;
     }
   }
-
 }
 
 .ranks {
@@ -442,12 +481,12 @@
 
     .title {
       font-size: 32rpx;
-      font-weight: bold;
+      // font-weight: bold;
     }
 
     .position {
       font-size: 28rpx;
-      font-weight: bold;
+      // font-weight: bold;
       color: #cdb271;
     }
   }
