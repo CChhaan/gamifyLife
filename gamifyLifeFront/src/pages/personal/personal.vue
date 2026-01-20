@@ -137,18 +137,6 @@
 <script setup lang="ts">
 import { onLoad } from "@dcloudio/uni-app";
 import http from "@/utils/http";
-
-onLoad(async () => {
-  await http({
-    url: "/api/auth/register",
-    method: "POST",
-    data: {
-      account: "testuser",
-      password: "testpassword",
-      email: "testuser@example.com",
-    },
-  });
-});
 </script>
 
 <style scoped lang="scss">
