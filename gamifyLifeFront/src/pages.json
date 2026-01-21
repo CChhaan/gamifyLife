@@ -16,7 +16,8 @@
     {
       "path": "pages/login/login",
       "style": {
-        "navigationBarTitleText": "login"
+        "navigationBarTitleText": "login",
+        "navigationStyle": "custom"
       }
     },
     {

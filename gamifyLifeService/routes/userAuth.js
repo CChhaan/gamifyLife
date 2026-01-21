@@ -10,14 +10,18 @@ const userAuthService = new UserAuthService();
 router.post("/register", async (ctx) => {
   try {
     const { account, password, email } = ctx.request.body;
-    
+
     if (!account || !password || !email) {
       ctx.status = 400;
       ctx.body = badRequest("缺少必要的注册信息");
       return;
     }
-    
-    const newUser = await userAuthService.registerUser(account, password, email);
+
+    const newUser = await userAuthService.registerUser(
+      account,
+      password,
+      email,
+    );
     ctx.status = 200;
     ctx.body = success(
       {
@@ -25,7 +29,7 @@ router.post("/register", async (ctx) => {
         account: newUser.account,
         email: newUser.email,
       },
-      "注册成功"
+      "注册成功",
     );
   } catch (error) {
     if (error.message.includes("已存在")) {
@@ -35,6 +39,26 @@ router.post("/register", async (ctx) => {
       ctx.status = 400;
       ctx.body = badRequest(error.message);
     }
+  }
+});
+
+// 用户登录接口
+router.post("/login", async (ctx) => {
+  try {
+    const { account, password } = ctx.request.body;
+
+    if (!account || !password) {
+      ctx.status = 400;
+      ctx.body = badRequest("缺少必要的登录信息");
+      return;
+    }
+
+    const token = await userAuthService.loginUser(account, password);
+    ctx.status = 200;
+    ctx.body = success(token, "登录成功");
+  } catch (error) {
+    ctx.status = 400;
+    ctx.body = badRequest(error.message);
   }
 });
 

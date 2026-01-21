@@ -1,5 +1,5 @@
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -10,10 +10,12 @@ import userAuthRoutes from "./routes/userAuth.js";
 import staticMiddleware from "koa-static";
 import errorHandler from "./middlewares/errorHanler.js";
 import { syncDatabase } from "./shared/db.js";
+import tokenAuth from "./middlewares/tokenAuth.js";
 
 const app = new Koa({});
 
 app.use(errorHandler);
+app.use(tokenAuth);
 app.use(staticMiddleware(__dirname + "/public"));
 app.use(bodyParser());
 app.use(userAuthRoutes.routes()).use(userAuthRoutes.allowedMethods());
