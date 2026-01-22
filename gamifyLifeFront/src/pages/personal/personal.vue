@@ -1,48 +1,35 @@
 <template>
   <view class="personal-content">
     <view class="setting">
-      <image
-        class="setting-icon"
-        src="/static/imgs/setting.png"
-        mode="scaleToFill"
-      />
+      <image class="setting-icon" src="/static/imgs/setting.png" mode="scaleToFill" />
       <text>设置</text>
     </view>
     <view class="card">
       <view class="personal-info">
         <view class="avatar">
-          <image
-            class="avatar-img"
+          <image v-if="!userInfo?.avatar_url" class="avatar-img"
             src="https://p9-passport.byteacctimg.com/img/mosaic-legacy/3796/2975850990~120x256.image"
-            mode="scaleToFill"
-          />
+            mode="scaleToFill" />
+          <image v-else class="avatar-img" :src="userInfo?.avatar_url" mode="scaleToFill" />
         </view>
         <view class="info">
           <view class="name-sex">
-            <view>
-              <text class="name">账户名</text>
-              <image
-                class="sex"
-                src="/static/imgs/male.png"
-                mode="scaleToFill"
-              />
+            <view class="left">
+              <text class="name">{{ userInfo?.nickname }}</text>
+              <image v-if="userInfo?.gender == 1" class="sex" src="/static/imgs/male.png" mode="scaleToFill" />
+              <image v-else-if="userInfo?.gender == 2" class="sex" src="/static/imgs/female.png" mode="scaleToFill" />
+              <view v-else class="sex"></view>
             </view>
-            <button size="mini" plain="true" class="info-setting">
+            <button size="mini" plain="true" class="info-setting" @click="editInfoShow = true">
               编辑资料
             </button>
           </view>
-          <text class="sign"
-            >个性签名: 月下柳梢头，人约黄昏后。月下柳梢头，人约黄昏后。</text
-          >
+          <text class="sign">{{ userInfo?.bio || '这个人很懒，什么都没有留下' }}</text>
           <view class="birth">
-            <text>生日: 2004-04-03</text>
+            <text>生日: {{ userInfo?.birthday || '- 年 - 月 - 日' }}</text>
           </view>
           <view class="gold">
-            <image
-              class="gold-icon"
-              src="/static/imgs/financing.png"
-              mode="scaleToFill"
-            />
+            <image class="gold-icon" src="/static/imgs/financing.png" mode="scaleToFill" />
             <text>金币：$1300</text>
           </view>
         </view>
@@ -86,19 +73,11 @@
     <view class="other-entry">
       <view class="entry-item achieve">
         <text>个人成就</text>
-        <image
-          class="entry-icon"
-          src="/static/imgs/trophy.png"
-          mode="scaleToFill"
-        />
+        <image class="entry-icon" src="/static/imgs/trophy.png" mode="scaleToFill" />
       </view>
       <view class="entry-item bag">
         <text>道具背包</text>
-        <image
-          class="entry-icon"
-          src="/static/imgs/backpack.png"
-          mode="scaleToFill"
-        />
+        <image class="entry-icon" src="/static/imgs/backpack.png" mode="scaleToFill" />
       </view>
     </view>
     <view class="card pet-entry">
@@ -131,12 +110,27 @@
         <text class="position">第XXX名</text>
       </div>
     </view>
+    <EditUserInfo @close="editInfoShow = false" @success="getUserInfo" v-if="editInfoShow" :userInfo="userInfo" />
   </view>
 </template>
 
 <script setup lang="ts">
 import { onLoad } from "@dcloudio/uni-app";
 import http from "@/utils/http";
+import { ref } from "vue";
+import { type UserInfo } from "@/type/user";
+import EditUserInfo from "./editUserInfo.vue";
+
+const editInfoShow = ref(false);
+
+const userInfo = ref<UserInfo | null>(null);
+
+const getUserInfo = async () => {
+  userInfo.value = await http<UserInfo>({ url: '/api/userInfo/getUserInfo', method: 'GET' })
+}
+onLoad(async () => {
+  await getUserInfo()
+})
 </script>
 
 <style scoped lang="scss">
@@ -153,7 +147,7 @@ import http from "@/utils/http";
   justify-content: start;
   height: 100vh;
   overflow: auto;
-  background-color: #fef8e6;
+  background-color: #f8f7e6;
 }
 
 .card {
@@ -197,7 +191,7 @@ import http from "@/utils/http";
   .avatar {
     width: 180rpx;
     height: 180rpx;
-    background-color: #fe7a24cc;
+    background-color: #fe7a24;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -219,6 +213,7 @@ import http from "@/utils/http";
     margin-left: 20rpx;
     color: #888;
     font-size: 28rpx;
+    width: calc(100% - 200rpx);
 
     .name-sex {
       display: flex;
@@ -227,20 +222,30 @@ import http from "@/utils/http";
       color: #000;
       margin-bottom: 8rpx;
 
+      .left {
+        display: flex;
+        align-items: center;
+        width: calc(100% - 170rpx);
+      }
+
       .sex {
         width: 35rpx;
         height: 35rpx;
-        margin-left: 16rpx;
+        margin-left: 14rpx;
         // vertical-align: middle;
       }
 
       .name {
         font-size: 36rpx;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: calc(100% - 50rpx);
         // font-weight: bold;
       }
 
       .info-setting {
-        margin-right: 30rpx;
+        margin-right: 20rpx;
         height: 50rpx;
         padding: 0 0.5em;
         border: 2rpx solid #888;
@@ -254,7 +259,7 @@ import http from "@/utils/http";
       margin-bottom: 8rpx;
       overflow: hidden;
       text-overflow: ellipsis;
-      white-space: nowrap;
+      // white-space: nowrap;
     }
 
     .birth {
@@ -314,7 +319,7 @@ import http from "@/utils/http";
     align-items: center;
     justify-content: center;
     position: relative;
-    border: 6rpx solid #fe7a24cc;
+    border: 6rpx solid #fe7a24;
     border-radius: 50%;
     width: 120rpx;
     height: 120rpx;
@@ -352,7 +357,7 @@ import http from "@/utils/http";
     .exp-now {
       width: 60%;
       height: 100%;
-      background-color: #fe7a24cc;
+      background-color: #fe7a24;
       border-radius: 10rpx;
     }
   }

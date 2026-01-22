@@ -7,6 +7,7 @@ const __dirname = dirname(__filename);
 import Koa from "koa";
 import bodyParser from "koa-bodyparser";
 import userAuthRoutes from "./routes/userAuth.js";
+import userInfoRoutes from "./routes/userInfo.js";
 import staticMiddleware from "koa-static";
 import errorHandler from "./middlewares/errorHanler.js";
 import { syncDatabase } from "./shared/db.js";
@@ -19,6 +20,7 @@ app.use(tokenAuth);
 app.use(staticMiddleware(__dirname + "/public"));
 app.use(bodyParser());
 app.use(userAuthRoutes.routes()).use(userAuthRoutes.allowedMethods());
+app.use(userInfoRoutes.routes()).use(userInfoRoutes.allowedMethods());
 
 // 异步启动
 (async () => {

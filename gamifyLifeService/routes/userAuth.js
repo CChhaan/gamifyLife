@@ -23,14 +23,7 @@ router.post("/register", async (ctx) => {
       email,
     );
     ctx.status = 200;
-    ctx.body = success(
-      {
-        id: newUser.id,
-        account: newUser.account,
-        email: newUser.email,
-      },
-      "注册成功",
-    );
+    ctx.body = success(newUser, "注册成功");
   } catch (error) {
     if (error.message.includes("已存在")) {
       ctx.status = 409;
@@ -45,15 +38,15 @@ router.post("/register", async (ctx) => {
 // 用户登录接口
 router.post("/login", async (ctx) => {
   try {
-    const { account, password } = ctx.request.body;
+    const { account, email, password } = ctx.request.body;
 
-    if (!account || !password) {
+    if (!(account || email) || !password) {
       ctx.status = 400;
       ctx.body = badRequest("缺少必要的登录信息");
       return;
     }
 
-    const token = await userAuthService.loginUser(account, password);
+    const token = await userAuthService.loginUser(account, email, password);
     ctx.status = 200;
     ctx.body = success(token, "登录成功");
   } catch (error) {

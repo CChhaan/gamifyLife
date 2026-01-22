@@ -4,11 +4,9 @@
       <view class="info">
         <view class="left">
           <view class="avatar">
-            <image
-              class="avatar-img"
+            <image class="avatar-img"
               src="https://p9-passport.byteacctimg.com/img/mosaic-legacy/3796/2975850990~120x256.image"
-              mode="scaleToFill"
-            />
+              mode="scaleToFill" />
           </view>
           <view class="center">
             <view class="username">
@@ -55,10 +53,7 @@
         </view>
         <view class="attr-item">
           <view class="attr-item-name">
-            <image
-              src="/static/imgs/communication.png"
-              class="attr-item-icon"
-            />
+            <image src="/static/imgs/communication.png" class="attr-item-icon" />
             <text>社交</text>
           </view>
           <text>20</text>
@@ -92,9 +87,7 @@
     <view class="card task-data">
       <view class="tasks">
         <view class="task-item">
-          <text class="task-item-text"
-            >完成 Vue 3 学习完成 Vue 3 学习 完成 Vue 3 学习</text
-          >
+          <text class="task-item-text">完成 Vue 3 学习完成 Vue 3 学习 完成 Vue 3 学习</text>
           <radio style="transform: scale(0.7)" borderColor="#aaa" />
         </view>
         <view class="task-item">
@@ -140,7 +133,7 @@ import FloatPet from "@/components/FloatPet.vue/FloatPet.vue";
   justify-content: center;
   padding-bottom: 140rpx;
   height: 100vh;
-  background-color: #fef8e6;
+  background-color: #f8f7e6;
 }
 
 .card {

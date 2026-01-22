@@ -32,6 +32,10 @@
             <uni-easyinput placeholderStyle="font-size:32rpx" type="password" prefixIcon="locked"
               v-model="registerFormData.password" placeholder="请输入密码" trim />
           </uni-forms-item>
+          <uni-forms-item class="form-item" name="confirmPassword">
+            <uni-easyinput placeholderStyle="font-size:32rpx" type="password" prefixIcon="locked"
+              v-model="registerFormData.confirmPassword" placeholder="请确认密码" trim />
+          </uni-forms-item>
         </uni-forms>
         <button class="form-button" @click="handleRegister">注册</button>
       </view>
@@ -61,7 +65,8 @@ const loginFormData = ref({
 const registerFormData = ref({
   account: '',
   email: '',
-  password: ''
+  password: '',
+  confirmPassword: ''
 })
 
 const loginRules = {
@@ -111,19 +116,41 @@ const registerRules = {
         errorMessage: '请输入密码',
       }
     ]
+  },
+  confirmPassword: {
+    rules: [
+      {
+        required: true,
+        errorMessage: '请确认密码',
+      },
+      {
+        validator: (rule: any, value: string) => {
+          if (value !== registerFormData.value.password) {
+            return false;
+          }
+          return true;
+        },
+        errorMessage: '两次输入的密码不一致',
+      }
+    ]
   }
 }
 
 const handleLogin = async () => {
   try {
-    await loginForm.value.validate();
+    await loginForm.value!.validate();
+    const data = {
+      [loginFormData.value.account.includes('@') ? 'email' : 'account']: loginFormData.value.account,
+      password: loginFormData.value.password
+    }
     const token = await http({
       url: "/api/auth/login",
       method: "POST",
-      data: loginFormData.value,
+      data,
     });
     uni.showToast({ title: '登录成功', icon: 'success', duration: 2000 });
-    setToken(token)
+    setToken(token);
+    uni.switchTab({ url: '/pages/index/index' });
   } catch (err) {
     // 校验失败或请求失败
     console.log('校验或请求错误', err);
@@ -131,7 +158,7 @@ const handleLogin = async () => {
 }
 const handleRegister = async () => {
   try {
-    await registerForm.value.validate();
+    await registerForm.value!.validate();
     await http({
       url: "/api/auth/register",
       method: "POST",
@@ -180,10 +207,10 @@ const handlePageChange = () => {
   box-shadow: 0 4rpx 16rpx #e4d4b7;
 
   .form-button {
-    background-color: #ea9554;
+    background-color: #fe7a24;
     color: #fff;
     border-radius: 30rpx;
-    box-shadow: 0 4rpx 16rpx #ea9554cc;
+    box-shadow: 0 4rpx 16rpx #ea9554;
   }
 
   .tip {
