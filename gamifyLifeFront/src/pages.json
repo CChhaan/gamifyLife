@@ -26,6 +26,12 @@
         "navigationBarTitleText": "个人中心",
         "navigationStyle": "custom"
       }
+    },
+    {
+      "path": "pages/setting/setting",
+      "style": {
+        "navigationBarTitleText": "设置"
+      }
     }
   ],
   "globalStyle": {
@@ -78,7 +84,7 @@
           "color": "#666",
           "selectedColor": "#fe7a24",
           "text": "",
-          "selectedText": "\ue69d"
+          "selectedText": ""
         }
       }
     ]

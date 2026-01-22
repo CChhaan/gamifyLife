@@ -1,6 +1,6 @@
 <template>
   <view class="personal-content">
-    <view class="setting">
+    <view class="setting" @click="goToSetting">
       <image class="setting-icon" src="/static/imgs/setting.png" mode="scaleToFill" />
       <text>设置</text>
     </view>
@@ -131,6 +131,12 @@ const getUserInfo = async () => {
 onLoad(async () => {
   await getUserInfo()
 })
+
+const goToSetting = () => {
+  uni.navigateTo({
+    url: '/pages/setting/setting'
+  });
+}
 </script>
 
 <style scoped lang="scss">

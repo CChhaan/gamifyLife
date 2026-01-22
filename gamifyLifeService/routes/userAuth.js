@@ -55,4 +55,16 @@ router.post("/login", async (ctx) => {
   }
 });
 
+// 用户退出登录接口
+router.post("/logout", async (ctx) => {
+  try {
+    await userAuthService.logoutUser(ctx.state.user.userId);
+    ctx.status = 200;
+    ctx.body = success(null, "退出登录成功");
+  } catch (error) {
+    ctx.status = 400;
+    ctx.body = badRequest(error.message);
+  }
+});
+
 export default router;

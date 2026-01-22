@@ -5,19 +5,25 @@
     </view>
     <div class="form">
       <view class="login-form" v-if="page == 'login'">
-        <uni-forms :modelValue="loginFormData" label-width="0" :rules="loginRules" ref="loginForm">
-          <uni-forms-item name="account">
-            <uni-easyinput placeholderStyle="font-size:32rpx" prefixIcon="person" type="text"
-              v-model="loginFormData.account" placeholder="请输入账号或邮箱" trim />
-          </uni-forms-item>
-          <uni-forms-item class="form-item" name="password">
-            <uni-easyinput placeholderStyle="font-size:32rpx" type="password" prefixIcon="locked"
-              v-model="loginFormData.password" placeholder="请输入密码" trim />
-          </uni-forms-item>
-        </uni-forms>
+        <u-form :model="loginFormData" ref="loginForm" :rules="loginRules" label-width="60">
+          <u-form-item class="form-item" prop="account" :border-bottom="false" left-icon="account">
+            <u-input v-model="loginFormData.account" placeholderStyle="font-size:32rpx" placeholder="请输入账号或邮箱" />
+          </u-form-item>
+          <u-form-item class="form-item" prop="password" :border-bottom="false" left-icon="lock">
+            <u-input v-model="loginFormData.password" placeholderStyle="font-size:32rpx" placeholder="请输入密码" />
+          </u-form-item>
+        </u-form>
         <button class="form-button" @click="handleLogin">登录</button>
       </view>
       <view class="register-form" v-else-if="page == 'register'">
+        <u-form :model="registerFormData" ref="registerForm" :rules="registerRules" label-width="60">
+          <u-form-item class="form-item" prop="account" :border-bottom="false" left-icon="account">
+            <u-input v-model="loginFormData.account" placeholderStyle="font-size:32rpx" placeholder="请输入账号或邮箱" />
+          </u-form-item>
+          <u-form-item class="form-item" prop="password" :border-bottom="false" left-icon="lock">
+            <u-input v-model="loginFormData.password" placeholderStyle="font-size:32rpx" placeholder="请输入密码" />
+          </u-form-item>
+        </u-form>
         <uni-forms :modelValue="registerFormData" label-width="0" ref="registerForm" :rules="registerRules"
           validate-trigger="blur">
           <uni-forms-item name="account">
@@ -70,87 +76,85 @@ const registerFormData = ref({
 })
 
 const loginRules = {
-  account: {
-    rules: [
-      {
-        required: true,
-        errorMessage: '请输入账号',
-      }
-    ]
-  },
-  password: {
-    rules: [
-      {
-        required: true,
-        errorMessage: '请输入密码',
-      }
-    ]
-  }
+  account: [
+    {
+      required: true,
+      message: '请输入账号',
+    }
+  ],
+  password: [
+    {
+      required: true,
+      message: '请输入密码',
+    }
+  ]
 }
 
 const registerRules = {
-  account: {
-    rules: [
-      {
-        required: true,
-        errorMessage: '请输入账号',
-      }
-    ]
-  },
-  email: {
-    rules: [
-      {
-        required: true,
-        errorMessage: '请输入邮箱',
+  account: [
+    {
+      required: true,
+      errorMessage: '请输入账号',
+    }
+  ],
+  email: [
+    {
+      required: true,
+      errorMessage: '请输入邮箱',
+    },
+    {
+      format: 'email',
+      errorMessage: '请输入正确的邮箱',
+    }
+  ],
+  password: [
+    {
+      required: true,
+      errorMessage: '请输入密码',
+    }
+  ],
+  confirmPassword: [
+    {
+      required: true,
+      errorMessage: '请确认密码',
+    },
+    {
+      validator: (rule: any, value: string) => {
+        if (value !== registerFormData.value.password) {
+          return false;
+        }
+        return true;
       },
-      {
-        format: 'email',
-        errorMessage: '请输入正确的邮箱',
-      }
-    ]
-  },
-  password: {
-    rules: [
-      {
-        required: true,
-        errorMessage: '请输入密码',
-      }
-    ]
-  },
-  confirmPassword: {
-    rules: [
-      {
-        required: true,
-        errorMessage: '请确认密码',
-      },
-      {
-        validator: (rule: any, value: string) => {
-          if (value !== registerFormData.value.password) {
-            return false;
-          }
-          return true;
-        },
-        errorMessage: '两次输入的密码不一致',
-      }
-    ]
-  }
+      errorMessage: '两次输入的密码不一致',
+    }
+  ]
 }
 
 const handleLogin = async () => {
   try {
-    await loginForm.value!.validate();
-    const data = {
-      [loginFormData.value.account.includes('@') ? 'email' : 'account']: loginFormData.value.account,
-      password: loginFormData.value.password
-    }
-    const token = await http({
-      url: "/api/auth/login",
-      method: "POST",
-      data,
+    loginForm.value?.validate(async (valid: boolean, errors: any[]) => {
+      if (valid) {
+        try {
+          const data = {
+            [loginFormData.value.account.includes('@') ? 'email' : 'account']: loginFormData.value.account,
+            password: loginFormData.value.password
+          }
+          const token = await http({
+            url: "/api/auth/login",
+            method: "POST",
+            data,
+          });
+          uni.showToast({ title: '登录成功', icon: 'success', duration: 2000 });
+          setToken(token);
+          uni.switchTab({ url: '/pages/index/index' });
+        } catch (error) {
+          console.error('更新失败', error);
+        }
+      } else {
+        console.log('表单验证失败', errors);
+      }
     });
-    uni.showToast({ title: '登录成功', icon: 'success', duration: 2000 });
-    setToken(token);
-    uni.switchTab({ url: '/pages/index/index' });
+
   } catch (err) {
     // 校验失败或请求失败
     console.log('校验或请求错误', err);
@@ -206,6 +210,21 @@ const handlePageChange = () => {
   border-bottom: 6rpx solid #eddebb;
   box-shadow: 0 4rpx 16rpx #e4d4b7;
 
+  .form-item {
+    background-color: #fff;
+    border: 3rpx solid #c6c0b3;
+    border-radius: 20rpx;
+    overflow: hidden;
+    padding: 10rpx 20rpx;
+    box-shadow: inset 0 0 4rpx 5rpx #f5f5f5;
+    font-size: 32rpx;
+    margin-bottom: 40rpx;
+  }
+
+  .login-form {
+    width: 100%;
+  }
+
   .form-button {
     background-color: #fe7a24;
     color: #fff;
@@ -222,20 +241,10 @@ const handlePageChange = () => {
   }
 }
 
-:deep(.is-input-border) {
-  border-radius: 20rpx;
-  overflow: hidden;
-  padding: 10rpx;
-  border: 3rpx solid #c6c0b3 !important;
-  box-shadow: inset 0 0 4rpx 5rpx #f5f5f5;
-
-  .uni-icons {
-    color: #aaa !important;
+:deep(.u-form-item) {
+  .u-iconfont {
+    font-size: 40rpx !important;
+    color: #aaa;
   }
-}
-
-:deep(.uni-easyinput__content-input) {
-  font-size: 32rpx;
-  padding-left: 10rpx;
 }
 </style>
