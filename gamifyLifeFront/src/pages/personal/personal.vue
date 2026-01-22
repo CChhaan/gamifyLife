@@ -197,7 +197,7 @@ const goToSetting = () => {
   .avatar {
     width: 180rpx;
     height: 180rpx;
-    background-color: #fe7a24;
+    background-color: var(--primary-color);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -325,7 +325,7 @@ const goToSetting = () => {
     align-items: center;
     justify-content: center;
     position: relative;
-    border: 6rpx solid #fe7a24;
+    border: 6rpx solid var(--primary-color);
     border-radius: 50%;
     width: 120rpx;
     height: 120rpx;
@@ -363,7 +363,7 @@ const goToSetting = () => {
     .exp-now {
       width: 60%;
       height: 100%;
-      background-color: #fe7a24;
+      background-color: var(--primary-color);
       border-radius: 10rpx;
     }
   }

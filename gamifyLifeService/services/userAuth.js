@@ -80,7 +80,7 @@ export default class UserAuthService {
   }
 
   // 用户退出登录方法
-  async logoutUser() {
+  async logoutUser(token) {
     try {
       UserAuthService.tokenBlacklist.add(token);
       return true;

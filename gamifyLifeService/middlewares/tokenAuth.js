@@ -1,5 +1,6 @@
 import jwt from "koa-jwt";
-import { error } from "../shared/response.js";
+import { unauthorized } from "../shared/response.js";
+import UserAuthService from "../services/userAuth.js";
 
 export default async function tokenAuth(ctx, next) {
   if (ctx.url === "/auth/login" || ctx.url === "/auth/register") {
@@ -12,7 +13,7 @@ export default async function tokenAuth(ctx, next) {
     // 检查 token 是否在黑名单中
     if (token && UserAuthService.isTokenBlacklisted(token)) {
       ctx.status = 401;
-      ctx.body = error("Token已失效");
+      ctx.body = unauthorized("Token已失效");
       return;
     }
 
@@ -21,6 +22,6 @@ export default async function tokenAuth(ctx, next) {
     })(ctx, next);
   } catch (err) {
     ctx.status = 401;
-    ctx.body = error("Token验证失败");
+    ctx.body = unauthorized("Token验证失败");
   }
 }

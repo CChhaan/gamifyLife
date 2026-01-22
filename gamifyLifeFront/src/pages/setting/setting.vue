@@ -5,14 +5,23 @@
 </template>
 
 <script setup lang="ts">
-import { removeToken } from '@/utils/auth';
+import { removeToken } from "@/utils/auth";
+import http from "@/utils/http";
 
-const logout = () => {
-  removeToken()
-  uni.reLaunch({
-    url: '/pages/login/login'
-  });
-}
+const logout = async () => {
+  try {
+    await http({
+      url: "/api/auth/logout",
+      method: "POST",
+    });
+    removeToken();
+    uni.reLaunch({
+      url: "/pages/login/login",
+    });
+  } catch (error) {
+    console.error("退出登录失败", error);
+  }
+};
 </script>
 
 <style scoped lang="scss"></style>

@@ -4,50 +4,60 @@
       <text>GamifyLife</text>
     </view>
     <div class="form">
-      <view class="login-form" v-if="page == 'login'">
-        <u-form :model="loginFormData" ref="loginForm" :rules="loginRules" label-width="60">
-          <u-form-item class="form-item" prop="account" :border-bottom="false" left-icon="account">
-            <u-input v-model="loginFormData.account" placeholderStyle="font-size:32rpx" placeholder="请输入账号或邮箱" />
-          </u-form-item>
-          <u-form-item class="form-item" prop="password" :border-bottom="false" left-icon="lock">
-            <u-input v-model="loginFormData.password" placeholderStyle="font-size:32rpx" placeholder="请输入密码" />
-          </u-form-item>
-        </u-form>
-        <button class="form-button" @click="handleLogin">登录</button>
-      </view>
-      <view class="register-form" v-else-if="page == 'register'">
-        <u-form :model="registerFormData" ref="registerForm" :rules="registerRules" label-width="60">
-          <u-form-item class="form-item" prop="account" :border-bottom="false" left-icon="account">
-            <u-input v-model="loginFormData.account" placeholderStyle="font-size:32rpx" placeholder="请输入账号或邮箱" />
-          </u-form-item>
-          <u-form-item class="form-item" prop="password" :border-bottom="false" left-icon="lock">
-            <u-input v-model="loginFormData.password" placeholderStyle="font-size:32rpx" placeholder="请输入密码" />
-          </u-form-item>
-        </u-form>
-        <uni-forms :modelValue="registerFormData" label-width="0" ref="registerForm" :rules="registerRules"
-          validate-trigger="blur">
-          <uni-forms-item name="account">
-            <uni-easyinput placeholderStyle="font-size:32rpx" prefixIcon="person" type="text"
-              v-model="registerFormData.account" placeholder="请输入账号" trim />
-          </uni-forms-item>
-          <uni-forms-item name="email">
-            <uni-easyinput placeholderStyle="font-size:32rpx" prefixIcon="email" type="text"
-              v-model="registerFormData.email" placeholder="请输入邮箱" trim />
-          </uni-forms-item>
-          <uni-forms-item class="form-item" name="password">
-            <uni-easyinput placeholderStyle="font-size:32rpx" type="password" prefixIcon="locked"
-              v-model="registerFormData.password" placeholder="请输入密码" trim />
-          </uni-forms-item>
-          <uni-forms-item class="form-item" name="confirmPassword">
-            <uni-easyinput placeholderStyle="font-size:32rpx" type="password" prefixIcon="locked"
-              v-model="registerFormData.confirmPassword" placeholder="请确认密码" trim />
-          </uni-forms-item>
-        </uni-forms>
-        <button class="form-button" @click="handleRegister">注册</button>
-      </view>
+      <auth-form
+        v-if="page == 'login'"
+        v-model="loginFormData"
+        :auth-rules="commonRules"
+        btn-text="登录"
+        @submit="handleLogin"
+        :items="[
+          {
+            prop: 'account',
+            icon: 'account',
+            placeholder: '请输入账号或邮箱',
+          },
+          {
+            prop: 'password',
+            icon: 'lock',
+            placeholder: '请输入密码',
+            type: 'password',
+          },
+        ]"
+      />
+      <auth-form
+        v-else-if="page == 'register'"
+        v-model="registerFormData"
+        :auth-rules="registerRules"
+        btn-text="注册"
+        @submit="handleRegister"
+        :items="[
+          {
+            prop: 'account',
+            icon: 'account',
+            placeholder: '请输入账号',
+          },
+          {
+            prop: 'email',
+            icon: 'email',
+            placeholder: '请输入邮箱',
+          },
+          {
+            prop: 'password',
+            icon: 'lock',
+            placeholder: '请输入密码',
+            type: 'password',
+          },
+          {
+            prop: 'confirmPassword',
+            icon: 'lock',
+            placeholder: '请确认密码',
+            type: 'password',
+          },
+        ]"
+      />
       <view class="tip">
-        <button plain type="primary" class="tip-button" @click="handlePageChange">
-          {{ page == 'login' ? '没有账号？去注册' : '已有账号？去登录' }}
+        <button plain class="tip-button" @click="handlePageChange">
+          {{ page == "login" ? "没有账号？去注册" : "已有账号？去登录" }}
         </button>
       </view>
     </div>
@@ -55,68 +65,55 @@
 </template>
 
 <script lang="ts" setup>
-import { setToken } from '@/utils/auth';
-import http from '@/utils/http';
-import { ref } from 'vue';
+import AuthForm from "@/components/Form/AuthForm.vue";
+import { setToken } from "@/utils/auth";
+import http from "@/utils/http";
+import { ref } from "vue";
 
-const page = ref('login')
-const loginForm = ref(null)
-const registerForm = ref(null)
+const page = ref("login");
 
 const loginFormData = ref({
-  account: '',
-  password: ''
-})
+  account: "",
+  password: "",
+});
 
 const registerFormData = ref({
-  account: '',
-  email: '',
-  password: '',
-  confirmPassword: ''
-})
+  ...loginFormData.value,
+  email: "",
+  confirmPassword: "",
+});
 
-const loginRules = {
+const commonRules = {
   account: [
     {
       required: true,
-      message: '请输入账号',
-    }
+      message: "请输入账号",
+    },
   ],
   password: [
     {
       required: true,
-      message: '请输入密码',
-    }
-  ]
-}
+      message: "请输入密码",
+    },
+  ],
+};
 
 const registerRules = {
-  account: [
-    {
-      required: true,
-      errorMessage: '请输入账号',
-    }
-  ],
+  ...commonRules,
   email: [
     {
       required: true,
-      errorMessage: '请输入邮箱',
+      message: "请输入邮箱",
     },
     {
-      format: 'email',
-      errorMessage: '请输入正确的邮箱',
-    }
-  ],
-  password: [
-    {
-      required: true,
-      errorMessage: '请输入密码',
-    }
+      format: "email",
+      message: "请输入正确的邮箱",
+    },
   ],
   confirmPassword: [
     {
       required: true,
-      errorMessage: '请确认密码',
+      message: "请确认密码",
     },
     {
       validator: (rule: any, value: string) => {
@@ -125,70 +122,62 @@ const registerRules = {
         }
         return true;
       },
-      errorMessage: '两次输入的密码不一致',
-    }
-  ]
-}
+      message: "两次输入的密码不一致",
+    },
+  ],
+};
 
 const handleLogin = async () => {
   try {
-    loginForm.value?.validate(async (valid: boolean, errors: any[]) => {
-      if (valid) {
-        try {
-          const data = {
-            [loginFormData.value.account.includes('@') ? 'email' : 'account']: loginFormData.value.account,
-            password: loginFormData.value.password
-          }
-          const token = await http({
-            url: "/api/auth/login",
-            method: "POST",
-            data,
-          });
-          uni.showToast({ title: '登录成功', icon: 'success', duration: 2000 });
-          setToken(token);
-          uni.switchTab({ url: '/pages/index/index' });
-        } catch (error) {
-          console.error('更新失败', error);
-        }
-      } else {
-        console.log('表单验证失败', errors);
-      }
+    const data = {
+      [loginFormData.value.account.includes("@") ? "email" : "account"]:
+        loginFormData.value.account,
+      password: loginFormData.value.password,
+    };
+    const token = await http({
+      url: "/api/auth/login",
+      method: "POST",
+      data,
     });
-
-  } catch (err) {
-    // 校验失败或请求失败
-    console.log('校验或请求错误', err);
+    uni.showToast({ title: "登录成功", icon: "success", duration: 2000 });
+    setToken(token);
+    uni.switchTab({ url: "/pages/index/index" });
+  } catch (error) {
+    console.error("更新失败", error);
   }
-}
+};
+
 const handleRegister = async () => {
   try {
-    await registerForm.value!.validate();
     await http({
       url: "/api/auth/register",
       method: "POST",
       data: registerFormData.value,
     });
-    uni.showToast({ title: '注册成功，请登录', icon: 'none', duration: 2000 });
-    page.value = 'login';
-  } catch (err) {
-    // 校验失败或请求失败
-    console.log('校验或请求错误', err);
+    uni.showToast({
+      title: "注册成功，请登录",
+      icon: "none",
+      duration: 2000,
+    });
+    page.value = "login";
+  } catch (error) {
+    console.error("注册失败", error);
   }
-}
+};
 
 const handlePageChange = () => {
-  page.value = page.value == 'login' ? 'register' : 'login'
-}
+  page.value = page.value == "login" ? "register" : "login";
+};
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 .login {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100vh;
-  background-color: #f8f7e6;
+  background-color: var(--background-color);
 }
 
 .title {
@@ -199,52 +188,23 @@ const handlePageChange = () => {
 
 .form {
   width: 75%;
-  padding: 80rpx 40rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 80rpx 40rpx;
   background-color: #f8f2de;
   border-radius: 16rpx;
   border-top: 6rpx solid #f9f9f0;
   border-bottom: 6rpx solid #eddebb;
   box-shadow: 0 4rpx 16rpx #e4d4b7;
 
-  .form-item {
-    background-color: #fff;
-    border: 3rpx solid #c6c0b3;
-    border-radius: 20rpx;
-    overflow: hidden;
-    padding: 10rpx 20rpx;
-    box-shadow: inset 0 0 4rpx 5rpx #f5f5f5;
-    font-size: 32rpx;
-    margin-bottom: 40rpx;
-  }
-
-  .login-form {
-    width: 100%;
-  }
-
-  .form-button {
-    background-color: #fe7a24;
-    color: #fff;
-    border-radius: 30rpx;
-    box-shadow: 0 4rpx 16rpx #ea9554;
-  }
-
   .tip {
     margin-top: 30rpx;
-
     .tip-button {
       border: none;
+      color: var(--contrast-color);
     }
-  }
-}
-
-:deep(.u-form-item) {
-  .u-iconfont {
-    font-size: 40rpx !important;
-    color: #aaa;
   }
 }
 </style>

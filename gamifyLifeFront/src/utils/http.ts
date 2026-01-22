@@ -1,4 +1,4 @@
-import { getToken } from "./auth";
+import { getToken, removeToken } from "./auth";
 
 interface ApiResponse<T = any> {
   code: number;
@@ -23,6 +23,12 @@ const http = <T = any>(options: UniApp.RequestOptions): Promise<T> => {
         const response = res.data as ApiResponse<T>;
         if (response.code == 200) {
           resolve(response.data);
+        } else if (response.code == 401) {
+          uni.showToast({ icon: "none", title: "登录过期，请重新登录" });
+          removeToken();
+          uni.navigateTo({
+            url: '/pages/login/login'
+          });
         } else {
           uni.showToast({ icon: "none", title: response.msg || "请求错误" });
           reject(response);

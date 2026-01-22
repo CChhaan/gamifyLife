@@ -4,9 +4,11 @@
       <view class="info">
         <view class="left">
           <view class="avatar">
-            <image class="avatar-img"
+            <image
+              class="avatar-img"
               src="https://p9-passport.byteacctimg.com/img/mosaic-legacy/3796/2975850990~120x256.image"
-              mode="scaleToFill" />
+              mode="scaleToFill"
+            />
           </view>
           <view class="center">
             <view class="username">
@@ -53,7 +55,10 @@
         </view>
         <view class="attr-item">
           <view class="attr-item-name">
-            <image src="/static/imgs/communication.png" class="attr-item-icon" />
+            <image
+              src="/static/imgs/communication.png"
+              class="attr-item-icon"
+            />
             <text>社交</text>
           </view>
           <text>20</text>
@@ -87,7 +92,9 @@
     <view class="card task-data">
       <view class="tasks">
         <view class="task-item">
-          <text class="task-item-text">完成 Vue 3 学习完成 Vue 3 学习 完成 Vue 3 学习</text>
+          <text class="task-item-text"
+            >完成 Vue 3 学习完成 Vue 3 学习 完成 Vue 3 学习</text
+          >
           <radio style="transform: scale(0.7)" borderColor="#aaa" />
         </view>
         <view class="task-item">
@@ -133,7 +140,7 @@ import FloatPet from "@/components/FloatPet.vue/FloatPet.vue";
   justify-content: center;
   padding-bottom: 140rpx;
   height: 100vh;
-  background-color: #f8f7e6;
+  background-color: var(--background-color);
 }
 
 .card {
@@ -164,7 +171,6 @@ import FloatPet from "@/components/FloatPet.vue/FloatPet.vue";
       .avatar {
         width: 120rpx;
         height: 120rpx;
-        /* background-color: #fe7a24; */
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -223,7 +229,7 @@ import FloatPet from "@/components/FloatPet.vue/FloatPet.vue";
       .now {
         width: 50%;
         height: 100%;
-        background-color: #fe7a24;
+        background-color: var(--primary-color);
         border-radius: 10rpx;
       }
     }
@@ -285,7 +291,7 @@ import FloatPet from "@/components/FloatPet.vue/FloatPet.vue";
   }
 
   .selected {
-    background-color: #fe7a24;
+    background-color: var(--primary-color);
     color: #fff;
   }
 
@@ -296,8 +302,8 @@ import FloatPet from "@/components/FloatPet.vue/FloatPet.vue";
 
 .task-data {
   height: 35vh;
-  /* box-shadow: inset 0 0 0 10rpx #fe7a24cc; */
-  border-top: 14rpx solid #fe7a24cc;
+  /* box-shadow: inset 0 0 0 10rpx var(--primary-color)cc; */
+  border-top: 14rpx solid var(--primary-color) cc;
   padding-top: 10rpx;
   padding-bottom: 15rpx;
   display: flex;
@@ -332,7 +338,7 @@ import FloatPet from "@/components/FloatPet.vue/FloatPet.vue";
         display: inline-block;
         width: 10rpx;
         height: 28rpx;
-        background-color: #fe7a24;
+        background-color: var(--primary-color);
         margin-right: 20rpx;
       }
     }
@@ -348,7 +354,7 @@ import FloatPet from "@/components/FloatPet.vue/FloatPet.vue";
     align-items: center;
 
     .task-more {
-      background-color: #fe7a24;
+      background-color: var(--primary-color);
       color: #fff;
       border-radius: 20rpx;
       font-size: 30rpx;
