@@ -14,3 +14,19 @@ export interface UserInfo {
   createdAt?: Date; // 创建时间，默认当前时间戳
   updatedAt?: Date; // 更新时间，默认当前时间戳，更新时自动刷新
 }
+
+export interface UserGrowth {
+  level: number;
+  total_experience: number;
+  gold: number;
+  mind: number;
+  body: number;
+  social: number;
+  discipline: number;
+  today_high_value_task_count: number;
+  last_reset_date: Date;
+  user_id: number;
+  nextLevelExp: number;
+  updatedAt: Date;
+  createdAt: Date;
+}

@@ -5,3 +5,4 @@
   - 注册初始化用户信息（user_accounts、user_info、user_growth）
 - 用户信息修改
 - 获取用户信息
+- 退出登录

@@ -8,6 +8,7 @@ import Koa from "koa";
 import bodyParser from "koa-bodyparser";
 import userAuthRoutes from "./routes/userAuth.js";
 import userInfoRoutes from "./routes/userInfo.js";
+import userGrowthRoutes from "./routes/userGrowth.js";
 import staticMiddleware from "koa-static";
 import errorHandler from "./middlewares/errorHanler.js";
 import { syncDatabase } from "./shared/db.js";
@@ -21,6 +22,7 @@ app.use(staticMiddleware(__dirname + "/public"));
 app.use(bodyParser());
 app.use(userAuthRoutes.routes()).use(userAuthRoutes.allowedMethods());
 app.use(userInfoRoutes.routes()).use(userInfoRoutes.allowedMethods());
+app.use(userGrowthRoutes.routes()).use(userGrowthRoutes.allowedMethods());
 
 // 异步启动
 (async () => {

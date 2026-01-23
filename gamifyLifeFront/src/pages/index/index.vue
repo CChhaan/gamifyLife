@@ -12,15 +12,20 @@
           </view>
           <view class="center">
             <view class="username">
-              <text class="username-text">用户名用户名用户名</text>
+              <text class="username-text">{{ userInfo?.nickname }}</text>
             </view>
             <view class="level">
-              <text>Lv. 16</text>
+              <text>Lv. {{ userGrowth?.level }}</text>
             </view>
           </view>
         </view>
         <view class="more">
-          <button size="mini" plain="true" class="personal-more">
+          <button
+            size="mini"
+            plain="true"
+            class="personal-more"
+            @click="goToPersonal"
+          >
             查看详情
           </button>
         </view>
@@ -28,14 +33,18 @@
       <view class="exp">
         <view class="data">
           <view class="exp-data">
-            <text> exp: 1000/2000 </text>
+            <text>
+              exp: {{ userGrowth?.total_experience }}/{{
+                userGrowth?.nextLevelExp
+              }}
+            </text>
           </view>
           <view class="gold-data">
-            <text> $ 200 </text>
+            <text> $ {{ userGrowth?.gold }} </text>
           </view>
         </view>
         <view class="exp-line">
-          <view class="now"></view>
+          <view class="now" :style="{ width: expWidth + '%' }"></view>
         </view>
       </view>
       <view class="attr-data">
@@ -44,14 +53,14 @@
             <image src="/static/imgs/brain.png" class="attr-item-icon" />
             <text>心智</text>
           </view>
-          <text>20</text>
+          <text>{{ userGrowth?.mind }}</text>
         </view>
         <view class="attr-item">
           <view class="attr-item-name">
             <image src="/static/imgs/strength.png" class="attr-item-icon" />
             <text>体魄</text>
           </view>
-          <text>20</text>
+          <text>{{ userGrowth?.body }}</text>
         </view>
         <view class="attr-item">
           <view class="attr-item-name">
@@ -61,14 +70,14 @@
             />
             <text>社交</text>
           </view>
-          <text>20</text>
+          <text>{{ userGrowth?.social }}</text>
         </view>
         <view class="attr-item">
           <view class="attr-item-name">
             <image src="/static/imgs/hourglass.png" class="attr-item-icon" />
             <text>自律</text>
           </view>
-          <text>20</text>
+          <text>{{ userGrowth?.discipline }}</text>
         </view>
       </view>
     </view>
@@ -91,26 +100,10 @@
     </view>
     <view class="card task-data">
       <view class="tasks">
-        <view class="task-item">
+        <view class="task-item" v-for="n in 5" :key="n">
           <text class="task-item-text"
             >完成 Vue 3 学习完成 Vue 3 学习 完成 Vue 3 学习</text
           >
-          <radio style="transform: scale(0.7)" borderColor="#aaa" />
-        </view>
-        <view class="task-item">
-          <text class="task-item-text">完成 Vue 3 学习</text>
-          <radio style="transform: scale(0.7)" borderColor="#aaa" />
-        </view>
-        <view class="task-item">
-          <text class="task-item-text">完成 Vue 3 学习</text>
-          <radio style="transform: scale(0.7)" borderColor="#aaa" />
-        </view>
-        <view class="task-item">
-          <text class="task-item-text">完成 Vue 3 学习</text>
-          <radio style="transform: scale(0.7)" borderColor="#aaa" />
-        </view>
-        <view class="task-item">
-          <text class="task-item-text">完成 Vue 3 学习</text>
           <radio style="transform: scale(0.7)" borderColor="#aaa" />
         </view>
       </view>
@@ -124,6 +117,25 @@
 
 <script setup lang="ts">
 import FloatPet from "@/components/FloatPet.vue/FloatPet.vue";
+import { useUser } from "@/composables/useUser";
+import { onLoad } from "@dcloudio/uni-app";
+import { computed } from "vue";
+
+const { userInfo, userGrowth, loadUserData } = useUser();
+onLoad(async () => {
+  await loadUserData();
+});
+
+const expWidth = computed(() => {
+  if (!userGrowth.value) return 0;
+  const exp = userGrowth.value.total_experience;
+  const nextExp = userGrowth.value.nextLevelExp;
+  return Math.min((exp / nextExp) * 100, 100);
+});
+
+const goToPersonal = () => {
+  uni.switchTab({ url: "/pages/personal/personal" });
+};
 </script>
 
 <style scoped lang="scss">
@@ -193,7 +205,7 @@ import FloatPet from "@/components/FloatPet.vue/FloatPet.vue";
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            width: 30vw;
+            width: 35vw;
             vertical-align: middle;
           }
         }
@@ -227,7 +239,6 @@ import FloatPet from "@/components/FloatPet.vue/FloatPet.vue";
       box-shadow: 0 2rpx 5rpx #ccc;
 
       .now {
-        width: 50%;
         height: 100%;
         background-color: var(--primary-color);
         border-radius: 10rpx;

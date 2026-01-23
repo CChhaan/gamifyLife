@@ -1,83 +1,122 @@
 <template>
   <view class="personal-content">
     <view class="setting" @click="goToSetting">
-      <image class="setting-icon" src="/static/imgs/setting.png" mode="scaleToFill" />
+      <image
+        class="setting-icon"
+        src="/static/imgs/setting.png"
+        mode="scaleToFill"
+      />
       <text>设置</text>
     </view>
     <view class="card">
       <view class="personal-info">
         <view class="avatar">
-          <image v-if="!userInfo?.avatar_url" class="avatar-img"
+          <image
+            v-if="!userInfo?.avatar_url"
+            class="avatar-img"
             src="https://p9-passport.byteacctimg.com/img/mosaic-legacy/3796/2975850990~120x256.image"
-            mode="scaleToFill" />
-          <image v-else class="avatar-img" :src="userInfo?.avatar_url" mode="scaleToFill" />
+            mode="scaleToFill"
+          />
+          <image
+            v-else
+            class="avatar-img"
+            :src="userInfo?.avatar_url"
+            mode="scaleToFill"
+          />
         </view>
         <view class="info">
           <view class="name-sex">
-            <view class="left">
-              <text class="name">{{ userInfo?.nickname }}</text>
-              <image v-if="userInfo?.gender == 1" class="sex" src="/static/imgs/male.png" mode="scaleToFill" />
-              <image v-else-if="userInfo?.gender == 2" class="sex" src="/static/imgs/female.png" mode="scaleToFill" />
-              <view v-else class="sex"></view>
-            </view>
-            <button size="mini" plain="true" class="info-setting" @click="editInfoShow = true">
-              编辑资料
-            </button>
+            <text class="name">{{ userInfo?.nickname }}</text>
+            <image
+              v-if="userInfo?.gender == 1"
+              class="sex"
+              src="/static/imgs/male.png"
+              mode="scaleToFill"
+            />
+            <image
+              v-else-if="userInfo?.gender == 2"
+              class="sex"
+              src="/static/imgs/female.png"
+              mode="scaleToFill"
+            />
+            <view v-else class="sex"></view>
           </view>
-          <text class="sign">{{ userInfo?.bio || '这个人很懒，什么都没有留下' }}</text>
+          <text class="sign">{{
+            userInfo?.bio || "这个人很懒，什么都没有留下"
+          }}</text>
           <view class="birth">
-            <text>生日: {{ userInfo?.birthday || '- 年 - 月 - 日' }}</text>
+            <text>生日: {{ userInfo?.birthday || "- 年 - 月 - 日" }}</text>
           </view>
           <view class="gold">
-            <image class="gold-icon" src="/static/imgs/financing.png" mode="scaleToFill" />
-            <text>金币：$1300</text>
+            <image
+              class="gold-icon"
+              src="/static/imgs/financing.png"
+              mode="scaleToFill"
+            />
+            <text>金币：${{ userGrowth?.gold }}</text>
           </view>
         </view>
-        <!-- <button size="mini" plain="true" class="info-setting">
-          编辑资料
-        </button> -->
-        <!-- <view class="edit">修改个人资料</view> -->
       </view>
       <view class="personal-data">
         <view class="attr">
           <text class="attr-name">心智</text>
-          <text class="attr-value">120</text>
+          <text class="attr-value">{{ userGrowth?.mind }}</text>
         </view>
         <view class="attr">
           <text class="attr-name">体魄</text>
-          <text class="attr-value">120</text>
+          <text class="attr-value">{{ userGrowth?.body }}</text>
         </view>
         <view class="level">
-          <text class="level-value">12</text>
+          <text class="level-value">{{ userGrowth?.level }}</text>
           <text class="level-name">等级</text>
         </view>
         <view class="attr">
           <text class="attr-name">社交</text>
-          <text class="attr-value">120</text>
+          <text class="attr-value">{{ userGrowth?.social }}</text>
         </view>
         <view class="attr">
           <text class="attr-name">自律</text>
-          <text class="attr-value">120</text>
+          <text class="attr-value">{{ userGrowth?.discipline }}</text>
         </view>
       </view>
       <view class="exp">
+        <view class="exp-value">
+          {{ userGrowth?.total_experience }}/{{ userGrowth?.nextLevelExp }}
+        </view>
         <view class="exp-line">
           <text>EXP</text>
           <view class="exp-sum">
-            <view class="exp-now"></view>
+            <view class="exp-now" :style="{ width: expWidth + '%' }"></view>
           </view>
         </view>
-        <view class="exp-value"> 1200/2000 </view>
+      </view>
+      <view class="info-setting">
+        <button
+          size="mini"
+          plain="true"
+          class="info-setting-btn"
+          @click="editInfoShow = true"
+        >
+          编辑资料
+        </button>
       </view>
     </view>
     <view class="other-entry">
       <view class="entry-item achieve">
         <text>个人成就</text>
-        <image class="entry-icon" src="/static/imgs/trophy.png" mode="scaleToFill" />
+        <image
+          class="entry-icon"
+          src="/static/imgs/trophy.png"
+          mode="scaleToFill"
+        />
       </view>
       <view class="entry-item bag">
         <text>道具背包</text>
-        <image class="entry-icon" src="/static/imgs/backpack.png" mode="scaleToFill" />
+        <image
+          class="entry-icon"
+          src="/static/imgs/backpack.png"
+          mode="scaleToFill"
+        />
       </view>
     </view>
     <view class="card pet-entry">
@@ -110,33 +149,41 @@
         <text class="position">第XXX名</text>
       </div>
     </view>
-    <EditUserInfo @close="editInfoShow = false" @success="getUserInfo" v-if="editInfoShow" :userInfo="userInfo" />
+    <EditUserInfo
+      @close="editInfoShow = false"
+      @success="getUserInfo"
+      v-if="editInfoShow"
+      :userInfo="userInfo"
+    />
   </view>
 </template>
 
 <script setup lang="ts">
 import { onLoad } from "@dcloudio/uni-app";
-import http from "@/utils/http";
-import { ref } from "vue";
-import { type UserInfo } from "@/type/user";
+import { computed, ref } from "vue";
 import EditUserInfo from "./editUserInfo.vue";
+import { useUser } from "@/composables/useUser";
 
 const editInfoShow = ref(false);
 
-const userInfo = ref<UserInfo | null>(null);
+const { userInfo, userGrowth, loadUserData, getUserInfo } = useUser();
 
-const getUserInfo = async () => {
-  userInfo.value = await http<UserInfo>({ url: '/api/userInfo/getUserInfo', method: 'GET' })
-}
+const expWidth = computed(() => {
+  if (!userGrowth.value) return 0;
+  const exp = userGrowth.value.total_experience;
+  const nextExp = userGrowth.value.nextLevelExp;
+  return Math.min((exp / nextExp) * 100, 100);
+});
+
 onLoad(async () => {
-  await getUserInfo()
-})
+  await loadUserData();
+});
 
 const goToSetting = () => {
   uni.navigateTo({
-    url: '/pages/setting/setting'
+    url: "/pages/setting/setting",
   });
-}
+};
 </script>
 
 <style scoped lang="scss">
@@ -153,7 +200,7 @@ const goToSetting = () => {
   justify-content: start;
   height: 100vh;
   overflow: auto;
-  background-color: #f8f7e6;
+  background-color: var(--background-color);
 }
 
 .card {
@@ -197,7 +244,7 @@ const goToSetting = () => {
   .avatar {
     width: 180rpx;
     height: 180rpx;
-    background-color: var(--primary-color);
+    // background-color: var(--primary-color);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -224,22 +271,9 @@ const goToSetting = () => {
     .name-sex {
       display: flex;
       align-items: center;
-      justify-content: space-between;
       color: #000;
       margin-bottom: 8rpx;
-
-      .left {
-        display: flex;
-        align-items: center;
-        width: calc(100% - 170rpx);
-      }
-
-      .sex {
-        width: 35rpx;
-        height: 35rpx;
-        margin-left: 14rpx;
-        // vertical-align: middle;
-      }
+      padding-right: 50rpx;
 
       .name {
         font-size: 36rpx;
@@ -250,14 +284,11 @@ const goToSetting = () => {
         // font-weight: bold;
       }
 
-      .info-setting {
-        margin-right: 20rpx;
-        height: 50rpx;
-        padding: 0 0.5em;
-        border: 2rpx solid #888;
-        display: flex;
-        font-size: 24rpx;
-        align-items: center;
+      .sex {
+        width: 35rpx;
+        height: 35rpx;
+        margin-left: 10rpx;
+        // vertical-align: middle;
       }
     }
 
@@ -325,9 +356,6 @@ const goToSetting = () => {
     align-items: center;
     justify-content: center;
     position: relative;
-    border: 6rpx solid var(--primary-color);
-    border-radius: 50%;
-    width: 120rpx;
     height: 120rpx;
 
     .level-value {
@@ -361,7 +389,6 @@ const goToSetting = () => {
     }
 
     .exp-now {
-      width: 60%;
       height: 100%;
       background-color: var(--primary-color);
       border-radius: 10rpx;
@@ -369,10 +396,28 @@ const goToSetting = () => {
   }
 
   .exp-value {
-    text-align: right;
-    margin-top: 5rpx;
+    text-align: left;
+    margin-left: 3em;
     font-size: 28rpx;
     color: #888;
+  }
+}
+
+.info-setting {
+  width: 100%;
+  height: 60rpx;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10rpx;
+
+  .info-setting-btn {
+    width: 6em;
+    padding: 0;
+    border: 2rpx solid #888;
+    display: flex;
+    font-size: 24rpx;
+    align-items: center;
+    justify-content: center;
   }
 }
 

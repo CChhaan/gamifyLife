@@ -1,6 +1,7 @@
 import sequelize from "./sequelize.js";
 import initUserAccounts from "../models/userAccounts.js";
 import initUserInfo from "../models/userInfo.js";
+import initUserGrowth from "../models/userGrowth.js";
 import { DataTypes } from "sequelize";
 
 // 初始化所有模型
@@ -12,6 +13,7 @@ const db = {
 // 注册模型
 db.UserAccounts = initUserAccounts(sequelize, DataTypes);
 db.UserInfo = initUserInfo(sequelize, DataTypes);
+db.UserGrowth = initUserGrowth(sequelize, DataTypes);
 
 // 同步数据库
 export const syncDatabase = async () => {

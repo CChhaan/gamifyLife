@@ -27,10 +27,17 @@ export default class UserAuthService {
         },
         { transaction },
       );
+      const newUserGrowth = await db.UserGrowth.create(
+        {
+          user_id: newUser.id,
+        },
+        { transaction },
+      );
       await transaction.commit();
       return {
         ...newUser.toJSON(),
         user_info: newUserInfo.toJSON(),
+        user_growth: newUserGrowth.toJSON(),
         password_hash: undefined, // 确保不返回密码字段
       };
     } catch (error) {

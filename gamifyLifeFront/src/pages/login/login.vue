@@ -170,7 +170,7 @@ const handlePageChange = () => {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .login {
   display: flex;
   flex-direction: column;
@@ -201,6 +201,7 @@ const handlePageChange = () => {
 
   .tip {
     margin-top: 30rpx;
+
     .tip-button {
       border: none;
       color: var(--contrast-color);

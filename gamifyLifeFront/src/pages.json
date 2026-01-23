@@ -32,6 +32,13 @@
       "style": {
         "navigationBarTitleText": "设置"
       }
+    },
+    {
+      "path": "pages/task/task",
+      "style": {
+        "navigationBarTitleText": "任务管理",
+        "navigationStyle": "custom"
+      }
     }
   ],
   "globalStyle": {
@@ -64,7 +71,7 @@
           "color": "#666",
           "selectedColor": "#fe7a24",
           "text": "",
-          "selectedText": ""
+          "selectedText": "\ue6c0"
         }
       },
       {
