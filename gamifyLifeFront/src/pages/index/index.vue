@@ -1,5 +1,5 @@
 <template>
-  <view class="index-content">
+  <movable-area class="index-content">
     <view class="card personal-data">
       <view class="info">
         <view class="left">
@@ -112,7 +112,7 @@
       </view>
     </view>
     <FloatPet />
-  </view>
+  </movable-area>
 </template>
 
 <script setup lang="ts">
@@ -151,6 +151,7 @@ const goToPersonal = () => {
   align-items: center;
   justify-content: center;
   padding-bottom: 140rpx;
+  width: 100vw;
   height: 100vh;
   background-color: var(--background-color);
 }
