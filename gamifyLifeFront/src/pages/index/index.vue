@@ -108,7 +108,9 @@
         </view>
       </view>
       <view class="more">
-        <button size="mini" class="task-more">查看更多</button>
+        <button size="mini" class="task-more" @click="gotoTask">
+          查看更多
+        </button>
       </view>
     </view>
     <FloatPet />
@@ -135,6 +137,10 @@ const expWidth = computed(() => {
 
 const goToPersonal = () => {
   uni.switchTab({ url: "/pages/personal/personal" });
+};
+
+const gotoTask = () => {
+  uni.switchTab({ url: "/pages/task/task" });
 };
 </script>
 

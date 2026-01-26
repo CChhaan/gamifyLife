@@ -32,16 +32,18 @@
         <view class="time">本年</view>
         <view class="time">本年</view>
       </view>
-      <view class="task-item" v-for="n in 10" :key="n">
-        <radio style="transform: scale(0.7)" borderColor="#aaa" />
-        <view class="task-detail">
-          <view class="task-info">
-            <text class="task-title">完成 Vue 3 学习</text>
-            <view class="task-tag">前端学习</view>
-          </view>
-          <view class="task-reward">
-            <view class="reward">exp: 133</view>
-            <view class="reward">$133</view>
+      <view class="tasks">
+        <view class="task-item" v-for="n in 10" :key="n">
+          <radio style="transform: scale(0.7)" borderColor="#aaa" />
+          <view class="task-detail">
+            <view class="task-info">
+              <text class="task-title">完成 Vue 3 学习</text>
+              <view class="task-tag">前端学习</view>
+            </view>
+            <view class="task-reward">
+              <view class="reward">exp: 133</view>
+              <view class="reward">$133</view>
+            </view>
           </view>
         </view>
       </view>
@@ -69,7 +71,6 @@
   background-color: var(--third-color);
   display: flex;
   align-items: center;
-  justify-content: end;
   padding: 0 20rpx;
   button {
     margin: 0 10rpx;
@@ -77,22 +78,21 @@
 }
 
 .task-category {
-  width: calc(100% - 40rpx);
+  width: calc(100% - 50rpx);
   display: flex;
   align-items: center;
   justify-content: space-between;
   overflow: auto;
   gap: 15rpx;
-  padding: 20rpx 0;
-  margin: 20rpx 0;
+  padding: 30rpx 0;
+  // margin: 30rpx 0;
 
   .task-category-item {
-    border-radius: 20rpx;
     background-color: #fcfcfc;
-    border-radius: 20rpx;
+    border-radius: 50rpx;
     font-size: 28rpx;
     box-shadow: 0 6rpx 10rpx #ccc;
-    padding: 20rpx;
+    padding: 15rpx 30rpx;
   }
 
   .task-category-item-text {
@@ -109,20 +109,25 @@
   }
 }
 .task-list {
-  width: calc(100% - 40rpx);
+  width: calc(100% - 50rpx);
   background-color: #fff;
+  border-radius: 40rpx;
+  box-shadow: 0 6rpx 10rpx #ccc;
   padding: 20rpx;
+  height: calc(100vh - 390rpx);
+  overflow: auto;
   .timeFilter {
     width: 100%;
     font-size: 28rpx;
     color: #999;
-    margin-bottom: 20rpx;
+    margin-bottom: 30rpx;
     display: flex;
     overflow: auto;
     font-size: 32rpx;
     justify-content: space-between;
+    border-bottom: 2rpx solid #eee;
     .time {
-      padding: 5rpx 20rpx;
+      padding: 5rpx 20rpx 10rpx;
       white-space: nowrap;
     }
     .selected {
@@ -133,30 +138,36 @@
   .task-item {
     display: flex;
     font-size: 32rpx;
-    margin-bottom: 20rpx;
+    margin-bottom: 30rpx;
   }
-  .task-info,
-  .task-reward {
-    display: flex;
-    align-items: center;
-  }
-  .task-tag {
-    margin-left: 20rpx;
-    padding: 5rpx 10rpx;
-    border-radius: 10rpx;
-    font-size: 24rpx;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--third-color);
-    color: #fff;
-  }
-  .reward {
-    margin-left: 10rpx;
+  .tasks {
+    height: calc(100% - 85rpx);
+    overflow: auto;
 
-    border-radius: 10rpx;
-    font-size: 28rpx;
-    color: var(--third-color);
+    .task-info,
+    .task-reward {
+      display: flex;
+      align-items: center;
+      margin-left: 10rpx;
+    }
+    .task-tag {
+      margin-left: 20rpx;
+      padding: 5rpx 10rpx;
+      border-radius: 10rpx;
+      font-size: 24rpx;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--third-color);
+      color: #fff;
+    }
+    .reward {
+      margin-right: 15rpx;
+
+      border-radius: 10rpx;
+      font-size: 28rpx;
+      color: var(--third-color);
+    }
   }
 }
 .add-task {
