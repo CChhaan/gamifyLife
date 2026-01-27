@@ -7,7 +7,7 @@ const router = new Router({ prefix: "/userGrowth" });
 const userGrowthService = new UserGrowthService();
 
 // 获取用户成长信息接口
-router.get("/getUserGrowth", async (ctx) => {
+router.get("/", async (ctx) => {
   try {
     const userGrowth = await userGrowthService.getUserGrowth(
       ctx.state.user.userId,

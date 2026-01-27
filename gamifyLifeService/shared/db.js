@@ -2,6 +2,8 @@ import sequelize from "./sequelize.js";
 import initUserAccounts from "../models/userAccounts.js";
 import initUserInfo from "../models/userInfo.js";
 import initUserGrowth from "../models/userGrowth.js";
+import initTaskCategories from "../models/taskCategories.js";
+import initTaskTags from "../models/taskTags.js";
 import { DataTypes } from "sequelize";
 
 // 初始化所有模型
@@ -14,6 +16,8 @@ const db = {
 db.UserAccounts = initUserAccounts(sequelize, DataTypes);
 db.UserInfo = initUserInfo(sequelize, DataTypes);
 db.UserGrowth = initUserGrowth(sequelize, DataTypes);
+db.TaskCategories = initTaskCategories(sequelize, DataTypes);
+db.TaskTags = initTaskTags(sequelize, DataTypes);
 
 // 同步数据库
 export const syncDatabase = async () => {
