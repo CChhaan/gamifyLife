@@ -17,27 +17,28 @@ export default class UserAuthService {
           account,
           password_hash: password,
           email,
+          userInfo: {
+            nickname: `用户{{id}}`, // {{id}} 会被 Sequelize 自动替换为新创建的 user_id
+          },
+          userGrowth: {}, // UserGrowth 仅需 user_id，其他字段用默认值即可
+          taskCategory: {
+            name: "默认分类",
+            color: "#CCCCCC", // 补充默认值（模型已配置的话可省略）
+            display_order: 0,
+          },
+          taskTag: {
+            name: "默认标签",
+            primary_attr: "mind",
+          },
         },
-        { transaction },
-      );
-      const newUserInfo = await db.UserInfo.create(
         {
-          user_id: newUser.id,
-          nickname: `用户${newUser.id}`,
+          include: [db.UserInfo, db.UserGrowth, db.TaskCategories, db.TaskTags],
+          transaction,
         },
-        { transaction },
       );
-      const newUserGrowth = await db.UserGrowth.create(
-        {
-          user_id: newUser.id,
-        },
-        { transaction },
-      );
-      await transaction.commit();
       return {
         ...newUser.toJSON(),
-        user_info: newUserInfo.toJSON(),
-        user_growth: newUserGrowth.toJSON(),
+        user_info: newUser.user_info.toJSON(),
         password_hash: undefined, // 确保不返回密码字段
       };
     } catch (error) {

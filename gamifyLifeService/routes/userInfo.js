@@ -7,7 +7,7 @@ const router = new Router({ prefix: "/userInfo" });
 const userInfoService = new UserInfoService();
 
 // 获取用户信息接口
-router.get("/getUserInfo", async (ctx) => {
+router.get("/", async (ctx) => {
   try {
     const userInfo = await userInfoService.getUserInfo(ctx.state.user.userId);
     ctx.body = success(userInfo, "获取用户信息成功");
