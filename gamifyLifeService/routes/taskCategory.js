@@ -1,11 +1,10 @@
 import Router from "koa-router";
 import { success, badRequest } from "../shared/response.js";
-import taskCategoryService from "../services/taskCategory.js";
+import TaskCategoryService from "../services/taskCategory.js";
 
 const router = new Router({ prefix: "/taskCategory" });
 
-const taskCategoryService = new taskCategoryService();
-
+const taskCategoryService = new TaskCategoryService();
 // 获取任务分类接口
 router.get("/", async (ctx) => {
   try {

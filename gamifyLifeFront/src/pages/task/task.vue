@@ -54,7 +54,22 @@
   </view>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { TaskCategory } from "@/type/task";
+import http from "@/utils/http";
+import { onLoad } from "@dcloudio/uni-app";
+import { ref } from "vue";
+const taskCategories = ref<TaskCategory[] | null>(null);
+const getTaskCategories = async () => {
+  taskCategories.value = await http<TaskCategory[]>({
+    url: "/api/taskCategory/",
+    method: "GET",
+  });
+};
+onLoad(async () => {
+  await getTaskCategories();
+});
+</script>
 
 <style scoped lang="scss">
 .task-page {

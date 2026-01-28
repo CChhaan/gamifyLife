@@ -17,16 +17,13 @@ export default class UserAuthService {
           account,
           password_hash: password,
           email,
-          userInfo: {
-            nickname: `用户{{id}}`, // {{id}} 会被 Sequelize 自动替换为新创建的 user_id
-          },
-          userGrowth: {}, // UserGrowth 仅需 user_id，其他字段用默认值即可
-          taskCategory: {
+          UserGrowth: {}, // UserGrowth 仅需 user_id，其他字段用默认值即可
+          TaskCategories: {
             name: "默认分类",
             color: "#CCCCCC", // 补充默认值（模型已配置的话可省略）
             display_order: 0,
           },
-          taskTag: {
+          TaskTags: {
             name: "默认标签",
             primary_attr: "mind",
           },
@@ -36,10 +33,20 @@ export default class UserAuthService {
           transaction,
         },
       );
+      newUser.UserInfo = await db.UserInfo.create(
+        {
+          user_id: newUser.id,
+          nickname: `用户${newUser.id}`,
+        },
+        { transaction },
+      );
+
+      const result = newUser.toJSON();
+      await transaction.commit();
+
       return {
-        ...newUser.toJSON(),
-        user_info: newUser.user_info.toJSON(),
-        password_hash: undefined, // 确保不返回密码字段
+        ...result,
+        password_hash: undefined,
       };
     } catch (error) {
       await transaction.rollback();
@@ -82,7 +89,7 @@ export default class UserAuthService {
         return token;
       }
     } catch (error) {
-      console.error("注登录失败：", error);
+      console.error("登录失败：", error);
       throw new Error(error.message || "登录失败，请稍后重试");
     }
   }

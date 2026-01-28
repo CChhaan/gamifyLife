@@ -8,14 +8,14 @@ export function useUser() {
 
   const getUserInfo = async () => {
     userInfo.value = await http<UserInfo>({
-      url: "/api/userInfo/getUserInfo",
+      url: "/api/userInfo/",
       method: "GET",
     });
   };
 
   const getUserGrowth = async () => {
     userGrowth.value = await http({
-      url: "/api/userGrowth/getUserGrowth",
+      url: "/api/userGrowth/",
       method: "GET",
     });
   };

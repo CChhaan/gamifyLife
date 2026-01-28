@@ -19,6 +19,12 @@ db.UserGrowth = initUserGrowth(sequelize, DataTypes);
 db.TaskCategories = initTaskCategories(sequelize, DataTypes);
 db.TaskTags = initTaskTags(sequelize, DataTypes);
 
+Object.values(db).forEach((model) => {
+  if (model && typeof model.associate === "function") {
+    model.associate(db);
+  }
+});
+
 // 同步数据库
 export const syncDatabase = async () => {
   try {
