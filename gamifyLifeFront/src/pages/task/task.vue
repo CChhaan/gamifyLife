@@ -1,24 +1,24 @@
 <template>
   <view class="task-page">
     <view class="banner">
-      <button size="mini">标签管理</button>
-      <button size="mini">分类管理</button>
+      <button size="mini" @click="taskTagMngShow = true">标签管理</button>
+      <button size="mini" @click="taskCategoryMngShow = true">分类管理</button>
     </view>
     <view class="task-category">
-      <view class="task-category-item selected">
-        <text class="task-category-item-text">编程学习编程</text>
-      </view>
-      <view class="task-category-item">
-        <text class="task-category-item-text">学业任务</text>
-      </view>
-      <view class="task-category-item">
-        <text class="task-category-item-text">每日任务</text>
-      </view>
-      <view class="task-category-item">
-        <text class="task-category-item-text">健身目标</text>
-      </view>
-      <view class="task-category-item">
-        <text class="task-category-item-text">健身目标</text>
+      <view
+        class="task-category-item"
+        :class="selectedCategory == 'all' && 'selected'"
+        @click="selectedCategory = 'all'"
+        ><text class="task-category-item-text">全部</text></view
+      >
+      <view
+        class="task-category-item"
+        :class="selectedCategory == value.id && 'selected'"
+        v-for="value in taskCategories"
+        :key="value.id"
+        @click="selectedCategory = value.id"
+      >
+        <text class="task-category-item-text">{{ value.name }}</text>
       </view>
     </view>
     <view class="task-list">
@@ -51,21 +51,35 @@
     <view class="add-task">
       <button>+</button>
     </view>
+    <task-category-cmp
+      @close="taskCategoryMngShow = false"
+      :taskCategories="taskCategories"
+      @refresh="getTaskCategories"
+      v-if="taskCategoryMngShow"
+    />
+    <task-tag-cmp @close="taskTagMngShow = false" v-if="taskTagMngShow" />
   </view>
 </template>
 
 <script setup lang="ts">
-import { TaskCategory } from "@/type/task";
+import TaskCategoryCmp from "@/pages/task/taskCategory.vue";
+import TaskTagCmp from "@/pages/task/taskTag.vue";
+import { type TaskCategory } from "@/type/task";
 import http from "@/utils/http";
 import { onLoad } from "@dcloudio/uni-app";
-import { ref } from "vue";
+import { provide, ref } from "vue";
 const taskCategories = ref<TaskCategory[] | null>(null);
+const selectedCategory = ref<number | string>("all");
+const taskCategoryMngShow = ref(false);
 const getTaskCategories = async () => {
   taskCategories.value = await http<TaskCategory[]>({
     url: "/api/taskCategory/",
     method: "GET",
   });
 };
+
+const taskTagMngShow = ref(false);
+
 onLoad(async () => {
   await getTaskCategories();
 });
@@ -96,18 +110,17 @@ onLoad(async () => {
   width: calc(100% - 50rpx);
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: start;
   overflow: auto;
   gap: 15rpx;
   padding: 30rpx 0;
-  // margin: 30rpx 0;
 
   .task-category-item {
     background-color: #fcfcfc;
-    border-radius: 50rpx;
-    font-size: 28rpx;
+    border-radius: 20rpx;
+    font-size: 32rpx;
     box-shadow: 0 6rpx 10rpx #ccc;
-    padding: 15rpx 30rpx;
+    padding: 10rpx 30rpx;
   }
 
   .task-category-item-text {

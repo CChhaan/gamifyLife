@@ -7,6 +7,7 @@ export default class TaskTagService {
       const taskTags = await db.TaskTags.findAll({
         where: { user_id: userId },
       });
+      return taskTags;
     } catch (error) {
       console.error("获取用户任务标签失败", error);
       throw new Error(error.message || "获取用户任务标签失败");

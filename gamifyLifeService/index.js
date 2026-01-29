@@ -10,6 +10,7 @@ import userAuthRoutes from "./routes/userAuth.js";
 import userInfoRoutes from "./routes/userInfo.js";
 import userGrowthRoutes from "./routes/userGrowth.js";
 import taskCategoryRoutes from "./routes/taskCategory.js";
+import taskTagRoutes from "./routes/taskTag.js";
 import staticMiddleware from "koa-static";
 import errorHandler from "./middlewares/errorHanler.js";
 import { syncDatabase } from "./shared/db.js";
@@ -25,6 +26,7 @@ app.use(userAuthRoutes.routes()).use(userAuthRoutes.allowedMethods());
 app.use(userInfoRoutes.routes()).use(userInfoRoutes.allowedMethods());
 app.use(userGrowthRoutes.routes()).use(userGrowthRoutes.allowedMethods());
 app.use(taskCategoryRoutes.routes()).use(taskCategoryRoutes.allowedMethods());
+app.use(taskTagRoutes.routes()).use(taskTagRoutes.allowedMethods());
 
 // 异步启动
 (async () => {

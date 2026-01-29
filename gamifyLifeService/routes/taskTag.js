@@ -1,15 +1,15 @@
 import Router from "koa-router";
 import { success, badRequest } from "../shared/response.js";
-import taskTagService from "../services/taskTag.js";
+import TaskTagService from "../services/taskTag.js";
 
 const router = new Router({ prefix: "/taskTag" });
 
-const taskTagService = new taskTagService();
+const taskTagService = new TaskTagService();
 
 // 获取任务标签接口
 router.get("/", async (ctx) => {
   try {
-    const taskTags = await taskTagService.getTaskTags(ctx.state.user.userId);
+    const taskTags = await taskTagService.getTaskTagList(ctx.state.user.userId);
     ctx.body = success(taskTags, "获取任务标签成功");
   } catch (error) {
     ctx.status = 400;

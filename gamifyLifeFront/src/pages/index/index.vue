@@ -48,53 +48,36 @@
         </view>
       </view>
       <view class="attr-data">
-        <view class="attr-item">
+        <view
+          class="attr-item"
+          v-for="(name, key) in InfluenceAttrTextMap"
+          :key="key"
+        >
           <view class="attr-item-name">
-            <image src="/static/imgs/brain.png" class="attr-item-icon" />
-            <text>心智</text>
+            <image :src="`/static/imgs/${key}.png`" class="attr-item-icon" />
+            <text>{{ name }}</text>
           </view>
-          <text>{{ userGrowth?.mind }}</text>
-        </view>
-        <view class="attr-item">
-          <view class="attr-item-name">
-            <image src="/static/imgs/strength.png" class="attr-item-icon" />
-            <text>体魄</text>
-          </view>
-          <text>{{ userGrowth?.body }}</text>
-        </view>
-        <view class="attr-item">
-          <view class="attr-item-name">
-            <image
-              src="/static/imgs/communication.png"
-              class="attr-item-icon"
-            />
-            <text>社交</text>
-          </view>
-          <text>{{ userGrowth?.social }}</text>
-        </view>
-        <view class="attr-item">
-          <view class="attr-item-name">
-            <image src="/static/imgs/hourglass.png" class="attr-item-icon" />
-            <text>自律</text>
-          </view>
-          <text>{{ userGrowth?.discipline }}</text>
+          <text>{{ userGrowth?.[key] }}</text>
         </view>
       </view>
     </view>
     <view class="task-category">
-      <view class="task-category-item selected">
-        <text class="task-category-item-text">编程学习编程</text>
+      <view
+        class="task-category-item"
+        :class="selectedCategory == 'all' && 'selected'"
+        @click="selectedCategory = 'all'"
+        ><text class="task-category-item-text">全部</text></view
+      >
+      <view
+        class="task-category-item"
+        :class="selectedCategory == value.id && 'selected'"
+        v-for="value in taskCategories?.slice(0, 3)"
+        :key="value.id"
+        @click="selectedCategory = value.id"
+      >
+        <text class="task-category-item-text">{{ value.name }}</text>
       </view>
-      <view class="task-category-item">
-        <text class="task-category-item-text">学业任务</text>
-      </view>
-      <view class="task-category-item">
-        <text class="task-category-item-text">每日任务</text>
-      </view>
-      <view class="task-category-item">
-        <text class="task-category-item-text">健身目标</text>
-      </view>
-      <view class="task-category-item">
+      <view class="task-category-item" @click="gotoTask">
         <text class="task-category-item-text">更多</text>
       </view>
     </view>
@@ -121,12 +104,24 @@
 import FloatPet from "@/components/FloatPet.vue/FloatPet.vue";
 import { useUser } from "@/composables/useUser";
 import { onLoad } from "@dcloudio/uni-app";
-import { computed } from "vue";
+import { computed, ref } from "vue";
+import { InfluenceAttrTextMap, type TaskCategory } from "@/type/task";
+import http from "@/utils/http";
 
 const { userInfo, userGrowth, loadUserData } = useUser();
 onLoad(async () => {
   await loadUserData();
+  await getTaskCategories();
 });
+const taskCategories = ref<TaskCategory[] | null>(null);
+const selectedCategory = ref<number | string>("all");
+
+const getTaskCategories = async () => {
+  taskCategories.value = await http<TaskCategory[]>({
+    url: "/api/taskCategory/",
+    method: "GET",
+  });
+};
 
 const expWidth = computed(() => {
   if (!userGrowth.value) return 0;
@@ -289,7 +284,7 @@ const gotoTask = () => {
   width: 85vw;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  // justify-content: space-between;
   overflow: auto;
   gap: 15rpx;
   padding: 20rpx 0;

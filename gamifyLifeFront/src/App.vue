@@ -35,7 +35,8 @@ onHide(() => {
   --text-color: #333; // Default text color
   --contrast-color: #5789d3; // Secondary text color
   // --background-color: #fff; // Background color
-  --background-color: #f8f7e666; // Background color
+  --background-color: #f8f7e6; // Background color
+  --background-second-color: #f8f2de; // Background color
   --placeholder-color: #aaa; // Placeholder text color
 }
 </style>

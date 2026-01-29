@@ -26,6 +26,7 @@ export default class UserAuthService {
           TaskTags: {
             name: "默认标签",
             primary_attr: "mind",
+            secondary_attr: "body",
           },
         },
         {
