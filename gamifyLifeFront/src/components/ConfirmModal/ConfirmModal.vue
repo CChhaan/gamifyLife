@@ -14,6 +14,10 @@
 defineProps<{
   text: string;
 }>();
+defineEmits<{
+  (e: "confirm"): void;
+  (e: "close"): void;
+}>();
 </script>
 
 <style scoped lang="scss">
@@ -33,11 +37,11 @@ defineProps<{
 }
 
 .main {
+  padding: 20rpx 0;
   text-align: center;
   font-size: 40rpx;
   font-weight: bold;
   color: #8c6e52;
-  padding: 20rpx 0;
 }
 
 .confirm-btn-group {
@@ -47,11 +51,10 @@ defineProps<{
 }
 
 .confirm-button {
+  padding: 0 1em;
   background-color: #fe7a24;
   color: #fff;
   font-size: 32rpx;
   line-height: 2;
-  padding: 0 1em;
-  height: auto;
 }
 </style>

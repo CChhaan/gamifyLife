@@ -70,7 +70,7 @@ import { setToken } from "@/utils/auth";
 import http from "@/utils/http";
 import { ref } from "vue";
 
-const page = ref("login");
+const page = ref<string>("login");
 
 const loginFormData = ref({
   account: "",
@@ -139,7 +139,7 @@ const handleLogin = async () => {
       method: "POST",
       data,
     });
-    uni.showToast({ title: "登录成功", icon: "success", duration: 2000 });
+    uni.showToast({ title: "登录成功", icon: "success" });
     setToken(token);
     uni.switchTab({ url: "/pages/index/index" });
   } catch (error) {
@@ -157,7 +157,6 @@ const handleRegister = async () => {
     uni.showToast({
       title: "注册成功，请登录",
       icon: "none",
-      duration: 2000,
     });
     page.value = "login";
   } catch (error) {
@@ -181,9 +180,9 @@ const handlePageChange = () => {
 }
 
 .title {
-  font-size: 24px;
+  font-size: 48rpx;
   font-weight: bold;
-  margin-bottom: 20px;
+  margin-bottom: 40rpx;
 }
 
 .form {

@@ -9,89 +9,41 @@
       <button class="btn" @click="isAdding = true">添加分类</button>
     </view>
     <view>
-      <view v-show="isAdding" class="category-item">
-        <view>
-          <u-input
-            v-model="addName"
-            class="edit-input"
-            placeholder="请输入分类名称"
-          ></u-input>
-        </view>
-        <view class="operation">
-          <button
-            size="mini"
-            plain
-            class="operation-btn save-btn"
-            @click="addSave"
-          >
-            保存
-          </button>
-          <button
-            size="mini"
-            plain
-            class="operation-btn cancel-btn"
-            @click="cancelAdd"
-          >
-            取消
-          </button>
-        </view>
-      </view>
-      <view v-for="item in taskCategories" :key="item.id" class="category-item">
-        <view>
-          <u-input
-            v-model="editName"
-            v-show="editId == item.id"
-            class="edit-input"
-            placeholder="请输入分类名称"
-          ></u-input>
-          <text v-show="editId != item.id">{{ item.name }}</text>
-        </view>
-        <view class="operation">
-          <template v-if="editId != item.id">
-            <u-icon
-              name="edit-pen"
-              @click="changeEditStatus(item.id, item.name)"
-            >
-            </u-icon>
-            <u-icon
-              name="trash"
-              color="#ff0000"
-              @click="openDeleteModal(item.id, item.name)"
-            >
-            </u-icon>
-          </template>
-          <template v-else>
-            <button
-              size="mini"
-              plain
-              class="operation-btn save-btn"
-              @click="editSave"
-            >
-              保存
-            </button>
-            <button
-              size="mini"
-              plain
-              class="operation-btn cancel-btn"
-              @click="cancelEdit"
-            >
-              取消
-            </button>
-          </template>
-        </view>
-      </view>
+      <category-item-cmp
+        v-show="isAdding"
+        :is-input-status="true"
+        v-model="addName"
+        @input-save="addSave"
+        @cancel-input="cancelAdd"
+      />
+      <template
+        v-for="item in taskCategories"
+        :key="item.id"
+        class="category-item"
+      >
+        <category-item-cmp
+          :item
+          v-model="editName"
+          :is-input-status="editId === item.id"
+          @change-item-status="changeEditStatus"
+          @delete-icon-evt="openDeleteModal"
+          @input-save="editSave"
+          @cancel-input="cancelEdit"
+        />
+      </template>
     </view>
     <confirm-modal
       :text="text"
       v-if="confirmModalShow"
       @close="confirmModalShow = false"
       @confirm="deleteConfirm"
-    ></confirm-modal>
+    />
   </view>
 </template>
 
 <script setup lang="ts">
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal.vue";
+import CategoryItemCmp from "./components/categoryItemCmp.vue";
 import { type TaskCategory } from "@/type/task";
 import http from "@/utils/http";
 import { ref } from "vue";
@@ -105,19 +57,19 @@ const emit = defineEmits<{
   (e: "close"): void;
 }>();
 
-const isAdding = ref(false);
+const isAdding = ref<boolean>(false);
 const addName = ref<string>("");
 const editName = ref<string>("");
 const editId = ref<number | null>(null);
 const deleteId = ref<number | null>(null);
-
 const text = ref<string>("");
-const confirmModalShow = ref(false);
+const confirmModalShow = ref<boolean>(false);
 
 const changeEditStatus = (id: number, name: string) => {
   editId.value = id;
   editName.value = name;
 };
+
 const openDeleteModal = (id: number, name: string) => {
   deleteId.value = id;
   text.value = `确定要删除[${name}]分类吗？`;
@@ -201,12 +153,14 @@ const cancelEdit = () => {
   overflow: auto;
   position: fixed;
 }
+
 .title {
   font-size: 40rpx;
   font-weight: bold;
   text-align: center;
   margin-bottom: 30rpx;
 }
+
 .back {
   position: absolute;
   top: 25rpx;
@@ -218,34 +172,6 @@ const cancelEdit = () => {
   }
 }
 
-.category-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border: 3rpx solid var(--secondary-color);
-  border-left: 10rpx solid var(--primary-color);
-  padding: 30rpx;
-  margin: 20rpx 0;
-  background-color: #fff;
-  font-size: 36rpx;
-  border-radius: 10rpx;
-  color: #444;
-  .edit-input {
-    width: 80%;
-    border-bottom: 3rpx solid;
-    padding: 0 10rpx !important;
-    box-sizing: border-box;
-  }
-  .operation {
-    display: flex;
-    width: 45%;
-    align-items: center;
-    justify-content: end;
-    .u-icon {
-      margin-left: 30rpx;
-    }
-  }
-}
 .btn {
   background-color: var(--primary-color);
   color: #fff;
@@ -254,19 +180,5 @@ const cancelEdit = () => {
   line-height: 2;
   padding: 0.25em 1.5em;
   height: auto;
-}
-.operation-btn {
-  border: none;
-  color: #fff;
-  font-size: 28rpx;
-  line-height: 1.5;
-  padding: 0.25em 1em;
-}
-.save-btn {
-  background-color: var(--primary-color);
-}
-
-.cancel-btn {
-  background-color: var(--contrast-color);
 }
 </style>

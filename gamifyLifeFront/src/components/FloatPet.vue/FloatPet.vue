@@ -1,12 +1,5 @@
 <template>
-  <movable-view
-    class="float-pet"
-    direction="all"
-    :x="posX"
-    :y="posY"
-    @change=""
-    @scale=""
-  >
+  <movable-view class="float-pet" direction="all" :x="posX" :y="posY">
     <image
       style="width: 200rpx; height: 250rpx"
       src="../../static/pet_baby.png"

@@ -66,7 +66,7 @@ router.put("/updateTaskTagName/:tagId", async (ctx) => {
 router.put("/updateTaskTagProperty/:tagId", async (ctx) => {
   try {
     const tagId = ctx.params.tagId;
-    const updatedTag = await taskTagService.updateTaskTagProperty(
+    const updatedTag = await taskTagService.updateTaskTagAttributes(
       ctx.state.user.userId,
       tagId,
       ctx.request.body,

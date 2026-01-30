@@ -29,10 +29,11 @@
 <script setup lang="ts">
 import { type FormItem } from "@/type/form";
 import UForm from "uview-pro/components/u-form/u-form.vue";
+import { FormRules } from "uview-pro/types/global";
 import { ref } from "vue";
-const authFormData = defineModel<Record<string, any>>({ default: {} });
+const authFormData = defineModel<Record<string, any>>({ default: () => ({}) });
 defineProps<{
-  authRules: object;
+  authRules: FormRules;
   items: FormItem[];
   btnText: string;
 }>();

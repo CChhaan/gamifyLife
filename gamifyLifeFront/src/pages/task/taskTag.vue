@@ -32,8 +32,12 @@
           }}</text>
         </view>
         <view class="operation">
-          <button class="operation-btn">修改</button>
-          <button class="operation-btn">删除</button>
+          <button
+            class="operation-btn"
+            @click="openDeleteModal(item.id, item.name)"
+          >
+            删除
+          </button>
         </view>
       </view>
     </view>
@@ -41,7 +45,7 @@
       <view class="add-tag-card">
         <u-form
           :model="addTagData"
-          ref="userInfoForm"
+          ref="taskTagForm"
           :rules="userInfoRules"
           label-width="100"
           label-align="center"
@@ -88,7 +92,7 @@
           </u-form-item>
         </u-form>
         <view class="add-operation">
-          <button class="operation-btn">确认</button>
+          <button class="operation-btn" @click="confirmAdd">确认</button>
           <button class="operation-btn" @click="cancelAdding">取消</button>
         </view>
       </view>
@@ -109,6 +113,12 @@
       confirm-text="确定"
       cancel-text="取消"
     ></u-select>
+    <confirm-modal
+      :text="text"
+      v-if="confirmModalShow"
+      @close="confirmModalShow = false"
+      @confirm="deleteConfirm"
+    ></confirm-modal>
   </view>
 </template>
 
@@ -119,8 +129,36 @@ import {
   type InfluenceAttr,
 } from "@/type/task";
 import http from "@/utils/http";
+import ConfirmModal from "@/components/ConfirmModal/ConfirmModal.vue";
+
 import { onMounted, ref } from "vue";
 const tags = ref<TaskTag[] | null>();
+const taskTagForm = ref();
+const confirmModalShow = ref(false);
+const text = ref<string>("");
+const deleteId = ref<number | null>(null);
+
+const openDeleteModal = (id: number, name: string) => {
+  text.value = `确认删除标签${name}吗？`;
+  confirmModalShow.value = true;
+  deleteId.value = id;
+};
+
+const deleteConfirm = async () => {
+  if (deleteId.value) {
+    try {
+      await http({
+        url: `/api/taskTag/deleteTaskTag/${deleteId.value}`,
+        method: "DELETE",
+      });
+      getTags();
+      uni.showToast({ title: "删除成功", icon: "success", duration: 2000 });
+    } catch (error) {
+      console.log("删除失败", error);
+    }
+  }
+  confirmModalShow.value = false;
+};
 
 const getTags = async () => {
   tags.value = await http<TaskTag[] | null>({
@@ -162,6 +200,31 @@ const cancelAdding = () => {
     primary_attr: "",
     secondary_attr: "",
   };
+};
+const confirmAdd = async () => {
+  taskTagForm.value?.validate(async (valid: boolean, errors: any[]) => {
+    if (valid) {
+      try {
+        await http({
+          url: "/api/taskTag/createTaskTag",
+          method: "POST",
+          data: addTagData.value,
+        });
+        addTagData.value = {
+          name: "",
+          primary_attr: "",
+          secondary_attr: "",
+        };
+        isAdding.value = false;
+        getTags();
+        uni.showToast({ title: "添加成功", icon: "success", duration: 2000 });
+      } catch (error) {
+        console.log("添加失败", error);
+      }
+    } else {
+      console.log("表单验证失败", errors);
+    }
+  });
 };
 onMounted(() => {
   getTags();

@@ -17,11 +17,13 @@ export default class TaskTagService {
   // 创建标签
   async createTaskTag(userId, tagData) {
     try {
+      let secondary = tagData.secondary_attr;
+      if (!secondary || secondary === "") secondary = null;
       const newTaskTag = await db.TaskTags.create({
         user_id: userId,
         name: tagData.name,
         primary_attr: tagData.primary_attr,
-        secondary_attr: tagData.secondary_attr,
+        secondary_attr: secondary,
       });
       return newTaskTag;
     } catch (error) {
