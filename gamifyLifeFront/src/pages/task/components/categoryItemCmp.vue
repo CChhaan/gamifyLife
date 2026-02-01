@@ -46,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import { TaskCategory } from "@/type/task";
+import type { TaskCategory } from "@/type/task";
 
 defineProps<{
   isInputStatus: boolean;
