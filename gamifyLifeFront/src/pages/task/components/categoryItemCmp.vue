@@ -7,19 +7,19 @@
         class="edit-input"
         placeholder="请输入分类名称"
       ></u-input>
-      <text v-show="!isInputStatus">{{ item.name }}</text>
+      <text v-show="!isInputStatus">{{ item?.name }}</text>
     </view>
     <view class="operation">
       <template v-if="!isInputStatus">
         <u-icon
           name="edit-pen"
-          @click="$emit('changeItemStatus', item.id, item.name)"
+          @click="$emit('changeItemStatus', item!.id, item!.name)"
         ></u-icon>
 
         <u-icon
           name="trash"
           color="#ff0000"
-          @click="$emit('deleteIconEvt', item.id, item.name)"
+          @click="$emit('deleteIconEvt', item!.id, item!.name)"
         >
         </u-icon>
       </template>

@@ -1,16 +1,13 @@
 import { fileURLToPath } from "url";
 import { dirname } from "path";
+import fs from "fs";
+import path from "path";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 import Koa from "koa";
 import bodyParser from "koa-bodyparser";
-import userAuthRoutes from "./routes/userAuth.js";
-import userInfoRoutes from "./routes/userInfo.js";
-import userGrowthRoutes from "./routes/userGrowth.js";
-import taskCategoryRoutes from "./routes/taskCategory.js";
-import taskTagRoutes from "./routes/taskTag.js";
 import staticMiddleware from "koa-static";
 import errorHandler from "./middlewares/errorHanler.js";
 import { syncDatabase } from "./shared/db.js";
@@ -22,15 +19,26 @@ app.use(errorHandler);
 app.use(tokenAuth);
 app.use(staticMiddleware(__dirname + "/public"));
 app.use(bodyParser());
-app.use(userAuthRoutes.routes()).use(userAuthRoutes.allowedMethods());
-app.use(userInfoRoutes.routes()).use(userInfoRoutes.allowedMethods());
-app.use(userGrowthRoutes.routes()).use(userGrowthRoutes.allowedMethods());
-app.use(taskCategoryRoutes.routes()).use(taskCategoryRoutes.allowedMethods());
-app.use(taskTagRoutes.routes()).use(taskTagRoutes.allowedMethods());
+
+// 动态加载 routes 目录下的路由模块
+async function loadRoutes() {
+  const dir = path.join(__dirname, "routes");
+  const files = fs.readdirSync(dir);
+  for (const file of files) {
+    if (!file.endsWith(".js") || file === "index.js") continue; // 可根据需要排除文件
+    const mod = await import(`./routes/${file}`);
+    const router = mod.default;
+    if (router && router.routes) {
+      app.use(router.routes()).use(router.allowedMethods());
+      console.log(`Loaded route: ${file}`);
+    }
+  }
+}
 
 // 异步启动
 (async () => {
   try {
+    await loadRoutes();
     await syncDatabase();
     app.listen(3000, () => {
       console.log("Server is running on http://localhost:3000");

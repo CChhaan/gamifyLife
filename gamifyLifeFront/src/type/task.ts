@@ -20,7 +20,7 @@ export const InfluenceAttrTextMap = {
 export interface TaskTag {
   id?: number;
   user_id?: number;
-  name: string;
-  primary_attr: InfluenceAttr;
-  secondary_attr?: InfluenceAttr | null;
+  name?: string;
+  primary_attr?: InfluenceAttr | "";
+  secondary_attr?: InfluenceAttr | null | "";
 }

@@ -1,23 +1,38 @@
 import sequelize from "./sequelize.js";
-import initUserAccounts from "../models/userAccounts.js";
-import initUserInfo from "../models/userInfo.js";
-import initUserGrowth from "../models/userGrowth.js";
-import initTaskCategories from "../models/taskCategories.js";
-import initTaskTags from "../models/taskTags.js";
 import { DataTypes } from "sequelize";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
-// 初始化所有模型
 const db = {
   sequelize,
   Sequelize: sequelize.constructor,
 };
 
-// 注册模型
-db.UserAccounts = initUserAccounts(sequelize, DataTypes);
-db.UserInfo = initUserInfo(sequelize, DataTypes);
-db.UserGrowth = initUserGrowth(sequelize, DataTypes);
-db.TaskCategories = initTaskCategories(sequelize, DataTypes);
-db.TaskTags = initTaskTags(sequelize, DataTypes);
+// 获取当前文件的目录路径
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const modelsDir = path.join(__dirname, "../models");
+
+// 读取models目录下的所有文件
+const modelFiles = fs
+  .readdirSync(modelsDir)
+  .filter((file) => file.endsWith(".js"));
+
+// 动态导入并注册模型
+for (const file of modelFiles) {
+  const modelName = path.basename(file, ".js");
+  const capitalizedModelName =
+    modelName.charAt(0).toUpperCase() + modelName.slice(1);
+
+  // 动态导入模型初始化函数
+  const modelPath = path.join(modelsDir, file);
+  const importUrl = `file://${modelPath}`;
+  const initModel = (await import(importUrl)).default;
+
+  // 注册模型
+  db[capitalizedModelName] = initModel(sequelize, DataTypes);
+}
 
 Object.values(db).forEach((model) => {
   if (model && typeof model.associate === "function") {
@@ -25,7 +40,6 @@ Object.values(db).forEach((model) => {
   }
 });
 
-// 同步数据库
 export const syncDatabase = async () => {
   try {
     await sequelize.sync({ alter: true });
