@@ -48,7 +48,7 @@
         </view>
       </view>
     </view>
-    <view class="add-task">
+    <view class="add-task" @click="taskCreateShow = true">
       <button>+</button>
     </view>
     <task-category-cmp
@@ -57,31 +57,54 @@
       @refresh="getTaskCategories"
       v-if="taskCategoryMngShow"
     />
-    <task-tag-cmp @close="taskTagMngShow = false" v-if="taskTagMngShow" />
+    <task-tag-cmp
+      @close="taskTagMngShow = false"
+      @refresh="getTags"
+      :tags="tags!"
+      v-if="taskTagMngShow"
+    />
+    <task-create-cmp
+      :categories="taskCategories!"
+      :tags="tags!"
+      @close="taskCreateShow = false"
+      v-if="taskCreateShow"
+    />
   </view>
 </template>
 
 <script setup lang="ts">
 import TaskCategoryCmp from "@/pages/task/taskCategory.vue";
 import TaskTagCmp from "@/pages/task/taskTag.vue";
-import { type TaskCategory } from "@/type/task";
+import TaskCreateCmp from "@/pages/task/taskCreate.vue";
+import type { TaskTag, TaskCategory } from "@/type/task";
 import http from "@/utils/http";
 import { onLoad } from "@dcloudio/uni-app";
-import { provide, ref } from "vue";
+import { ref } from "vue";
+
+// 任务分类
 const taskCategories = ref<TaskCategory[] | null>(null);
 const selectedCategory = ref<number | string>("all");
 const taskCategoryMngShow = ref(false);
+
 const getTaskCategories = async () => {
-  taskCategories.value = await http<TaskCategory[]>({
-    url: "/api/taskCategory/",
-    method: "GET",
-  });
+  taskCategories.value = await http.get<TaskCategory[]>("/api/taskCategory/");
+};
+
+// 任务标签
+const tags = ref<TaskTag[] | null>();
+
+const getTags = async () => {
+  tags.value = await http.get<TaskTag[] | null>("/api/taskTag/");
 };
 
 const taskTagMngShow = ref(false);
 
+// 任务
+const taskCreateShow = ref(false);
+
 onLoad(async () => {
   await getTaskCategories();
+  await getTags();
 });
 </script>
 

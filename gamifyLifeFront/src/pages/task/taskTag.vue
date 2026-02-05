@@ -32,18 +32,23 @@
 </template>
 
 <script setup lang="ts">
-import {
-  InfluenceAttrTextMap,
-  type TaskTag,
-  type InfluenceAttr,
-} from "@/type/task";
+import type { TaskTag } from "@/type/task";
 import http from "@/utils/http";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal.vue";
-import { onMounted, ref } from "vue";
+import { ref } from "vue";
 import TagItemCmp from "./components/tagItemCmp.vue";
 import AddTagCmp from "./components/addTagCmp.vue";
 
-const tags = ref<TaskTag[] | null>();
+defineProps<{
+  tags: TaskTag[] | null;
+}>();
+
+const emits = defineEmits<{
+  (e: "close"): void;
+  (e: "refresh"): void;
+}>();
+
+// 删除标签
 const confirmModalShow = ref(false);
 const text = ref<string>("");
 const deleteId = ref<number | null>(null);
@@ -57,11 +62,8 @@ const openDeleteModal = (id: number, name: string) => {
 const deleteConfirm = async () => {
   if (deleteId.value) {
     try {
-      await http({
-        url: `/api/taskTag/deleteTaskTag/${deleteId.value}`,
-        method: "DELETE",
-      });
-      getTags();
+      await http.delete(`/api/taskTag/deleteTaskTag/${deleteId.value}`);
+      emits("refresh");
       uni.showToast({ title: "删除成功", icon: "success", duration: 2000 });
     } catch (error) {
       console.log("删除失败", error);
@@ -70,19 +72,7 @@ const deleteConfirm = async () => {
   confirmModalShow.value = false;
 };
 
-const getTags = async () => {
-  tags.value = await http<TaskTag[] | null>({
-    url: "/api/taskTag/",
-    method: "GET",
-  });
-};
-
-const addTagData = ref<TaskTag>({
-  name: "",
-  primary_attr: "",
-  secondary_attr: "",
-});
-
+// 增加标签
 const isAdding = ref(false);
 const cancelAdding = () => {
   isAdding.value = false;
@@ -92,28 +82,23 @@ const cancelAdding = () => {
     secondary_attr: "",
   };
 };
+
+const addTagData = ref<TaskTag>({
+  name: "",
+  primary_attr: "",
+  secondary_attr: "",
+});
+
 const confirmAdd = async () => {
   try {
-    await http({
-      url: "/api/taskTag/createTaskTag",
-      method: "POST",
-      data: addTagData.value,
-    });
-    addTagData.value = {
-      name: "",
-      primary_attr: "",
-      secondary_attr: "",
-    };
-    isAdding.value = false;
-    getTags();
+    await http.post("/api/taskTag/createTaskTag", addTagData.value);
+    cancelAdding();
+    emits("refresh");
     uni.showToast({ title: "添加成功", icon: "success", duration: 2000 });
   } catch (error) {
     console.log("添加失败", error);
   }
 };
-onMounted(() => {
-  getTags();
-});
 </script>
 
 <style scoped lang="scss">

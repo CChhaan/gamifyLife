@@ -10,10 +10,7 @@ import http from "@/utils/http";
 
 const logout = async () => {
   try {
-    await http({
-      url: "/api/auth/logout",
-      method: "POST",
-    });
+    await http.post("/api/auth/logout");
     removeToken();
     uni.reLaunch({
       url: "/pages/login/login",

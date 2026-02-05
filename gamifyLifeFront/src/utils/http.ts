@@ -5,6 +5,21 @@ interface ApiResponse<T = any> {
   data: T;
   msg: string;
 }
+const methods = [
+  "get",
+  "post",
+  "put",
+  "delete",
+  "patch",
+  "head",
+  "options",
+] as const;
+type Method = (typeof methods)[number];
+type MethodFn = <T = any>(
+  url: string,
+  data?: any,
+  options?: Omit<UniApp.RequestOptions, "url" | "method" | "data">,
+) => Promise<T>;
 
 const http = <T = any>(options: UniApp.RequestOptions): Promise<T> => {
   return new Promise((resolve, reject) => {
@@ -27,7 +42,7 @@ const http = <T = any>(options: UniApp.RequestOptions): Promise<T> => {
           uni.showToast({ icon: "none", title: "登录过期，请重新登录" });
           removeToken();
           uni.navigateTo({
-            url: '/pages/login/login'
+            url: "/pages/login/login",
           });
         } else {
           uni.showToast({ icon: "none", title: response.msg || "请求错误" });
@@ -42,4 +57,20 @@ const http = <T = any>(options: UniApp.RequestOptions): Promise<T> => {
   });
 };
 
-export default http;
+// 为每个HTTP方法动态创建对应的请求函数
+methods.forEach((m) => {
+  (http as any)[m] = <T = any>(
+    url: string,
+    data?: any,
+    options?: UniApp.RequestOptions,
+  ) => {
+    return http<T>({
+      url,
+      method: m.toUpperCase() as any,
+      data,
+      ...options,
+    });
+  };
+});
+
+export default http as typeof http & Record<Method, MethodFn>;

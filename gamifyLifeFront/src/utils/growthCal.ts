@@ -1,10 +1,13 @@
-export const nextLevelExp = (currentLevel) => {
+export const nextLevelExp = (currentLevel: number) => {
   // 计算下一级所需经验值
   return Math.floor(100 * Math.pow(1.2, currentLevel - 1));
 };
 
-// 根据任务难度(1-5)、用户等级、任务完成的时间计算任务可获得经验
-export const taskExp = (taskDifficulty, userLevel, finishTime) => {
+export const taskExp = (
+  taskDifficulty: number,
+  userLevel: number,
+  finishTime: number,
+) => {
   if (![1, 2, 3, 4, 5].includes(taskDifficulty)) {
     throw new Error("任务难度必须是1-5之间的整数");
   }
@@ -20,5 +23,15 @@ export const taskExp = (taskDifficulty, userLevel, finishTime) => {
   return Math.max(1, Math.ceil(total));
 };
 
-// 根据任务难度、用户等级、任务标签计算任务可获得金币
-// 根据任务难度、用户等级、任务标签计算任务可获得属性点
+export const saveUserData = (userLevel: number, exp: number) => {
+  // 用数学公式简单加密保存在设备中
+  uni.setStorageSync("uL", userLevel * 10 + 10);
+  uni.setStorageSync("uE", userLevel * 10 + 10);
+};
+
+export const getUserData = () => {
+  // 用数学公式简单解密从设备中读取
+  const userLevel = (uni.getStorageSync("uL") - 10) / 10;
+  const exp = (uni.getStorageSync("uE") - 10) / 10;
+  return { userLevel, exp };
+};

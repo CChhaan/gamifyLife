@@ -57,78 +57,23 @@ const emit = defineEmits<{
   (e: "close"): void;
 }>();
 
+// 增加分类
 const isAdding = ref<boolean>(false);
 const addName = ref<string>("");
-const editName = ref<string>("");
-const editId = ref<number | null>(null);
-const deleteId = ref<number | null>(null);
-const text = ref<string>("");
-const confirmModalShow = ref<boolean>(false);
-
-const changeEditStatus = (id: number, name: string) => {
-  editId.value = id;
-  editName.value = name;
-};
-
-const openDeleteModal = (id: number, name: string) => {
-  deleteId.value = id;
-  text.value = `确定要删除[${name}]分类吗？`;
-  confirmModalShow.value = true;
-};
 
 const addSave = async () => {
   try {
     if (!addName.value.trim()) return;
 
-    await http({
-      url: "/api/taskCategory/createTaskCategory",
-      method: "POST",
-      data: {
-        name: addName.value,
-      },
+    await http.post("/api/taskCategory/createTaskCategory", {
+      name: addName.value,
     });
 
-    addName.value = "";
-    isAdding.value = false;
+    cancelAdd();
     emit("refresh");
     uni.showToast({ title: "添加成功", icon: "success", duration: 2000 });
   } catch (error) {
     console.log("添加失败", error);
-  }
-};
-
-const editSave = async () => {
-  try {
-    if (!editName.value.trim()) return;
-
-    await http({
-      url: "/api/taskCategory/updateTaskCategory/" + editId.value,
-      method: "PUT",
-      data: {
-        name: editName.value,
-      },
-    });
-    editId.value = null;
-    editName.value = "";
-    emit("refresh");
-    uni.showToast({ title: "修改成功", icon: "success", duration: 2000 });
-  } catch (error) {
-    console.log("修改失败", error);
-  }
-};
-
-const deleteConfirm = async () => {
-  try {
-    await http({
-      url: "/api/taskCategory/deleteTaskCategory/" + deleteId.value,
-      method: "DELETE",
-    });
-    deleteId.value = null;
-    confirmModalShow.value = false;
-    emit("refresh");
-    uni.showToast({ title: "删除成功", icon: "success", duration: 2000 });
-  } catch (error) {
-    console.log("删除失败", error);
   }
 };
 
@@ -137,9 +82,56 @@ const cancelAdd = () => {
   isAdding.value = false;
 };
 
+// 修改分类名称
+const editName = ref<string>("");
+const editId = ref<number | null>(null);
+
+const changeEditStatus = (id: number, name: string) => {
+  editId.value = id;
+  editName.value = name;
+};
+
+const editSave = async () => {
+  try {
+    if (!editName.value.trim()) return;
+
+    await http.put(`/api/taskCategory/updateTaskCategory/${editId.value}`, {
+      name: editName.value,
+    });
+    cancelEdit();
+    emit("refresh");
+    uni.showToast({ title: "修改成功", icon: "success", duration: 2000 });
+  } catch (error) {
+    console.log("修改失败", error);
+  }
+};
+
 const cancelEdit = () => {
   editId.value = null;
   editName.value = "";
+};
+
+// 删除分类
+const deleteId = ref<number | null>(null);
+const text = ref<string>("");
+const confirmModalShow = ref<boolean>(false);
+
+const openDeleteModal = (id: number, name: string) => {
+  deleteId.value = id;
+  text.value = `确定要删除[${name}]分类吗？`;
+  confirmModalShow.value = true;
+};
+
+const deleteConfirm = async () => {
+  try {
+    await http.delete(`/api/taskCategory/deleteTaskCategory/${deleteId.value}`);
+    deleteId.value = null;
+    confirmModalShow.value = false;
+    emit("refresh");
+    uni.showToast({ title: "删除成功", icon: "success", duration: 2000 });
+  } catch (error) {
+    console.log("删除失败", error);
+  }
 };
 </script>
 

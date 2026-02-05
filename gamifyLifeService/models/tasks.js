@@ -180,6 +180,13 @@ export default (sequelize, DataTypes) => {
         allowNull: true,
         defaultValue: null,
         comment: "预计完成时间（可选）",
+        //必须在现在之后
+        validate: {
+          isAfterNow: function (value) {
+            if (value && new Date(value) < new Date())
+              throw new Error("Due time must be after now");
+          },
+        },
       },
 
       // 18. 实际完成时间（completed_at）
