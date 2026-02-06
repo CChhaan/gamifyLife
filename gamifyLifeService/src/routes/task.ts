@@ -1,6 +1,6 @@
 import Router from "koa-router";
-import { success, badRequest } from "../shared/response.js";
-import TaskService from "../services/task.js";
+import { success, badRequest } from "../shared/response.ts";
+import TaskService from "../services/task.ts";
 
 const router = new Router({ prefix: "/task" });
 
@@ -38,6 +38,20 @@ router.get("/getTaskDetail", async (ctx) => {
       ctx.query.taskId,
     );
     ctx.body = success(taskDetail, "获取任务详情成功");
+  } catch (error) {
+    ctx.status = 400;
+    ctx.body = badRequest(error.message);
+  }
+});
+
+// 更新任务接口
+router.put("/updateTask", async (ctx) => {
+  try {
+    const updatedTask = await taskService.updateTask(
+      ctx.request.body,
+      ctx.state.user.userId,
+    );
+    ctx.body = success(updatedTask, "更新任务成功");
   } catch (error) {
     ctx.status = 400;
     ctx.body = badRequest(error.message);

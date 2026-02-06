@@ -1,8 +1,9 @@
 import jwt from "koa-jwt";
-import { unauthorized } from "../shared/response.js";
-import UserAuthService from "../services/userAuth.js";
+import { unauthorized } from "../shared/response.ts";
+import UserAuthService from "../services/userAuth.ts";
+import type { Context, Next } from "koa";
 
-export default async function tokenAuth(ctx, next) {
+export default async function tokenAuth(ctx: Context, next: Next) {
   if (ctx.url === "/auth/login" || ctx.url === "/auth/register") {
     await next();
     return;

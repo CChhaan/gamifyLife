@@ -1,5 +1,5 @@
 import { Model } from "sequelize";
-import { sha256 } from "../shared/security.js";
+import { sha256 } from "../shared/security.ts";
 
 export default (sequelize, DataTypes) => {
   class UserAccounts extends Model {

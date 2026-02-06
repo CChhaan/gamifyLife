@@ -1,6 +1,13 @@
-
+interface ApiResponse<T = any> {
+  code: number;
+  data: T | null;
+  msg: string;
+}
 // 成功响应
-export function success(data = null, msg = "操作成功") {
+export function success<T = any>(
+  data: T | null = null,
+  msg = "操作成功",
+): ApiResponse<T> {
   return {
     code: 200,
     msg,
@@ -9,7 +16,11 @@ export function success(data = null, msg = "操作成功") {
 }
 
 // 错误响应
-export function error(code = 500, msg = "系统错误", data = null) {
+export function error<T = any>(
+  code = 500,
+  msg = "系统错误",
+  data: T | null = null,
+): ApiResponse<T> {
   return {
     code,
     msg,

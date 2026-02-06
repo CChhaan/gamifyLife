@@ -30,19 +30,47 @@
         <view class="time">本周</view>
         <view class="time">本月</view>
         <view class="time">本年</view>
-        <view class="time">本年</view>
       </view>
       <view class="tasks">
-        <view class="task-item" v-for="n in 10" :key="n">
+        <view
+          class="task-item"
+          v-for="task in taskList"
+          :key="task.id"
+          @click="showTaskDetail(task.id!)"
+        >
           <radio style="transform: scale(0.7)" borderColor="#aaa" />
           <view class="task-detail">
             <view class="task-info">
-              <text class="task-title">完成 Vue 3 学习</text>
-              <view class="task-tag">前端学习</view>
+              <text class="task-title">{{ task.title }}</text>
+              <view class="task-tag"
+                >#{{ tags?.find((tag) => tag.id == task.tag_id_1)?.name }}</view
+              >
+              <view class="task-tag"
+                >#{{ tags?.find((tag) => tag.id == task.tag_id_2)?.name }}</view
+              >
             </view>
             <view class="task-reward">
-              <view class="reward">exp: 133</view>
-              <view class="reward">$133</view>
+              <view class="reward-item">
+                <view class="reward-item-title">exp</view>
+                <view class="reward-item-value">{{ task.final_exp }}</view>
+              </view>
+              <view class="reward-item">
+                <view class="reward-item-title">$ </view>
+                <view class="reward-item-value">{{ task.final_gold }}</view>
+              </view>
+              <view
+                class="reward-item"
+                v-for="(name, key) in task.estimated_attr_gains"
+                :key="key"
+              >
+                <view class="attr-item-name">
+                  <image
+                    :src="`/static/imgs/${key}.png`"
+                    class="attr-item-icon"
+                  />
+                  <!-- <text>{{ name }}</text> -->
+                </view>
+              </view>
             </view>
           </view>
         </view>
@@ -64,10 +92,21 @@
       v-if="taskTagMngShow"
     />
     <task-create-cmp
+      type="create"
       :categories="taskCategories!"
       :tags="tags!"
+      @refresh="getTaskList"
       @close="taskCreateShow = false"
       v-if="taskCreateShow"
+    />
+    <task-detail-cmp
+      :task="taskList!.find((task) => task.id == taskId)!"
+      :category="taskList!.find((task) => task.category_id)"
+      :categories="taskCategories!"
+      :tags="tags!"
+      @refresh="getTaskList"
+      @close="taskDetailShow = false"
+      v-if="taskDetailShow"
     />
   </view>
 </template>
@@ -76,35 +115,57 @@
 import TaskCategoryCmp from "@/pages/task/taskCategory.vue";
 import TaskTagCmp from "@/pages/task/taskTag.vue";
 import TaskCreateCmp from "@/pages/task/taskCreate.vue";
-import type { TaskTag, TaskCategory } from "@/type/task";
-import http from "@/utils/http";
-import { onLoad } from "@dcloudio/uni-app";
+import TaskDetailCmp from "@/pages/task/taskDetail.vue";
+import type { Task } from "@/type/task";
+import { onHide, onLoad } from "@dcloudio/uni-app";
 import { ref } from "vue";
+import { useTask } from "@/composables/useTask";
 
-// 任务分类
-const taskCategories = ref<TaskCategory[] | null>(null);
+const {
+  taskCategories,
+  tags,
+  taskList,
+  getTaskCategories,
+  getTags,
+  getTaskList,
+  loadTaskData,
+} = useTask();
+
 const selectedCategory = ref<number | string>("all");
 const taskCategoryMngShow = ref(false);
-
-const getTaskCategories = async () => {
-  taskCategories.value = await http.get<TaskCategory[]>("/api/taskCategory/");
-};
-
-// 任务标签
-const tags = ref<TaskTag[] | null>();
-
-const getTags = async () => {
-  tags.value = await http.get<TaskTag[] | null>("/api/taskTag/");
-};
-
 const taskTagMngShow = ref(false);
-
-// 任务
 const taskCreateShow = ref(false);
 
+// 任务详情
+const taskDetailShow = ref(false);
+const taskId = ref(0);
+const detail = ref<
+  (Task & { category?: string; tag1?: string; tag2?: string }) | null
+>(null);
+
+const showTaskDetail = (id: number) => {
+  taskId.value = id;
+  taskDetailShow.value = true;
+  detail.value = taskList.value!.find((task) => task.id == id)!;
+  detail.value.category = taskCategories.value!.find(
+    (cate) => cate.id == detail.value?.category_id,
+  )?.name;
+  detail.value.tag1 = tags.value!.find(
+    (tag) => tag.id == detail.value?.tag_id_1,
+  )?.name;
+  detail.value.tag2 = tags.value!.find(
+    (tag) => tag.id == detail.value?.tag_id_2,
+  )?.name;
+};
+
 onLoad(async () => {
-  await getTaskCategories();
-  await getTags();
+  loadTaskData();
+});
+onHide(() => {
+  taskCreateShow.value = false;
+  taskTagMngShow.value = false;
+  taskCategoryMngShow.value = false;
+  taskDetailShow.value = false;
 });
 </script>
 
@@ -191,6 +252,28 @@ onLoad(async () => {
     font-size: 32rpx;
     margin-bottom: 30rpx;
   }
+
+  .reward-item {
+    display: flex;
+    margin-right: 15rpx;
+    border-radius: 10rpx;
+    font-size: 32rpx;
+    color: var(--third-color);
+    .reward-item-value {
+      margin-left: 5rpx;
+    }
+
+    .attr-item-name {
+      display: flex;
+      align-items: center;
+
+      .attr-item-icon {
+        margin-right: 5rpx;
+        width: 45rpx;
+        height: 45rpx;
+      }
+    }
+  }
   .tasks {
     height: calc(100% - 85rpx);
     overflow: auto;
@@ -200,6 +283,9 @@ onLoad(async () => {
       display: flex;
       align-items: center;
       margin-left: 10rpx;
+    }
+    .task-reward {
+      margin-top: 10rpx;
     }
     .task-tag {
       margin-left: 20rpx;
@@ -211,13 +297,6 @@ onLoad(async () => {
       justify-content: center;
       background-color: var(--third-color);
       color: #fff;
-    }
-    .reward {
-      margin-right: 15rpx;
-
-      border-radius: 10rpx;
-      font-size: 28rpx;
-      color: var(--third-color);
     }
   }
 }

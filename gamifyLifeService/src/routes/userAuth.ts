@@ -1,6 +1,6 @@
 import Router from "koa-router";
-import UserAuthService from "../services/userAuth.js";
-import { success, badRequest, conflict } from "../shared/response.js";
+import UserAuthService from "../services/userAuth.ts";
+import { success, badRequest, conflict } from "../shared/response.ts";
 
 const router = new Router({ prefix: "/auth" });
 

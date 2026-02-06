@@ -1,4 +1,4 @@
-import db from "../shared/db.js";
+import db from "../shared/db.ts";
 
 export default class UserInfoService {
   // 获取用户信息方法

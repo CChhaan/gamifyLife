@@ -83,10 +83,8 @@
     </view>
     <view class="card task-data">
       <view class="tasks">
-        <view class="task-item" v-for="n in 5" :key="n">
-          <text class="task-item-text"
-            >完成 Vue 3 学习完成 Vue 3 学习 完成 Vue 3 学习</text
-          >
+        <view class="task-item" v-for="task in taskList" :key="task.id">
+          <text class="task-item-text">{{ task.title }}</text>
           <radio style="transform: scale(0.7)" borderColor="#aaa" />
         </view>
       </view>
@@ -105,23 +103,16 @@ import FloatPet from "@/components/FloatPet.vue/FloatPet.vue";
 import { useUser } from "@/composables/useUser";
 import { onLoad } from "@dcloudio/uni-app";
 import { computed, ref } from "vue";
-import { InfluenceAttrTextMap, type TaskCategory } from "@/type/task";
-import http from "@/utils/http";
+import { InfluenceAttrTextMap } from "@/type/task";
+import { useTask } from "@/composables/useTask";
 
 const { userInfo, userGrowth, loadUserData } = useUser();
+const { taskCategories, taskList, loadTaskData } = useTask();
 onLoad(async () => {
   await loadUserData();
-  await getTaskCategories();
+  await loadTaskData();
 });
-const taskCategories = ref<TaskCategory[] | null>(null);
 const selectedCategory = ref<number | string>("all");
-
-const getTaskCategories = async () => {
-  taskCategories.value = await http<TaskCategory[]>({
-    url: "/api/taskCategory/",
-    method: "GET",
-  });
-};
 
 const expWidth = computed(() => {
   if (!userGrowth.value) return 0;

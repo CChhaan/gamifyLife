@@ -1,6 +1,6 @@
 import Router from "koa-router";
-import { success, badRequest, conflict } from "../shared/response.js";
-import UserInfoService from "../services/userInfo.js";
+import { success, badRequest, conflict } from "../shared/response.ts";
+import UserInfoService from "../services/userInfo.ts";
 
 const router = new Router({ prefix: "/userInfo" });
 

@@ -1,4 +1,4 @@
-import db from "../shared/db.js";
+import db from "../shared/db.ts";
 
 export default class TaskTagService {
   // 获取用户任务标签方法

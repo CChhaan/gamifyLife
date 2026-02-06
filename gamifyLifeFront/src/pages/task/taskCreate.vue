@@ -1,6 +1,8 @@
 <template>
   <view class="task-create-ctn">
-    <view class="task-create-header">创建任务</view>
+    <view class="task-create-header">{{
+      type === "create" ? "创建任务" : "编辑任务"
+    }}</view>
     <view class="back" @click="$emit('close')">
       <u-icon name="arrow-left-double"></u-icon>
       <text class="back-text">返回</text>
@@ -38,16 +40,21 @@
             @click="categorySelectShow = true"
             border
             placeholder="请选择所属分类"
+            :clearable="false"
           ></u-input>
         </u-form-item>
         <!-- <u-form-item label="父级任务" prop="parent_task_id"></u-form-item> -->
-        <u-form-item label="是否重复任务" prop="is_recurring">
+        <u-form-item
+          v-show="type == 'create'"
+          label="是否重复任务"
+          prop="is_recurring"
+        >
           <u-switch v-model="task.is_recurring"></u-switch>
         </u-form-item>
         <u-form-item
           label="重复规则"
           prop="recurring_rule"
-          v-show="task.is_recurring"
+          v-show="type == 'create' && task.is_recurring"
         ></u-form-item>
         <u-form-item label="任务难度" prop="difficulty">
           <u-rate :count="5" v-model="task.difficulty"></u-rate>
@@ -60,6 +67,7 @@
             @click="tag1SelectShow = true"
             border
             placeholder="请选择关联标签1"
+            :clearable="false"
           ></u-input>
         </u-form-item>
         <u-form-item label="关联标签2" prop="tag_id_2">
@@ -70,6 +78,7 @@
             @click="tag2SelectShow = true"
             border
             placeholder="请选择关联标签2"
+            :clearable="false"
           ></u-input>
         </u-form-item>
         <u-form-item label="预计完成时间" prop="completed_at">
@@ -80,15 +89,45 @@
             border
             @click="calendarShow = true"
             placeholder="请选择预计完成时间"
+            :clearable="false"
           ></u-input>
         </u-form-item>
       </u-form>
+      <view class="reward-count">
+        <view class="title">预计可获得收益</view>
+        <view class="tip"
+          >收益由所选难度、标签、完成时间、用户等级等多方面因素计算所得,请以最后实际结果为准</view
+        >
+        <view class="rewards">
+          <view class="reward-item">
+            <view class="reward-item-title">$ </view>
+            <view class="reward-item-value">{{ rewardMoney }}</view>
+          </view>
+          <view class="reward-item">
+            <view class="reward-item-title">exp</view>
+            <view class="reward-item-value">{{ rewardExp }}</view>
+          </view>
+          <view
+            class="reward-item"
+            v-for="(name, key) in InfluenceAttrTextMap"
+            :key="key"
+          >
+            <view class="attr-item-name">
+              <image :src="`/static/imgs/${key}.png`" class="attr-item-icon" />
+              <!-- <text>{{ name }}</text> -->
+            </view>
+            <view class="reward-item-value">{{ rewardAttrMap[key] }}</view>
+          </view>
+        </view>
+      </view>
       <view class="add-operation">
-        <button class="operation-btn" @click="submitTask">创建</button>
+        <button class="operation-btn" @click="submitTask">
+          {{ type == "create" ? "创建" : "保存" }}
+        </button>
       </view>
     </view>
 
-    <view class="ai-create">
+    <view class="ai-create" v-show="type == 'create'">
       <button>AI</button>
     </view>
     <u-select
@@ -136,20 +175,30 @@
 </template>
 
 <script setup lang="ts">
-import type { Task, TaskCategory, TaskTag } from "@/type/task";
+import {
+  InfluenceAttrTextMap,
+  type Task,
+  type TaskCategory,
+  type TaskTag,
+} from "@/type/task";
+import { getUserData, taskAttr, taskExp, taskGold } from "@/utils/growthCal";
 import http from "@/utils/http";
+import { onShow } from "@dcloudio/uni-app";
 import dayjs from "dayjs";
 import { computed, ref } from "vue";
 
 const taskCreateForm = ref();
 
 const props = defineProps<{
+  type: "create" | "edit";
+  task?: Task;
   categories: TaskCategory[];
   tags: TaskTag[];
 }>();
 
 const emit = defineEmits<{
   (e: "close"): void;
+  (e: "refresh"): void;
 }>();
 
 const task = ref<Task>({
@@ -160,7 +209,7 @@ const task = ref<Task>({
   is_recurring: 0,
   recurring_rule: undefined,
   status: "PENDING",
-  difficulty: undefined,
+  difficulty: 1,
   tag_id_1: undefined,
   tag_id_2: undefined,
   due_time: undefined,
@@ -204,11 +253,68 @@ const selectedTag2Name = computed(() => {
   return selectedTag ? selectedTag.name : "";
 });
 
+const rewardExp = computed(() => {
+  const diff = dayjs().diff(
+    dayjs(task.value.due_time, "YYYY-M-D H:mm"),
+    "hour",
+    true,
+  );
+  console.log("level", getUserData().userLevel);
+  return taskExp(
+    task.value.difficulty,
+    getUserData().userLevel,
+    Math.ceil(-diff),
+  );
+});
+
+const rewardMoney = computed(() => {
+  const diff = dayjs().diff(
+    dayjs(task.value.due_time, "YYYY-M-D H:mm"),
+    "hour",
+    true,
+  );
+  return taskGold(task.value.difficulty, Math.ceil(-diff));
+});
+const rewardAttrMap = computed(() => {
+  const map: Record<string, number> = {};
+  const level = getUserData().userLevel;
+  const difficulty = task.value.difficulty;
+  const tag1 = props.tags.find((item) => item.id === task.value.tag_id_1);
+  const tag2 = props.tags.find((item) => item.id === task.value.tag_id_2);
+
+  Object.keys(InfluenceAttrTextMap).forEach((key) => {
+    let reward = 0;
+    if (tag1) {
+      if (tag1.primary_attr === key) {
+        reward += taskAttr(level, difficulty);
+      }
+      if (tag1.secondary_attr && tag1.secondary_attr === key) {
+        reward += taskAttr(level, difficulty);
+      }
+    }
+    if (tag2) {
+      if (tag2.primary_attr === key) {
+        reward += taskAttr(level, difficulty);
+      }
+      if (tag2.secondary_attr && tag2.secondary_attr === key) {
+        reward += taskAttr(level, difficulty);
+      }
+    }
+    map[key] = reward;
+  });
+
+  return map;
+});
+
 const submitTask = async () => {
   taskCreateForm.value.validate(async (valid: boolean, errors: any[]) => {
     if (valid) {
       try {
-        await http.post("/api/task/createTask", task.value);
+        if (props.type == "create") {
+          await http.post("/api/task/createTask", task.value);
+        } else {
+          await http.put("/api/task/updateTask", task.value);
+        }
         task.value = {
           title: "",
           description: "",
@@ -222,8 +328,13 @@ const submitTask = async () => {
           tag_id_2: undefined,
           due_time: undefined,
         };
+        emit("refresh");
         emit("close");
-        uni.showToast({ title: "添加成功", icon: "success", duration: 2000 });
+        uni.showToast({
+          title: `${props.type == "create" ? "添加" : "修改"}成功`,
+          icon: "success",
+          duration: 2000,
+        });
       } catch (error) {
         console.log("添加失败", error);
       }
@@ -232,6 +343,12 @@ const submitTask = async () => {
     }
   });
 };
+
+onShow(() => {
+  if (props.task) {
+    task.value = props.task;
+  }
+});
 </script>
 
 <style scoped lang="scss">
@@ -283,6 +400,39 @@ const submitTask = async () => {
     padding: 10rpx 20rpx;
     background-color: #fff;
     font-size: 32rpx;
+  }
+}
+
+.reward-count {
+  .title {
+    font-size: 32rpx;
+    margin-top: 10rpx;
+  }
+  .tip {
+    color: #666;
+    font-size: 24rpx;
+  }
+  .rewards {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10rpx;
+  }
+  .reward-item {
+    display: flex;
+    .reward-item-value {
+      margin-left: 5rpx;
+    }
+
+    .attr-item-name {
+      display: flex;
+      align-items: center;
+
+      .attr-item-icon {
+        margin-right: 5rpx;
+        width: 45rpx;
+        height: 45rpx;
+      }
+    }
   }
 }
 

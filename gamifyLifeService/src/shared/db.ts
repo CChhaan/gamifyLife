@@ -1,12 +1,18 @@
-import sequelize from "./sequelize.js";
-import { DataTypes } from "sequelize";
+import sequelize from "./sequelize.ts";
+import { DataTypes, Sequelize } from "sequelize";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
-const db = {
+interface Database {
+  sequelize: typeof sequelize;
+  Sequelize: typeof Sequelize;
+  [key: string]: any;
+}
+
+const db: Database = {
   sequelize,
-  Sequelize: sequelize.constructor,
+  Sequelize: sequelize.constructor as typeof Sequelize,
 };
 
 // 获取当前文件的目录路径
@@ -17,11 +23,11 @@ const modelsDir = path.join(__dirname, "../models");
 // 读取models目录下的所有文件
 const modelFiles = fs
   .readdirSync(modelsDir)
-  .filter((file) => file.endsWith(".js"));
+  .filter((file) => file.endsWith(".ts"));
 
 // 动态导入并注册模型
 for (const file of modelFiles) {
-  const modelName = path.basename(file, ".js");
+  const modelName = path.basename(file, ".ts");
   const capitalizedModelName =
     modelName.charAt(0).toUpperCase() + modelName.slice(1);
 
@@ -35,7 +41,7 @@ for (const file of modelFiles) {
 }
 
 Object.values(db).forEach((model) => {
-  if (model && typeof model.associate === "function") {
+  if (model && "associate" in model && typeof model.associate === "function") {
     model.associate(db);
   }
 });

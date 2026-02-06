@@ -1,4 +1,4 @@
-import db from "../shared/db.js";
+import db from "../shared/db.ts";
 
 export default class TaskCategoryService {
   // 获取用户任务分类方法

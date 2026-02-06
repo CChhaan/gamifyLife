@@ -1,6 +1,6 @@
 import Router from "koa-router";
-import { success, badRequest } from "../shared/response.js";
-import TaskTagService from "../services/taskTag.js";
+import { success, badRequest } from "../shared/response.ts";
+import TaskTagService from "../services/taskTag.ts";
 
 const router = new Router({ prefix: "/taskTag" });
 

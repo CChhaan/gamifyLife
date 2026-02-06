@@ -3,8 +3,9 @@ export const nextLevelExp = (currentLevel: number) => {
   return Math.floor(100 * Math.pow(1.2, currentLevel - 1));
 };
 
+// 根据任务难度(1-5)、用户等级、任务完成的时间计算任务可获得经验
 export const taskExp = (
-  taskDifficulty: number = 0,
+  taskDifficulty = 0,
   userLevel: number,
   finishTime: number,
 ) => {
@@ -19,7 +20,8 @@ export const taskExp = (
   return Math.max(1, Math.ceil(total));
 };
 
-export const taskGold = (taskDifficulty: number = 0, finishTime: number) => {
+// 根据任务难度、用户等级、任务标签计算任务可获得金币
+export const taskGold = (taskDifficulty = 0, finishTime: number) => {
   const hours = Math.max(1, Math.ceil(Number(finishTime) || 1));
   const difficultyMultiplier = 1 + (taskDifficulty - 1) * 0.3;
   const timeMultiplier = 1 + hours * 0.05;
@@ -27,22 +29,10 @@ export const taskGold = (taskDifficulty: number = 0, finishTime: number) => {
   return Math.max(1, Math.ceil(total));
 };
 
-export const taskAttr = (userLevel: number, taskDifficulty: number = 0) => {
+// 根据任务难度、用户等级、任务标签计算任务可获得属性点
+export const taskAttr = (userLevel: number, taskDifficulty = 0) => {
   const levelMultiplier = 1 + userLevel * 0.02;
   const difficultyMultiplier = 1 + (taskDifficulty - 1) * 0.2;
   const total = 10 * levelMultiplier * difficultyMultiplier;
   return Math.max(1, Math.ceil(total));
-};
-
-export const saveUserData = (userLevel: number, exp: number) => {
-  // 用数学公式简单加密保存在设备中
-  uni.setStorageSync("uL", userLevel * 10 + 10);
-  uni.setStorageSync("uE", exp * 10 + 10);
-};
-
-export const getUserData = () => {
-  // 用数学公式简单解密从设备中读取
-  const userLevel = (uni.getStorageSync("uL") - 10) / 10;
-  const exp = (uni.getStorageSync("uE") - 10) / 10;
-  return { userLevel, exp };
 };

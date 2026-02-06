@@ -1,6 +1,6 @@
 import Router from "koa-router";
-import { success, badRequest } from "../shared/response.js";
-import TaskCategoryService from "../services/taskCategory.js";
+import { success, badRequest } from "../shared/response.ts";
+import TaskCategoryService from "../services/taskCategory.ts";
 
 const router = new Router({ prefix: "/taskCategory" });
 

@@ -1,6 +1,6 @@
 import Router from "koa-router";
-import { success, badRequest, conflict } from "../shared/response.js";
-import UserGrowthService from "../services/userGrowth.js";
+import { success, badRequest, conflict } from "../shared/response.ts";
+import UserGrowthService from "../services/userGrowth.ts";
 
 const router = new Router({ prefix: "/userGrowth" });
 

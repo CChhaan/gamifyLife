@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
-import db from "../shared/db.js";
-import { sha256 } from "../shared/security.js";
+import db from "../shared/db.ts";
+import { sha256 } from "../shared/security.ts";
 
 export default class UserAuthService {
   static tokenBlacklist = new Set();

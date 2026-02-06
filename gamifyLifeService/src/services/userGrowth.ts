@@ -1,5 +1,5 @@
-import db from "../shared/db.js";
-import { nextLevelExp } from "../shared/growthCalc.js";
+import db from "../shared/db.ts";
+import { nextLevelExp } from "../shared/growthCalc.ts";
 
 export default class UserGrowthService {
   // 获取用户成长信息方法
