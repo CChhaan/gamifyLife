@@ -1,8 +1,9 @@
-import { Model, UUIDV4 } from "sequelize";
+import { DataTypes as SequelizeDataTypes, Sequelize, Model, UUIDV4 } from "sequelize";
+import db from "../shared/db.ts";
 
-export default (sequelize, DataTypes) => {
+export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
   class AiWorkOrder extends Model {
-    static associate(models) {}
+    static associate(models: typeof db) { }
   }
 
   AiWorkOrder.init(

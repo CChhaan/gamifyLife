@@ -1,8 +1,10 @@
-import { Model } from "sequelize";
+import { DataTypes as SequelizeDataTypes, Sequelize, Model } from "sequelize";
+import db from "../shared/db.ts";
+import { UserInfo as UserInfoType } from "@/type/user.ts";
 
-export default (sequelize, DataTypes) => {
-  class UserInfo extends Model {
-    static associate(models) {
+export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
+  class UserInfo extends Model<UserInfoType, UserInfoType> {
+    static associate(models: typeof db) {
       this.belongsTo(models.UserAccounts, {
         foreignKey: "user_id",
         targetKey: "id",

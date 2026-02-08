@@ -13,7 +13,7 @@ router.get("/", async (ctx) => {
       ctx.state.user.userId,
     );
     ctx.body = success(userGrowth, "获取用户成长信息成功");
-  } catch (error) {
+  } catch (error: any) {
     ctx.status = 400;
     ctx.body = badRequest(error.message);
   }

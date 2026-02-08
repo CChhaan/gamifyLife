@@ -5,11 +5,12 @@ import { sha256 } from "../shared/security.ts";
 export default class UserAuthService {
   static tokenBlacklist = new Set();
 
-  static isTokenBlacklisted(token) {
+  static isTokenBlacklisted(token: any) {
     return this.tokenBlacklist.has(token);
   }
+
   // 用户注册方法
-  async registerUser(account, password, email) {
+  async registerUser(account: string, password: string, email: string) {
     const transaction = await db.sequelize.transaction();
     try {
       const newUser = await db.UserAccounts.create(
@@ -34,10 +35,10 @@ export default class UserAuthService {
           transaction,
         },
       );
-      newUser.UserInfo = await db.UserInfo.create(
+      newUser.dataValues.UserInfo = await db.UserInfo.create(
         {
-          user_id: newUser.id,
-          nickname: `用户${newUser.id}`,
+          user_id: newUser.dataValues.id,
+          nickname: `用户${newUser.dataValues.id}`,
         },
         { transaction },
       );
@@ -49,7 +50,7 @@ export default class UserAuthService {
         ...result,
         password_hash: undefined,
       };
-    } catch (error) {
+    } catch (error: any) {
       await transaction.rollback();
       console.error("注册用户失败：", error);
       throw new Error(error.message || "注册用户失败，请稍后重试");
@@ -57,7 +58,7 @@ export default class UserAuthService {
   }
 
   // 用户登录方法
-  async loginUser(account, email, password) {
+  async loginUser(account: string, email: string, password: string) {
     try {
       let user;
       if (account) {
@@ -80,28 +81,28 @@ export default class UserAuthService {
         throw new Error("用户名或密码错误");
       } else {
         const token = jwt.sign(
-          { userId: user.id },
+          { userId: user.dataValues.id },
           process.env.JWT_SECRET || "my_app_secret",
         );
         await db.UserAccounts.update(
           { last_login: new Date() },
-          { where: { id: user.id } },
+          { where: { id: user.dataValues.id } },
         );
         return token;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("登录失败：", error);
       throw new Error(error.message || "登录失败，请稍后重试");
     }
   }
 
   // 用户退出登录方法
-  async logoutUser(token) {
+  async logoutUser(token: any) {
     try {
       UserAuthService.tokenBlacklist.add(token);
       return true;
       // 清除令牌
-    } catch (error) {
+    } catch (error: any) {
       console.error("退出登录失败", error);
       throw new Error(error.message || "退出登录失败");
     }

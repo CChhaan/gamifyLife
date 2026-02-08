@@ -16,10 +16,12 @@ import tokenAuth from "./middlewares/tokenAuth.ts";
 
 const app = new Koa({});
 configDotenv();
+
 app.use(errorHandler);
 app.use(tokenAuth);
 app.use(staticMiddleware(__dirname + "/public"));
 app.use(bodyParser());
+
 // 动态加载 routes 目录下的路由模块
 async function loadRoutes() {
   const dir = path.join(__dirname, "routes");

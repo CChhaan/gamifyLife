@@ -4,8 +4,8 @@ export interface TaskCategory {
   name: string;
   color: string;
   display_order: number;
-  updatedAt: Date;
-  createdAt: Date;
+  updatedAt?: Date;
+  createdAt?: Date;
 }
 
 export type InfluenceAttr = "mind" | "body" | "social" | "discipline";

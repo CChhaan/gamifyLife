@@ -1,8 +1,10 @@
-import { Model } from "sequelize";
+import { DataTypes as SequelizeDataTypes, Model, Sequelize } from "sequelize";
+import db from "../shared/db.ts";
+import { TaskCategory } from "@/type/task.ts";
 
-export default (sequelize, DataTypes) => {
-  class TaskCategories extends Model {
-    static associate(models) {
+export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
+  class TaskCategories extends Model<TaskCategory, TaskCategory> {
+    static associate(models: typeof db) {
       this.belongsTo(models.UserAccounts, {
         foreignKey: "user_id",
         as: "user",

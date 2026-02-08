@@ -1,24 +1,26 @@
-import { Model } from "sequelize";
 import { sha256 } from "../shared/security.ts";
+import { DataTypes as SequelizeDataTypes, Sequelize, Model } from "sequelize";
+import db from "../shared/db.ts";
+import { UserAccount } from "@/type/user.ts";
 
-export default (sequelize, DataTypes) => {
-  class UserAccounts extends Model {
-    static associate(models) {
+export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
+  class UserAccounts extends Model<UserAccount, UserAccount> {
+    static associate(models: typeof db) {
       this.hasOne(models.UserInfo, {
         foreignKey: "user_id",
-        targetKey: "id",
+        sourceKey: "id",
       });
       this.hasOne(models.UserGrowth, {
         foreignKey: "user_id",
-        targetKey: "id",
+        sourceKey: "id",
       });
       this.hasMany(models.TaskCategories, {
         foreignKey: "user_id",
-        targetKey: "id",
+        sourceKey: "id",
       });
       this.hasMany(models.TaskTags, {
         foreignKey: "user_id",
-        targetKey: "id",
+        sourceKey: "id",
       });
     }
   }
@@ -106,9 +108,9 @@ export default (sequelize, DataTypes) => {
     },
   );
 
-  UserAccounts.beforeSave((user) => {
-    if (user.changed("password_hash") && user.password_hash.length > 0) {
-      user.password_hash = sha256(user.password_hash);
+  UserAccounts.beforeSave((user: UserAccounts) => {
+    if (user.changed("password_hash" as keyof UserAccounts) && user.dataValues.password_hash!.length > 0) {
+      user.dataValues.password_hash = sha256(user.dataValues.password_hash);
     }
   });
 

@@ -1,24 +1,25 @@
+import { InfluenceAttr, TaskTag } from "@/type/task.ts";
 import db from "../shared/db.ts";
 
 export default class TaskTagService {
   // 获取用户任务标签方法
-  async getTaskTagList(userId) {
+  async getTaskTagList(userId: number) {
     try {
       const taskTags = await db.TaskTags.findAll({
         where: { user_id: userId },
       });
       return taskTags;
-    } catch (error) {
+    } catch (error: any) {
       console.error("获取用户任务标签失败", error);
       throw new Error(error.message || "获取用户任务标签失败");
     }
   }
 
   // 创建标签
-  async createTaskTag(userId, tagData) {
+  async createTaskTag(userId: number, tagData: TaskTag) {
     try {
       let secondary = tagData.secondary_attr;
-      if (!secondary || secondary === "") secondary = null;
+      if (!secondary) secondary = null;
       const newTaskTag = await db.TaskTags.create({
         user_id: userId,
         name: tagData.name,
@@ -26,27 +27,27 @@ export default class TaskTagService {
         secondary_attr: secondary,
       });
       return newTaskTag;
-    } catch (error) {
+    } catch (error: any) {
       console.error("创建标签失败", error);
       throw new Error(error.message || "创建标签失败");
     }
   }
   // 修改标签名称
-  async updateTaskTagName(userId, tagId, newName) {
+  async updateTaskTagName(userId: number, tagId: number, newName: string) {
     try {
       const updatedTaskTag = await db.TaskTags.update(
         { name: newName },
         { where: { user_id: userId, id: tagId } },
       );
       return updatedTaskTag;
-    } catch (error) {
+    } catch (error: any) {
       console.error("修改标签名称失败", error);
       throw new Error(error.message || "修改标签名称失败");
     }
   }
 
   // 修改标签影响属性
-  async updateTaskTagAttributes(userId, tagId, attributes) {
+  async updateTaskTagAttributes(userId: number, tagId: number, attributes: { primary_attr: InfluenceAttr | ""; secondary_attr: InfluenceAttr | "" }) {
     try {
       const updatedTaskTag = await db.TaskTags.update(
         {
@@ -56,14 +57,14 @@ export default class TaskTagService {
         { where: { user_id: userId, id: tagId } },
       );
       return updatedTaskTag;
-    } catch (error) {
+    } catch (error: any) {
       console.error("修改标签影响属性失败", error);
       throw new Error(error.message || "修改标签影响属性失败");
     }
   }
 
   // 删除标签
-  async deleteTaskTag(userId, tagId) {
+  async deleteTaskTag(userId: number, tagId: number) {
     try {
       const existingTag = await db.TaskTags.findOne({
         where: { user_id: userId, id: tagId },
@@ -73,7 +74,7 @@ export default class TaskTagService {
       }
       await db.TaskTags.destroy({ where: { user_id: userId, id: tagId } });
       return "标签删除成功";
-    } catch (error) {
+    } catch (error: any) {
       console.error("删除标签失败", error);
       throw new Error(error.message || "删除标签失败");
     }

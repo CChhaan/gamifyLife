@@ -1,6 +1,7 @@
 import Router from "koa-router";
 import { success, badRequest } from "../shared/response.ts";
 import TaskService from "../services/task.ts";
+import { Task } from "@/type/task.ts";
 
 const router = new Router({ prefix: "/task" });
 
@@ -10,7 +11,7 @@ router.get("/", async (ctx) => {
   try {
     const tasks = await taskService.getTasks(ctx.state.user.userId);
     ctx.body = success(tasks, "获取任务分类成功");
-  } catch (error) {
+  } catch (error: any) {
     ctx.status = 400;
     ctx.body = badRequest(error.message);
   }
@@ -21,10 +22,10 @@ router.post("/createTask", async (ctx) => {
   try {
     const newTask = await taskService.createTask(
       ctx.state.user.userId,
-      ctx.request.body,
+      ctx.request.body as Task,
     );
     ctx.body = success(newTask, "创建任务分类成功");
-  } catch (error) {
+  } catch (error: any) {
     ctx.status = 400;
     ctx.body = badRequest(error.message);
   }
@@ -34,11 +35,10 @@ router.post("/createTask", async (ctx) => {
 router.get("/getTaskDetail", async (ctx) => {
   try {
     const taskDetail = await taskService.getTask(
-      ctx.state.user.userId,
-      ctx.query.taskId,
+      +ctx.query.taskId!,
     );
     ctx.body = success(taskDetail, "获取任务详情成功");
-  } catch (error) {
+  } catch (error: any) {
     ctx.status = 400;
     ctx.body = badRequest(error.message);
   }
@@ -48,11 +48,11 @@ router.get("/getTaskDetail", async (ctx) => {
 router.put("/updateTask", async (ctx) => {
   try {
     const updatedTask = await taskService.updateTask(
-      ctx.request.body,
+      ctx.request.body as Task,
       ctx.state.user.userId,
     );
     ctx.body = success(updatedTask, "更新任务成功");
-  } catch (error) {
+  } catch (error: any) {
     ctx.status = 400;
     ctx.body = badRequest(error.message);
   }
@@ -63,10 +63,10 @@ router.post("/aiCreateTask", async (ctx) => {
   try {
     const newTask = await taskService.aiCreateTask(
       //   ctx.state.user.userId,
-      ctx.request.body,
+      (ctx.request.body as any).content as string,
     );
     ctx.body = success(newTask, "生成任务成功");
-  } catch (error) {
+  } catch (error: any) {
     ctx.status = 400;
     ctx.body = badRequest(error.message);
   }

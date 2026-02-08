@@ -1,6 +1,7 @@
 import Router from "koa-router";
 import { success, badRequest, conflict } from "../shared/response.ts";
 import UserInfoService from "../services/userInfo.ts";
+import { UserInfo } from "@/type/user.ts";
 
 const router = new Router({ prefix: "/userInfo" });
 
@@ -11,7 +12,7 @@ router.get("/", async (ctx) => {
   try {
     const userInfo = await userInfoService.getUserInfo(ctx.state.user.userId);
     ctx.body = success(userInfo, "获取用户信息成功");
-  } catch (error) {
+  } catch (error: any) {
     ctx.status = 400;
     ctx.body = badRequest(error.message);
   }
@@ -22,10 +23,10 @@ router.post("/updateUserInfo", async (ctx) => {
   try {
     const updatedInfo = await userInfoService.updateUserInfo(
       ctx.state.user.userId,
-      ctx.request.body,
+      ctx.request.body as UserInfo,
     );
     ctx.body = success(updatedInfo, "更新用户信息成功");
-  } catch (error) {
+  } catch (error: any) {
     ctx.status = 400;
     ctx.body = badRequest(error.message);
   }

@@ -1,6 +1,7 @@
 import Router from "koa-router";
 import { success, badRequest } from "../shared/response.ts";
 import TaskCategoryService from "../services/taskCategory.ts";
+import { TaskCategory } from "@/type/task.ts";
 
 const router = new Router({ prefix: "/taskCategory" });
 
@@ -12,7 +13,7 @@ router.get("/", async (ctx) => {
       ctx.state.user.userId,
     );
     ctx.body = success(taskCategories, "获取任务分类成功");
-  } catch (error) {
+  } catch (error: any) {
     ctx.status = 400;
     ctx.body = badRequest(error.message);
   }
@@ -23,10 +24,10 @@ router.post("/createTaskCategory", async (ctx) => {
   try {
     const newCategory = await taskCategoryService.createTaskCategory(
       ctx.state.user.userId,
-      ctx.request.body,
+      ctx.request.body as TaskCategory,
     );
     ctx.body = success(newCategory, "创建任务分类成功");
-  } catch (error) {
+  } catch (error: any) {
     ctx.status = 400;
     ctx.body = badRequest(error.message);
   }
@@ -35,10 +36,10 @@ router.post("/createTaskCategory", async (ctx) => {
 // 删除任务分类接口
 router.delete("/deleteTaskCategory/:categoryId", async (ctx) => {
   try {
-    const categoryId = ctx.params.categoryId;
+    const categoryId = +ctx.params.categoryId;
     const result = await taskCategoryService.deleteTaskCategory(categoryId);
     ctx.body = success(result, "删除任务分类成功");
-  } catch (error) {
+  } catch (error: any) {
     ctx.status = 400;
     ctx.body = badRequest(error.message);
   }
@@ -47,13 +48,13 @@ router.delete("/deleteTaskCategory/:categoryId", async (ctx) => {
 // 更新任务分类接口
 router.put("/updateTaskCategory/:categoryId", async (ctx) => {
   try {
-    const categoryId = ctx.params.categoryId;
+    const categoryId = +ctx.params.categoryId;
     const updatedCategory = await taskCategoryService.updateTaskCategory(
       categoryId,
-      ctx.request.body,
+      ctx.request.body as TaskCategory,
     );
     ctx.body = success(updatedCategory, "更新任务分类成功");
-  } catch (error) {
+  } catch (error: any) {
     ctx.status = 400;
     ctx.body = badRequest(error.message);
   }

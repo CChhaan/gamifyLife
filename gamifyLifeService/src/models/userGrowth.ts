@@ -1,8 +1,11 @@
-import { Model } from "sequelize";
+import { DataTypes as SequelizeDataTypes, Sequelize, Model } from "sequelize";
+import db from "../shared/db.ts";
+import { UserGrowth as UserGrowthType } from "@/type/user.ts";
 
-export default (sequelize, DataTypes) => {
-  class UserGrowth extends Model {
-    static associate(models) {
+
+export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
+  class UserGrowth extends Model<UserGrowthType, UserGrowthType> {
+    static associate(models: typeof db) {
       // 关联用户账号表（user_accounts）
       this.belongsTo(models.UserAccounts, {
         foreignKey: "user_id",

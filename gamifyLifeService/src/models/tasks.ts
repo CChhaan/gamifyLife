@@ -1,8 +1,10 @@
-import { Model } from "sequelize";
+import type { Task } from "@/type/task.ts";
+import { DataTypes as SequelizeDataTypes, Sequelize, Model } from "sequelize";
+import db from "../shared/db.ts";
 
-export default (sequelize, DataTypes) => {
-  class Tasks extends Model {
-    static associate(models) {
+export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
+  class Tasks extends Model<Task, Task> {
+    static associate(models: typeof db) {
       this.belongsTo(models.UserAccounts, {
         foreignKey: "user_id",
         as: "user",
@@ -79,7 +81,7 @@ export default (sequelize, DataTypes) => {
 
       // 7. 是否为AI生成（is_ai_generated）
       is_ai_generated: {
-        type: DataTypes.TINYINT(1),
+        type: DataTypes.TINYINT({ length: 1 }),
         allowNull: false,
         defaultValue: 0,
         comment: "是否为AI生成",
@@ -87,7 +89,7 @@ export default (sequelize, DataTypes) => {
 
       // 8. 是否重复任务（is_recurring）
       is_recurring: {
-        type: DataTypes.TINYINT(1),
+        type: DataTypes.TINYINT({ length: 1 }),
         allowNull: false,
         defaultValue: 0,
         comment: "是否重复任务",
@@ -182,7 +184,7 @@ export default (sequelize, DataTypes) => {
         comment: "预计完成时间（可选）",
         //必须在现在之后
         validate: {
-          isAfterNow: function (value) {
+          isAfterNow: function (value: Date) {
             if (value && new Date(value) < new Date())
               throw new Error("Due time must be after now");
           },

@@ -1,6 +1,7 @@
 import Router from "koa-router";
 import { success, badRequest } from "../shared/response.ts";
 import TaskTagService from "../services/taskTag.ts";
+import type { InfluenceAttr, TaskTag } from "@/type/task.ts";
 
 const router = new Router({ prefix: "/taskTag" });
 
@@ -11,7 +12,7 @@ router.get("/", async (ctx) => {
   try {
     const taskTags = await taskTagService.getTaskTagList(ctx.state.user.userId);
     ctx.body = success(taskTags, "获取任务标签成功");
-  } catch (error) {
+  } catch (error: any) {
     ctx.status = 400;
     ctx.body = badRequest(error.message);
   }
@@ -22,10 +23,10 @@ router.post("/createTaskTag", async (ctx) => {
   try {
     const newTaskTag = await taskTagService.createTaskTag(
       ctx.state.user.userId,
-      ctx.request.body,
+      ctx.request.body as TaskTag,
     );
     ctx.body = success(newTaskTag, "创建任务标签成功");
-  } catch (error) {
+  } catch (error: any) {
     ctx.status = 400;
     ctx.body = badRequest(error.message);
   }
@@ -34,13 +35,13 @@ router.post("/createTaskTag", async (ctx) => {
 // 删除任务标签接口
 router.delete("/deleteTaskTag/:tagId", async (ctx) => {
   try {
-    const tagId = ctx.params.tagId;
+    const tagId = +ctx.params.tagId;
     const result = await taskTagService.deleteTaskTag(
       ctx.state.user.userId,
       tagId,
     );
     ctx.body = success(result, "删除任务标签成功");
-  } catch (error) {
+  } catch (error: any) {
     ctx.status = 400;
     ctx.body = badRequest(error.message);
   }
@@ -49,14 +50,14 @@ router.delete("/deleteTaskTag/:tagId", async (ctx) => {
 // 修改标签名称接口
 router.put("/updateTaskTagName/:tagId", async (ctx) => {
   try {
-    const tagId = ctx.params.tagId;
+    const tagId = +ctx.params.tagId;
     const updatedTag = await taskTagService.updateTaskTagName(
       ctx.state.user.userId,
       tagId,
-      ctx.request.body.name,
+      (ctx.request.body as TaskTag).name!,
     );
     ctx.body = success(updatedTag, "更新任务标签成功");
-  } catch (error) {
+  } catch (error: any) {
     ctx.status = 400;
     ctx.body = badRequest(error.message);
   }
@@ -65,14 +66,14 @@ router.put("/updateTaskTagName/:tagId", async (ctx) => {
 // 修改标签影响属性
 router.put("/updateTaskTagProperty/:tagId", async (ctx) => {
   try {
-    const tagId = ctx.params.tagId;
+    const tagId = +ctx.params.tagId;
     const updatedTag = await taskTagService.updateTaskTagAttributes(
       ctx.state.user.userId,
       tagId,
-      ctx.request.body,
+      ctx.request.body as { primary_attr: InfluenceAttr | ""; secondary_attr: InfluenceAttr | "" },
     );
     ctx.body = success(updatedTag, "更新任务标签属性成功");
-  } catch (error) {
+  } catch (error: any) {
     ctx.status = 400;
     ctx.body = badRequest(error.message);
   }
