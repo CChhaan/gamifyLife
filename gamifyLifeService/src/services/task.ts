@@ -21,7 +21,7 @@ export default class TaskService {
       );
       const { level } = (await db.UserGrowth.findByPk(userId))!.dataValues;
       const tag1 = (await db.TaskTags.findByPk(tag_id_1))!.dataValues;
-      const tag2 = (await db.TaskTags.findByPk(tag_id_2))!.dataValues;
+      const tag2 = (await db.TaskTags.findByPk(tag_id_2))?.dataValues || null;
       const final_exp = taskExp(difficulty, level, Math.ceil(-finishTime));
       const final_gold = taskGold(difficulty, Math.ceil(-finishTime));
 

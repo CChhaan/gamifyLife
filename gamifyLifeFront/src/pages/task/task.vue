@@ -45,7 +45,7 @@
               <view class="task-tag"
                 >#{{ tags?.find((tag) => tag.id == task.tag_id_1)?.name }}</view
               >
-              <view class="task-tag"
+              <view class="task-tag" v-if="task.tag_id_2"
                 >#{{ tags?.find((tag) => tag.id == task.tag_id_2)?.name }}</view
               >
             </view>

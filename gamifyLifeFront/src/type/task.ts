@@ -4,8 +4,8 @@ export interface TaskCategory {
   name: string;
   color: string;
   display_order: number;
-  updatedAt: Date;
-  createdAt: Date;
+  updatedAt?: Date;
+  createdAt?: Date;
 }
 
 export type InfluenceAttr = "mind" | "body" | "social" | "discipline";
@@ -53,4 +53,6 @@ export interface Task {
   completed_at?: string; // 完成时间，可选，可为null
   ai_job_id?: string; // AI任务ID，可选，可为null
   ai_goal_input?: string; // AI目标输入，可选，可为null
+  updatedAt?: Date;
+  createdAt?: Date;
 }
