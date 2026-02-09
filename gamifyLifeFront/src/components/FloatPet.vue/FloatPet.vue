@@ -16,7 +16,7 @@
     <image
       v-show="move"
       style="width: 200rpx; height: 250rpx"
-      src="../../static/pet_baby_catch.gif"
+      src="../../static/pet_baby_catch.webp"
       mode="aspectFit"
     />
   </movable-view>
