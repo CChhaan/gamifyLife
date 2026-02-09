@@ -144,6 +144,7 @@ const deleteConfirm = async () => {
   box-sizing: border-box;
   overflow: auto;
   position: fixed;
+  z-index: 10;
 }
 
 .title {

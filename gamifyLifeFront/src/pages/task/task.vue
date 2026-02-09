@@ -89,30 +89,33 @@
                 {{ tags?.find((tag) => tag.id == task.tag_id_2)?.name }}</view
               >
             </view>
-            <view class="task-due-time">{{
-              dayjs(task.due_time).format("YYYY-MM-DD HH:mm")
-            }}</view>
+
             <view class="task-data">
-              <view class="task-reward">
-                <view class="reward-item">
-                  <view class="reward-item-title">exp</view>
-                  <view class="reward-item-value">{{ task.final_exp }}</view>
-                </view>
-                <view class="reward-item">
-                  <view class="reward-item-title">$ </view>
-                  <view class="reward-item-value">{{ task.final_gold }}</view>
-                </view>
-                <view
-                  class="reward-item"
-                  v-for="(name, key) in task.estimated_attr_gains"
-                  :key="key"
-                >
-                  <view class="attr-item-name">
-                    <image
-                      :src="`/static/imgs/${key}.png`"
-                      class="attr-item-icon"
-                    />
-                    <!-- <text>{{ name }}</text> -->
+              <view class="task-data-item">
+                <view class="task-due-time">{{
+                  dayjs(task.due_time).format("YYYY-MM-DD HH:mm")
+                }}</view>
+                <view class="task-reward">
+                  <view class="reward-item">
+                    <view class="reward-item-title">exp</view>
+                    <view class="reward-item-value">{{ task.final_exp }}</view>
+                  </view>
+                  <view class="reward-item">
+                    <view class="reward-item-title">$ </view>
+                    <view class="reward-item-value">{{ task.final_gold }}</view>
+                  </view>
+                  <view
+                    class="reward-item"
+                    v-for="(name, key) in task.estimated_attr_gains"
+                    :key="key"
+                  >
+                    <view class="attr-item-name">
+                      <image
+                        :src="`/static/imgs/${key}.png`"
+                        class="attr-item-icon"
+                      />
+                      <!-- <text>{{ name }}</text> -->
+                    </view>
                   </view>
                 </view>
               </view>
@@ -130,6 +133,9 @@
     </view>
     <view class="add-task" @click="taskCreateShow = true">
       <button>+</button>
+    </view>
+    <view class="ai-create" @click="aiGenShow = true">
+      <button>AI</button>
     </view>
     <task-category-cmp
       @close="taskCategoryMngShow = false"
@@ -160,6 +166,10 @@
       @close="taskDetailShow = false"
       v-if="taskDetailShow"
     />
+    <ai-task-gen-cmp
+      v-if="aiGenShow"
+      @close="aiGenShow = false"
+    ></ai-task-gen-cmp>
   </view>
 </template>
 
@@ -174,6 +184,7 @@ import { computed, ref } from "vue";
 import { useTask } from "@/composables/useTask";
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
+import AiTaskGenCmp from "./components/aiTaskGen.vue";
 dayjs.extend(isBetween);
 
 const {
@@ -261,6 +272,7 @@ const taskStatusClass = (status: string) => {
 
 const selectedCategory = ref<number | string>("all");
 const selectedTime = ref("today");
+
 const taskCategoryMngShow = ref(false);
 const taskTagMngShow = ref(false);
 const taskCreateShow = ref(false);
@@ -286,6 +298,9 @@ const showTaskDetail = (id: number) => {
     (tag) => tag.id == detail.value?.tag_id_2,
   )?.name;
 };
+
+// AI生成任务
+const aiGenShow = ref(false);
 
 onLoad(async () => {
   loadTaskData();
@@ -356,6 +371,16 @@ onHide(() => {
   }
 }
 
+.task-list {
+  width: calc(100% - 50rpx);
+  background-color: #fff;
+  border-radius: 40rpx;
+  box-shadow: 0 6rpx 10rpx #ccc;
+  padding: 20rpx;
+  height: calc(100vh - 390rpx);
+  overflow: auto;
+}
+
 .timeFilter {
   width: 100%;
   font-size: 28rpx;
@@ -374,15 +399,6 @@ onHide(() => {
     color: var(--primary-color);
     border-bottom: 6rpx solid var(--primary-color);
   }
-}
-.task-list {
-  width: calc(100% - 50rpx);
-  background-color: #fff;
-  border-radius: 40rpx;
-  box-shadow: 0 6rpx 10rpx #ccc;
-  padding: 20rpx;
-  height: calc(100vh - 390rpx);
-  overflow: auto;
 }
 
 .tasks {
@@ -441,26 +457,32 @@ onHide(() => {
     background-color: var(--third-color);
     color: #fff;
   }
-  .task-due-time {
-    font-size: 24rpx;
-    color: #999;
-    margin-left: 10rpx;
-  }
+
   .task-data {
     display: flex;
     justify-content: space-between;
 
+    .task-due-time {
+      font-size: 24rpx;
+      color: #999;
+      margin-left: 10rpx;
+    }
+
     .task-status {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       border-radius: 10rpx;
-      padding: 5rpx 10rpx;
+      padding: 5rpx 20rpx;
     }
 
     .finished {
-      color: #fff;
-      background-color: #00b96b;
+      color: #03db6c;
+      border: 3rpx solid #03db6c;
     }
   }
 }
+
 .add-task {
   position: fixed;
   bottom: 200rpx;
@@ -473,6 +495,24 @@ onHide(() => {
     height: 80rpx;
     border-radius: 50%;
     background-color: var(--primary-color);
+    color: #fff;
+    font-size: 80rpx;
+  }
+}
+
+.ai-create {
+  position: fixed;
+  bottom: 350rpx;
+  right: 50rpx;
+  button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 80rpx;
+    height: 80rpx;
+    border-radius: 50%;
+    background-color: var(--contrast-color);
+    box-shadow: 0 0 10rpx rgba(0, 0, 0, 0.2);
     color: #fff;
     font-size: 40rpx;
     font-weight: bold;

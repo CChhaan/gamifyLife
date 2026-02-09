@@ -200,7 +200,7 @@ const goToSetting = () => {
   justify-content: start;
   height: 100vh;
   overflow: auto;
-  background-color: var(--background-color);
+  background-color: var(--background-second-color);
 }
 
 .card {
@@ -493,27 +493,25 @@ const goToSetting = () => {
 }
 
 .ranks {
-  background-color: #c9b183;
+  background: url("../../static/imgs/reward_bg.png") no-repeat;
+  background-size: 100% 100%;
   flex: 1;
   width: 100%;
-  margin: -100rpx 0 0 0;
+  margin: -120rpx 0 0 0;
   z-index: 1;
-  padding-top: 100rpx;
+  padding: 120rpx 0 180rpx;
   display: flex;
   align-items: center;
   justify-content: space-around;
-  /* border-radius: 50% 0; */
   border-radius: 20rpx 20rpx 0 0;
-  border: 6rpx solid #e1c695;
-  padding-bottom: 140rpx;
 
   .rank-item {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: #a99574;
-    border: 5rpx solid #e1c695;
+    background: url("../../static/imgs/rank_bg.png") no-repeat;
+    background-size: 100% 100%;
     border-radius: 10rpx;
     width: 30%;
     height: 250rpx;

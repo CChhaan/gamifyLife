@@ -39,6 +39,12 @@
         "navigationBarTitleText": "任务管理",
         "navigationStyle": "custom"
       }
+    },
+    {
+      "path": "pages/community/community",
+      "style": {
+        "navigationBarTitleText": "community"
+      }
     }
   ],
   "globalStyle": {
@@ -71,7 +77,7 @@
           "color": "#666",
           "selectedColor": "#fe7a24",
           "text": "",
-          "selectedText": "\ue6c0"
+          "selectedText": ""
         }
       },
       {

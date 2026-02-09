@@ -127,10 +127,6 @@
         </button>
       </view>
     </view>
-
-    <view class="ai-create" v-show="type == 'create'" @click="aiGenShow = true">
-      <button>AI</button>
-    </view>
     <u-select
       v-model="categorySelectShow"
       mode="single-column"
@@ -172,10 +168,6 @@
         task.due_time = `${$event.year}-${$event.month}-${$event.day} ${$event.hour}:00`
       "
     ></u-picker>
-    <ai-task-gen-cmp
-      v-if="aiGenShow"
-      @close="aiGenShow = false"
-    ></ai-task-gen-cmp>
   </view>
 </template>
 
@@ -191,7 +183,6 @@ import http from "@/utils/http";
 import { onShow } from "@dcloudio/uni-app";
 import dayjs from "dayjs";
 import { computed, ref } from "vue";
-import AiTaskGenCmp from "./components/aiTaskGen.vue";
 
 const taskCreateForm = ref();
 
@@ -227,7 +218,6 @@ const categorySelectShow = ref(false);
 const tag1SelectShow = ref(false);
 const tag2SelectShow = ref(false);
 const calendarShow = ref(false);
-const aiGenShow = ref(false);
 const categoryList = computed(() =>
   props.categories.map((item) => ({
     value: item.id,
@@ -368,7 +358,7 @@ onShow(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow: auto;
+  overflow-y: auto;
   position: fixed;
   z-index: 10;
 }
@@ -397,12 +387,10 @@ onShow(() => {
   border-radius: 30rpx;
   padding: 10rpx 30rpx;
   box-sizing: border-box;
-  overflow: auto;
+  overflow-y: auto;
   box-shadow: 0 6rpx 10rpx #ccc;
 
   .form-item {
-    // box-shadow: inset 0 0 4rpx 5rpx #f5f5f5;
-    // margin-bottom: 40rpx;
     border: 3rpx solid #c6c0b3;
     border-radius: 10rpx;
     padding: 10rpx 20rpx;
@@ -446,7 +434,7 @@ onShow(() => {
 
 .add-operation {
   width: 100%;
-  margin: 20rpx;
+  margin: 20rpx 0;
 }
 
 .operation-btn {
@@ -455,25 +443,5 @@ onShow(() => {
   background-color: var(--primary-color);
   font-size: 36rpx;
   width: 80%;
-}
-
-.ai-create {
-  position: fixed;
-  bottom: 200rpx;
-  right: 50rpx;
-  z-index: 15;
-  button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 80rpx;
-    height: 80rpx;
-    border-radius: 50%;
-    background-color: var(--contrast-color);
-    box-shadow: 0 0 10rpx rgba(0, 0, 0, 0.2);
-    color: #fff;
-    font-size: 40rpx;
-    font-weight: bold;
-  }
 }
 </style>
