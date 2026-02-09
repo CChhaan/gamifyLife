@@ -14,6 +14,7 @@
         ref="taskCreateForm"
         :rules="taskCreateRules"
         label-width="200"
+        label-position="top"
       >
         <u-form-item label="标题" prop="title">
           <u-input
@@ -127,7 +128,7 @@
       </view>
     </view>
 
-    <view class="ai-create" v-show="type == 'create'">
+    <view class="ai-create" v-show="type == 'create'" @click="aiGenShow = true">
       <button>AI</button>
     </view>
     <u-select
@@ -171,6 +172,10 @@
         task.due_time = `${$event.year}-${$event.month}-${$event.day} ${$event.hour}:00`
       "
     ></u-picker>
+    <ai-task-gen-cmp
+      v-if="aiGenShow"
+      @close="aiGenShow = false"
+    ></ai-task-gen-cmp>
   </view>
 </template>
 
@@ -186,6 +191,7 @@ import http from "@/utils/http";
 import { onShow } from "@dcloudio/uni-app";
 import dayjs from "dayjs";
 import { computed, ref } from "vue";
+import AiTaskGenCmp from "./components/aiTaskGen.vue";
 
 const taskCreateForm = ref();
 
@@ -221,6 +227,7 @@ const categorySelectShow = ref(false);
 const tag1SelectShow = ref(false);
 const tag2SelectShow = ref(false);
 const calendarShow = ref(false);
+const aiGenShow = ref(false);
 const categoryList = computed(() =>
   props.categories.map((item) => ({
     value: item.id,
@@ -355,8 +362,8 @@ onShow(() => {
 .task-create-ctn {
   width: 100vw;
   height: 100vh;
-  background-color: var(--background-color);
-  padding: 15rpx;
+  background-color: #f1ede2;
+  padding: 20rpx;
   padding-bottom: 155rpx;
   display: flex;
   flex-direction: column;
@@ -386,11 +393,12 @@ onShow(() => {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  background-color: #ffffef;
+  background-color: #fff;
   border-radius: 30rpx;
-  padding: 20rpx;
+  padding: 10rpx 30rpx;
   box-sizing: border-box;
   overflow: auto;
+  box-shadow: 0 6rpx 10rpx #ccc;
 
   .form-item {
     // box-shadow: inset 0 0 4rpx 5rpx #f5f5f5;
@@ -438,8 +446,6 @@ onShow(() => {
 
 .add-operation {
   width: 100%;
-  /* display: flex;
-  justify-content: space-between; */
   margin: 20rpx;
 }
 
@@ -455,6 +461,7 @@ onShow(() => {
   position: fixed;
   bottom: 200rpx;
   right: 50rpx;
+  z-index: 15;
   button {
     display: flex;
     justify-content: center;

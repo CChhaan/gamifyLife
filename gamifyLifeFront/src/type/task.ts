@@ -17,6 +17,13 @@ export const InfluenceAttrTextMap = {
   discipline: "自律",
 } as const;
 
+export const TaskStatusTextMap = {
+  PENDING: "进行中",
+  COMPLETED: "已完成",
+  OVERDUE: "已逾期",
+  ABANDONED: "已放弃",
+} as const;
+
 export interface TaskTag {
   id?: number;
   user_id?: number;

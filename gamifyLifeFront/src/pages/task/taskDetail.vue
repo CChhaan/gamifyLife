@@ -7,10 +7,12 @@
       </view>
       <view class="task-detail-header">任务详情</view>
       <view class="tab-option">
-        <button class="operation-btn tab-btn" @click="taskEditShow = true">
-          修改
-        </button>
-        <button class="operation-btn tab-btn">删除</button>
+        <u-icon
+          class="option"
+          name="edit-pen"
+          @click="taskEditShow = true"
+        ></u-icon>
+        <u-icon class="option cancel" name="trash"></u-icon>
       </view>
     </view>
     <view class="task-detail">
@@ -43,6 +45,8 @@
           dayjs(task.due_time).format("YYYY-MM-DD HH:00:00")
         }}</text>
       </view>
+    </view>
+    <view class="task-detail">
       <view class="reward-count">
         <view class="title">预计可获得收益</view>
         <view class="tip"
@@ -150,16 +154,16 @@ const taskEditShow = ref(false);
 .tab-option {
   display: flex;
   align-items: center;
-  .operation-btn {
-    border: none;
-    color: #fff;
-    background-color: var(--primary-color);
-    font-size: 32rpx;
-    padding: 0 0.5em;
-    line-height: 2em;
-    margin-left: 10rpx;
-    // width: 40%;
-    border-radius: 10rpx;
+  .option {
+    margin-left: 25rpx;
+    font-size: 44rpx;
+    padding: 15rpx;
+    background-color: #fff;
+    border-radius: 20rpx;
+    box-shadow: 0 0 10rpx rgba(0, 0, 0, 0.1);
+  }
+  .cancel {
+    color: red;
   }
 }
 
@@ -173,6 +177,7 @@ const taskEditShow = ref(false);
   padding: 20rpx;
   box-sizing: border-box;
   overflow: auto;
+  margin-bottom: 20rpx;
   .task-title {
     font-size: 36rpx;
     margin: 10rpx 10rpx 0;
@@ -215,14 +220,14 @@ const taskEditShow = ref(false);
 }
 
 .reward-count {
-  margin: 10rpx;
+  margin: 0 10rpx;
   .title {
     font-size: 32rpx;
-    margin-top: 10rpx;
   }
   .tip {
     color: #666;
     font-size: 24rpx;
+    margin: 10rpx 0;
   }
   .rewards {
     display: flex;
@@ -252,7 +257,7 @@ const taskEditShow = ref(false);
   display: flex;
   width: 100%;
   justify-content: space-around;
-  margin: 30rpx 0;
+  margin: 20rpx 0;
 
   .operation-btn {
     border: none;

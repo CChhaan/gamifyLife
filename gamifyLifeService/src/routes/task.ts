@@ -34,9 +34,7 @@ router.post("/createTask", async (ctx) => {
 // 获取用户任务详情接口
 router.get("/getTaskDetail", async (ctx) => {
   try {
-    const taskDetail = await taskService.getTask(
-      +ctx.query.taskId!,
-    );
+    const taskDetail = await taskService.getTask(+ctx.query.taskId!);
     ctx.body = success(taskDetail, "获取任务详情成功");
   } catch (error: any) {
     ctx.status = 400;
@@ -64,6 +62,7 @@ router.post("/aiCreateTask", async (ctx) => {
     const newTask = await taskService.aiCreateTask(
       //   ctx.state.user.userId,
       (ctx.request.body as any).content as string,
+      ctx.state.user.userId,
     );
     ctx.body = success(newTask, "生成任务成功");
   } catch (error: any) {

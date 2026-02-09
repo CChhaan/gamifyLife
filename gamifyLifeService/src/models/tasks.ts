@@ -16,10 +16,9 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
     {
       // 1. 任务ID（id）
       id: {
-        type: DataTypes.INTEGER.UNSIGNED,
+        type: DataTypes.STRING(200),
         allowNull: false,
         primaryKey: true,
-        autoIncrement: true,
         comment: "任务ID",
       },
 
@@ -132,6 +131,14 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
         comment: "基础经验值",
       },
 
+      // 12. 实际经验值（real_exp）
+      real_exp: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        allowNull: true,
+        defaultValue: null,
+        comment: "实际经验值",
+      },
+
       // 13. 基础金币值（final_gold）
       final_gold: {
         type: DataTypes.INTEGER.UNSIGNED,
@@ -140,12 +147,28 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
         comment: "基础金币值",
       },
 
+      // 13. 实际金币值（real_gold）
+      real_gold: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        allowNull: true,
+        defaultValue: null,
+        comment: "实际金币值",
+      },
+
       // 14. 预估属性增益（estimated_attr_gains）
       estimated_attr_gains: {
         type: DataTypes.JSON,
         allowNull: true,
         defaultValue: null,
         comment: '预估属性增益（如{"mind":5,"body":2}）',
+      },
+
+      // 15. 实际属性增益（real_attr_gains）
+      real_attr_gains: {
+        type: DataTypes.JSON,
+        allowNull: true,
+        defaultValue: null,
+        comment: '实际属性增益（如{"mind":5,"body":2}）',
       },
 
       // 15. 标签1（tag_id_1）

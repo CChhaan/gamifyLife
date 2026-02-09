@@ -30,7 +30,7 @@ export interface TaskTag {
  * 用于描述任务的各种属性和状态
  */
 export interface Task {
-  id?: number; // 任务ID，可选
+  id?: string; // 任务ID，可选
   user_id?: number; // 用户ID，可选
   title: string; // 任务标题，必填
   description?: string; // 任务描述，可选，可为null
@@ -42,9 +42,15 @@ export interface Task {
   status: "PENDING" | "COMPLETED" | "OVERDUE" | "ABANDONED"; // 任务状态，必填
   difficulty?: number; // 任务难度，可选，可为null
   final_exp?: number; // 最终获得经验值，必填
+  real_exp?: number; // 实际获得经验值，可选，可为null
   final_gold?: number; // 最终获得金币，必填
+  real_gold?: number; // 实际获得金币，可选，可为null
   estimated_attr_gains?: {
     // 预计属性增益，可选，可为null
+    [key: string]: number;
+  };
+  real_attr_gains?: {
+    // 实际属性增益，可选，可为null
     [key: string]: number;
   };
   tag_id_1?: number; // 标签1 ID，可选，可为null
