@@ -24,19 +24,23 @@ import http from "@/utils/http";
 import { ref } from "vue";
 
 const prompt = ref("");
+const emit = defineEmits<{
+  (e: "close"): void;
+  (e: "getAiStatus", id: string): void;
+}>();
 
 const aiGen = async () => {
   if (prompt.value) {
-    uni.showLoading({
-      title: "加载中",
-    });
     // 调用AI接口
-    const res = await http.post("/api/task/aiCreateTask", {
-      content: prompt.value,
-    });
-    console.log(JSON.parse(res.choices[0].message.content));
+    http
+      .post("/api/aiTask/aiCreateTask", {
+        content: prompt.value,
+      })
+      .then((res) => {
+        emit("close");
+        emit("getAiStatus", res.id);
+      });
   }
-  uni.hideLoading();
 };
 </script>
 

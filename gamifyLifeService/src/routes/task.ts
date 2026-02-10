@@ -56,19 +56,4 @@ router.put("/updateTask", async (ctx) => {
   }
 });
 
-// AI生成任务接口
-router.post("/aiCreateTask", async (ctx) => {
-  try {
-    const newTask = await taskService.aiCreateTask(
-      //   ctx.state.user.userId,
-      (ctx.request.body as any).content as string,
-      ctx.state.user.userId,
-    );
-    ctx.body = success(newTask, "生成任务成功");
-  } catch (error: any) {
-    ctx.status = 400;
-    ctx.body = badRequest(error.message);
-  }
-});
-
 export default router;

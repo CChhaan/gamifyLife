@@ -46,7 +46,7 @@
         </u-form-item>
         <!-- <u-form-item label="父级任务" prop="parent_task_id"></u-form-item> -->
         <u-form-item
-          v-show="type == 'create'"
+          v-show="type !== 'edit'"
           label="是否重复任务"
           prop="is_recurring"
         >
@@ -55,7 +55,7 @@
         <u-form-item
           label="重复规则"
           prop="recurring_rule"
-          v-show="type == 'create' && task.is_recurring"
+          v-show="type == 'edit' && task.is_recurring"
         ></u-form-item>
         <u-form-item label="任务难度" prop="difficulty">
           <u-rate :count="5" v-model="task.difficulty"></u-rate>
@@ -187,7 +187,7 @@ import { computed, ref } from "vue";
 const taskCreateForm = ref();
 
 const props = defineProps<{
-  type: "create" | "edit";
+  type: "create" | "edit" | "ai-edit";
   task?: Task;
   categories: TaskCategory[];
   tags: TaskTag[];
@@ -309,8 +309,10 @@ const submitTask = async () => {
       try {
         if (props.type == "create") {
           await http.post("/api/task/createTask", task.value);
-        } else {
+        } else if (props.type == "edit") {
           await http.put("/api/task/updateTask", task.value);
+        } else {
+          await http.put("/api/aiTask/updateAITask", task.value);
         }
         task.value = {
           title: "",
@@ -360,7 +362,9 @@ onShow(() => {
   align-items: center;
   overflow-y: auto;
   position: fixed;
-  z-index: 10;
+  z-index: 20;
+  top: 0;
+  left: 0;
 }
 
 .task-create-header {

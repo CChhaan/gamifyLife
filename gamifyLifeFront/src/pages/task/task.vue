@@ -1,9 +1,10 @@
 <template>
   <view class="task-page">
+    <u-top-tips ref="uTipsRef"></u-top-tips>
     <view class="banner">
       <button size="mini" @click="taskTagMngShow = true">标签管理</button>
       <button size="mini" @click="taskCategoryMngShow = true">分类管理</button>
-      <button size="mini">AI任务队列</button>
+      <button size="mini" @click="aiListShow = true">AI任务队列</button>
       <u-icon class="banner-icon" name="question-circle-fill"></u-icon>
     </view>
     <view class="task-category">
@@ -169,7 +170,15 @@
     <ai-task-gen-cmp
       v-if="aiGenShow"
       @close="aiGenShow = false"
+      @getAiStatus="getAIStatus"
     ></ai-task-gen-cmp>
+    <ai-task-list-cmp
+      v-if="aiListShow"
+      :categories="taskCategories!"
+      :tags="tags!"
+      @close="aiListShow = false"
+      @refresh="getTaskList"
+    ></ai-task-list-cmp>
   </view>
 </template>
 
@@ -178,15 +187,37 @@ import TaskCategoryCmp from "@/pages/task/taskCategory.vue";
 import TaskTagCmp from "@/pages/task/taskTag.vue";
 import TaskCreateCmp from "@/pages/task/taskCreate.vue";
 import TaskDetailCmp from "@/pages/task/taskDetail.vue";
-import { TaskStatusTextMap, type Task } from "@/type/task";
+import AiTaskListCmp from "@/pages/task/taskAi.vue";
+import { TaskStatusTextMap, type Ticket, type Task } from "@/type/task";
 import { onHide, onLoad } from "@dcloudio/uni-app";
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useTask } from "@/composables/useTask";
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
 import AiTaskGenCmp from "./components/aiTaskGen.vue";
+import http from "@/utils/http";
 dayjs.extend(isBetween);
 
+// 标记应用是否在前台
+let isAppForeground = true;
+
+// 监听应用切后台
+const appHideHandler = () => {
+  isAppForeground = false;
+};
+
+// 监听应用切前台
+const appShowHandler = () => {
+  isAppForeground = true;
+};
+
+onMounted(() => {
+  // 注册应用前后台监听
+  uni.onAppHide(appHideHandler);
+  uni.onAppShow(appShowHandler);
+});
+
+const uTipsRef = ref();
 const {
   taskCategories,
   tags,
@@ -302,14 +333,48 @@ const showTaskDetail = (id: number) => {
 // AI生成任务
 const aiGenShow = ref(false);
 
+// 轮询AI状态
+const getAIStatus = (jobId: number | string) => {
+  uTipsRef.value?.show({
+    title: "AI规划中，完成时会在顶部通知",
+    type: "success",
+    duration: "2300",
+  });
+  const timer = setInterval(async () => {
+    const aijob = await http.get<Ticket>(
+      "/api/aiTask/aiTaskStatus?taskId=" + jobId,
+    );
+    if (aijob.status == "SUCCESS") {
+      clearInterval(timer);
+      uTipsRef.value?.show({
+        title: "AI规划完成，可在AI任务队列页面查看",
+        type: "success",
+        duration: "2300",
+      });
+    } else if (aijob.status == "FAILED") {
+      clearInterval(timer);
+      uTipsRef.value?.show({
+        title: "AI规划失败",
+        type: "error",
+        duration: "2300",
+      });
+    }
+  }, 2000);
+};
+
+const aiListShow = ref(false);
+
 onLoad(async () => {
   loadTaskData();
 });
 onHide(() => {
+  if (!isAppForeground) return;
   taskCreateShow.value = false;
   taskTagMngShow.value = false;
   taskCategoryMngShow.value = false;
   taskDetailShow.value = false;
+  aiGenShow.value = false;
+  aiListShow.value = false;
 });
 </script>
 
@@ -461,6 +526,7 @@ onHide(() => {
   .task-data {
     display: flex;
     justify-content: space-between;
+    align-items: center;
 
     .task-due-time {
       font-size: 24rpx;

@@ -3,16 +3,20 @@ import { DataTypes as SequelizeDataTypes, Sequelize, Model } from "sequelize";
 import db from "../shared/db.ts";
 
 export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
-  class Tasks extends Model<Task, Task> {
+  class AIDraftTasks extends Model<Task, Task> {
     static associate(models: typeof db) {
       this.belongsTo(models.UserAccounts, {
         foreignKey: "user_id",
-        as: "user",
+        targetKey: "id",
+      });
+      this.belongsTo(models.AiWorkOrders, {
+        foreignKey: "ai_job_id",
+        targetKey: "id",
       });
     }
   }
 
-  Tasks.init(
+  AIDraftTasks.init(
     {
       // 1. 任务ID（id）
       id: {
@@ -70,7 +74,7 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
         allowNull: true,
         defaultValue: null,
         references: {
-          model: "tasks",
+          model: "ai_draft_tasks",
           key: "id",
         },
         onDelete: "SET NULL",
@@ -82,7 +86,7 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
       is_ai_generated: {
         type: DataTypes.TINYINT({ length: 1 }),
         allowNull: false,
-        defaultValue: 0,
+        defaultValue: 1,
         comment: "是否为AI生成",
       },
 
@@ -121,54 +125,6 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
           max: 5,
         },
         comment: "任务难度1-5",
-      },
-
-      // 12. 基础经验值（final_exp）
-      final_exp: {
-        type: DataTypes.INTEGER.UNSIGNED,
-        allowNull: false,
-        defaultValue: 0,
-        comment: "基础经验值",
-      },
-
-      // 12. 实际经验值（real_exp）
-      real_exp: {
-        type: DataTypes.INTEGER.UNSIGNED,
-        allowNull: true,
-        defaultValue: null,
-        comment: "实际经验值",
-      },
-
-      // 13. 基础金币值（final_gold）
-      final_gold: {
-        type: DataTypes.INTEGER.UNSIGNED,
-        allowNull: false,
-        defaultValue: 0,
-        comment: "基础金币值",
-      },
-
-      // 13. 实际金币值（real_gold）
-      real_gold: {
-        type: DataTypes.INTEGER.UNSIGNED,
-        allowNull: true,
-        defaultValue: null,
-        comment: "实际金币值",
-      },
-
-      // 14. 预估属性增益（estimated_attr_gains）
-      estimated_attr_gains: {
-        type: DataTypes.JSON,
-        allowNull: true,
-        defaultValue: null,
-        comment: '预估属性增益（如{"mind":5,"body":2}）',
-      },
-
-      // 15. 实际属性增益（real_attr_gains）
-      real_attr_gains: {
-        type: DataTypes.JSON,
-        allowNull: true,
-        defaultValue: null,
-        comment: '实际属性增益（如{"mind":5,"body":2}）',
       },
 
       // 15. 标签1（tag_id_1）
@@ -214,14 +170,6 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
         },
       },
 
-      // 18. 实际完成时间（completed_at）
-      completed_at: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        defaultValue: null,
-        comment: "实际完成时间",
-      },
-
       // 19. 关联的AI工单ID（ai_job_id）
       ai_job_id: {
         type: DataTypes.STRING(64),
@@ -246,12 +194,12 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
     },
     {
       sequelize,
-      tableName: "tasks",
+      tableName: "ai_draft_tasks",
       charset: "utf8mb4",
       collate: "utf8mb4_unicode_ci",
       paranoid: true,
     },
   );
 
-  return Tasks;
+  return AIDraftTasks;
 };

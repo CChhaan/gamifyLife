@@ -63,3 +63,41 @@ export interface Task {
   updatedAt?: Date;
   createdAt?: Date;
 }
+
+// 工单状态枚举
+export enum TicketStatus {
+  // 待处理
+  PENDING = "待处理",
+  // 处理中
+  PROCESSING = "处理中",
+  // 处理成功
+  SUCCESS = "处理成功",
+  // 处理失败
+  FAILED = "处理失败",
+  // 已消费（任务已被使用）
+  CONSUMED = "已使用",
+}
+
+// 工单基础类型
+export interface Ticket {
+  /** 工单ID（UUID v4） */
+  id?: string;
+  /** 发起用户ID（关联用户表 user_accounts.id） */
+  user_id: number;
+  /** 用户输入的原始目标 */
+  input_goal: string;
+  /** 处理状态 */
+  status: "PENDING" | "PROCESSING" | "SUCCESS" | "FAILED" | "CONSUMED";
+
+  /** 失败信息（成功/处理中时为 null） */
+  error_message: string | null;
+
+  // 补充 Sequelize 自动生成的字段
+  /** 创建时间 */
+  createdAt?: string;
+  /** 更新时间 */
+  updatedAt?: string;
+  /** 逻辑删除时间（若启用 paranoid 模式） */
+  deletedAt?: string | null;
+  AIDraftTasks?: Task[];
+}

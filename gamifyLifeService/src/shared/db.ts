@@ -3,21 +3,22 @@ import { DataTypes, Sequelize, Model, ModelStatic } from "sequelize";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import type { Task, TaskCategory, TaskTag } from "@/type/task.ts";
+import type { Task, TaskCategory, TaskTag, Ticket } from "@/type/task.ts";
 import type { UserGrowth, UserInfo } from "@/type/user.ts";
 
 type BaseModel<T extends {}> = ModelStatic<Model<T>> & {
   associate?: (db: Database) => void;
-}
+};
 
 type ModelTypes = {
   Tasks: BaseModel<Task>;
   TaskTags: BaseModel<TaskTag>;
   TaskCategories: BaseModel<TaskCategory>;
-  AiWorkOrder: BaseModel<any>;
+  AiWorkOrders: BaseModel<Ticket>;
   UserAccounts: BaseModel<any>;
   UserGrowth: BaseModel<UserGrowth>;
   UserInfo: BaseModel<UserInfo>;
+  AiDraftTasks: BaseModel<Task>;
   // ... 添加其他可能的模型
 };
 
@@ -26,7 +27,7 @@ type ModelName = keyof ModelTypes;
 type Database = {
   sequelize: typeof sequelize;
   Sequelize: typeof Sequelize;
-}
+};
 
 const db = {
   sequelize,
@@ -39,19 +40,18 @@ const __dirname = path.dirname(__filename);
 const modelsDir = path.join(__dirname, "../models");
 
 // 读取models目录下的所有文件
-const modelFiles = fs.readdirSync(modelsDir)
+const modelFiles = fs.readdirSync(modelsDir);
 
 // 动态导入并注册模型
 for (const file of modelFiles) {
   const modelName = path.basename(file, ".ts");
-  const capitalizedModelName =
-    modelName.charAt(0).toUpperCase() + modelName.slice(1) as ModelName;
+  const capitalizedModelName = (modelName.charAt(0).toUpperCase() +
+    modelName.slice(1)) as ModelName;
 
   // 动态导入模型初始化函数
   const modelPath = path.join(modelsDir, file);
   const importUrl = `file://${modelPath}`;
   const initModel = (await import(importUrl)).default;
-
   // 注册模型
   db[capitalizedModelName] = initModel(sequelize, DataTypes);
 }

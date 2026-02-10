@@ -2,6 +2,7 @@ import { ref } from "vue";
 import http from "@/utils/http";
 import type { TaskTag, TaskCategory, Task } from "@/type/task";
 import { saveUserData } from "@/utils/growthCal";
+import dayjs from "dayjs";
 
 export function useTask() {
   // 任务分类
@@ -21,6 +22,9 @@ export function useTask() {
 
   const getTaskList = async () => {
     taskList.value = await http.get("/api/task/");
+    taskList.value?.forEach((task) => {
+      task.due_time = dayjs(task.due_time).format("YYYY-MM-DD HH:mm");
+    });
   };
 
   const loadTaskData = async () => {

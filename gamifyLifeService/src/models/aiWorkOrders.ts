@@ -1,12 +1,23 @@
-import { DataTypes as SequelizeDataTypes, Sequelize, Model, UUIDV4 } from "sequelize";
+import {
+  DataTypes as SequelizeDataTypes,
+  Sequelize,
+  Model,
+  UUIDV4,
+} from "sequelize";
 import db from "../shared/db.ts";
+import { Ticket } from "@/type/task.ts";
 
 export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
-  class AiWorkOrder extends Model {
-    static associate(models: typeof db) { }
+  class AiWorkOrders extends Model<Ticket, Ticket> {
+    static associate(models: typeof db) {
+      this.hasMany(models.AiDraftTasks, {
+        foreignKey: "ai_job_id",
+        sourceKey: "id",
+      });
+    }
   }
 
-  AiWorkOrder.init(
+  AiWorkOrders.init(
     {
       id: {
         type: DataTypes.STRING(64),
@@ -46,38 +57,7 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
         defaultValue: "PENDING",
         comment: "处理状态",
       },
-      // 5. 已重试次数
-      retry_count: {
-        type: DataTypes.TINYINT.UNSIGNED,
-        allowNull: false,
-        defaultValue: 0,
-        comment: "已重试次数",
-      },
-      // 6. 最大重试次数
-      max_retries: {
-        type: DataTypes.TINYINT.UNSIGNED,
-        allowNull: false,
-        defaultValue: 3,
-        comment: "最大重试次数",
-      },
-      // 7. 进度（0-100）
-      progress: {
-        type: DataTypes.TINYINT.UNSIGNED,
-        allowNull: false,
-        defaultValue: 0,
-        validate: {
-          min: 0,
-          max: 100,
-        },
-        comment: "进度0-100",
-      },
-      // 8. 成功时的结构化任务列表（JSON）
-      result: {
-        type: DataTypes.JSON,
-        allowNull: true,
-        defaultValue: null,
-        comment: "成功时的结构化任务列表",
-      },
+
       // 9. 失败信息
       error_message: {
         type: DataTypes.STRING(500),
@@ -95,5 +75,5 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
     },
   );
 
-  return AiWorkOrder;
+  return AiWorkOrders;
 };
