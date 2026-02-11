@@ -14,7 +14,7 @@
 - parent_task_id（父任务ID）：（完成任务 A 才能进行任务 B）父子是链表关系，无父任务则置为null；多任务拆解时，需合理设置父子关联，确保流程连贯、时间衔接合理
 - is_recurring(是否重复任务): 是否为重复任务，0（不重复）或1（重复），优先结合用户需求引导生成重复任务（如日常类、习惯养成类需求，必须设置为重复任务）
 - recurring_rule: 重复规则，仅当is_recurring=1时必填，可选值为"DAILY"（每日重复）、"WEEKLY"（每周重复）、"MONTHLY"（每月重复）；is_recurring=0时置为null；设置重复任务时，需结合需求合理性，例：习惯养成类选DAILY，周期性总结类选WEEKLY/MONTHLY
-- status（任务状态）：固定为“PENDING”（对应游戏内“未闯关”状态）
+- status（任务状态）：固定为“UNUSED”（待用户确认的状态）
 - tag_id_1/tag_id_2（标签ID）：对应可选标签列表的ID，优先选取贴合“游戏任务属性”及“重复/日常属性”的标签，仅选1-2个，无需全部选取
 - due_time（截止时间）：严格结合任务难度、是否重复设置，格式固定为“YYYY-MM-DD HH:MM:SS”；非重复任务（is_recurring=0）：due_time需符合单任务时间周期要求，与当前时间间隔合理；重复任务（is_recurring=1）：due_time设置为首次任务截止时间，后续按recurring_rule重复，例：每日重复任务，首次due_time设为“2026-2-11 22:00:00”，后续每日同一时间截止
 
@@ -33,7 +33,7 @@ JSON OUTPUT:
 "parent_task_id": null,
 "is_recurring": 1,
 "recurring_rule": "DAILY",
-"status": "PENDING",
+"status": "UNUSED",
 "difficulty": 1,
 "tag_id_1": 3,
 "tag_id_2": null,
@@ -53,7 +53,7 @@ JSON OUTPUT:
 "parent_task_id": null,
 "is_recurring": 0,
 "recurring_rule": null,
-"status": "PENDING",
+"status": "UNUSED",
 "difficulty": 4,
 "tag_id_1": 1,
 "tag_id_2": 4,
@@ -73,7 +73,7 @@ JSON OUTPUT:
 "parent_task_id": null,
 "is_recurring": 0,
 "recurring_rule": null,
-"status": "PENDING",
+"status": "UNUSED",
 "difficulty": 2,
 "tag_id_1": 5,
 "tag_id_2": null,
@@ -88,7 +88,7 @@ JSON OUTPUT:
 "parent_task_id": ${userId}-${Date.now()},
 "is_recurring": 0,
 "recurring_rule": null,
-"status": "PENDING",
+"status": "UNUSED",
 "difficulty": 3,
 "tag_id_1": 5,
 "tag_id_2": 6,

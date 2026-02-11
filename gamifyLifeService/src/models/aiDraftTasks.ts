@@ -108,7 +108,13 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
 
       // 10. 任务状态（status）
       status: {
-        type: DataTypes.ENUM("PENDING", "COMPLETED", "OVERDUE", "ABANDONED"),
+        type: DataTypes.ENUM(
+          "UNUSED",
+          "PENDING",
+          "COMPLETED",
+          "OVERDUE",
+          "ABANDONED",
+        ),
         allowNull: false,
         defaultValue: "PENDING",
         comment: "任务状态",

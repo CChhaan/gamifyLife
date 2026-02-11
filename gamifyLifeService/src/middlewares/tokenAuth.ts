@@ -2,9 +2,16 @@ import jwt from "koa-jwt";
 import { unauthorized } from "../shared/response.ts";
 import UserAuthService from "../services/userAuth.ts";
 import type { Context, Next } from "koa";
-
+const publicPaths = [
+  "/auth/login",
+  "/auth/register",
+  "/public", // 静态资源根目录
+  "/icons", // 图标资源
+  "/images", // 图片资源
+];
 export default async function tokenAuth(ctx: Context, next: Next) {
-  if (ctx.url === "/auth/login" || ctx.url === "/auth/register") {
+  const isPublicPath = publicPaths.some((path) => ctx.url.startsWith(path));
+  if (isPublicPath) {
     await next();
     return;
   }
@@ -25,4 +32,5 @@ export default async function tokenAuth(ctx: Context, next: Next) {
     ctx.status = 401;
     ctx.body = unauthorized("Token验证失败");
   }
+  // await next();
 }

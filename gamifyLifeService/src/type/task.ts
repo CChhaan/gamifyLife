@@ -39,7 +39,7 @@ export interface Task {
   is_ai_generated: 0 | 1; // 是否AI生成，0或1
   is_recurring: 0 | 1; // 是否为重复任务，0或1
   recurring_rule?: "DAILY" | "WEEKLY" | "MONTHLY"; // 重复规则，可选，可为null
-  status: "PENDING" | "COMPLETED" | "OVERDUE" | "ABANDONED"; // 任务状态，必填
+  status: "UNUSED" | "PENDING" | "COMPLETED" | "OVERDUE" | "ABANDONED"; // 任务状态，必填
   difficulty?: number; // 任务难度，可选，可为null
   final_exp?: number; // 最终获得经验值，必填
   real_exp?: number; // 实际获得经验值，可选，可为null

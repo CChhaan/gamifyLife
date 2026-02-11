@@ -64,7 +64,10 @@ router.put("/updateAITask", async (ctx) => {
 // 应用AI工单下的所有临时草稿任务
 router.post("/applyAITask", async (ctx) => {
   try {
-    const task = await aiTaskService.applyAITask((ctx.request.body as any).id);
+    const task = await aiTaskService.applyAITask(
+      ctx.state.user.userId,
+      (ctx.request.body as any).id,
+    );
     ctx.body = success(task, "应用草稿任务成功");
   } catch (error: any) {
     ctx.status = 400;

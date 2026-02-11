@@ -110,7 +110,7 @@
           mode="scaleToFill"
         />
       </view>
-      <view class="entry-item bag">
+      <view class="entry-item bag" @click="goToInventory">
         <text>道具背包</text>
         <image
           class="entry-icon"
@@ -182,6 +182,12 @@ onLoad(async () => {
 const goToSetting = () => {
   uni.navigateTo({
     url: "/pages/setting/setting",
+  });
+};
+
+const goToInventory = () => {
+  uni.navigateTo({
+    url: "/pages/inventory/inventory",
   });
 };
 </script>

@@ -43,7 +43,14 @@
     {
       "path": "pages/community/community",
       "style": {
-        "navigationBarTitleText": "community"
+        "navigationBarTitleText": "社区中心"
+      }
+    },
+    {
+      "path": "pages/inventory/inventory",
+      "style": {
+        "navigationBarTitleText": "道具背包",
+        "navigationStyle": "custom"
       }
     }
   ],

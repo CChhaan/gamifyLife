@@ -1,0 +1,242 @@
+<template>
+  <view class="sys-ctn">
+    <view class="sys-items">
+      <view class="sys-item" v-for="item in sysItems" :key="item.id">
+        <view class="icon">
+          <image
+            class="icon-img"
+            :src="'http://localhost:3000' + item.icon_url"
+            mode="scaleToFill"
+          />
+        </view>
+        <view class="detail">
+          <view class="name">{{ item.name }}</view>
+          <view class="desc" :class="{ fold: fold !== item.id }">
+            {{ item.description }}
+          </view>
+          <view
+            class="text-show"
+            @click="fold = fold == item.id ? -1 : item.id"
+            >{{ fold == item.id ? "收起" : "展开" }}</view
+          >
+        </view>
+        <view class="item-data">
+          <view class="price">单价：${{ item.price }}</view>
+          <u-number-box
+            :model-value="getItemQuantity(item.id)"
+            input-width="50"
+            @update:model-value="
+              (value: number) => updateCartItem(item.id, value)
+            "
+          ></u-number-box>
+        </view>
+      </view>
+    </view>
+    <view class="buy-info">
+      <view class="data">
+        <view class="count">已购买：{{ totalCount }}</view>
+        <view class="price">总价：{{ totalPrice }}</view>
+      </view>
+      <view class="option">
+        <button class="empty" @click="clearCart">清空</button>
+        <button @click="buyItems">确认购买</button>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script setup lang="ts">
+import type { Item } from "@/type/item";
+import http from "@/utils/http";
+import { onLoad } from "@dcloudio/uni-app";
+import { sys } from "uview-pro";
+import { computed, ref } from "vue";
+
+const value = ref(1);
+const fold = ref();
+
+const sysItems = ref<Item[] | null>();
+const cart = ref<Map<number, number>>(new Map());
+
+const updateCartItem = (itemId: number, count: number) => {
+  if (count <= 0) {
+    cart.value.delete(itemId);
+    return 0;
+  } else {
+    cart.value.set(itemId, count);
+    console.log(cart.value);
+    return count;
+  }
+};
+
+const getItemQuantity = (itemId: number) => {
+  return cart.value.get(itemId) || 0;
+};
+
+// 计算购物车总数量
+const totalCount = computed(() => {
+  let total = 0;
+  cart.value.forEach((count) => (total += count));
+  return total;
+});
+
+// 计算购物车总价
+const totalPrice = computed(() => {
+  let total = 0;
+  cart.value.forEach((count, itemId) => {
+    const item = sysItems.value?.find((i) => i.id === itemId);
+    if (item) {
+      total += item.price * count;
+    }
+  });
+  return total;
+});
+
+// 清空购物车
+const clearCart = () => {
+  cart.value.clear();
+};
+
+// 购买道具
+const buyItems = async () => {
+  try {
+    if (cart.value.size === 0) {
+      uni.showToast({
+        title: "请先选择商品",
+        icon: "none",
+      });
+      return;
+    }
+    const purchaseItems = Array.from(cart.value.entries()).map(
+      ([itemId, count]) => ({
+        id: itemId,
+        quantity: count,
+      }),
+    );
+    await http.post("api/items/buyItem", purchaseItems);
+    uni.showToast({
+      title: "购买成功",
+      icon: "success",
+    });
+    cart.value.clear();
+  } catch (error) {
+    console.log("购买道具失败", error);
+  }
+};
+
+const getSysItems = async () => {
+  sysItems.value = await http.get<Item[]>("api/items");
+};
+
+onLoad(() => {
+  getSysItems();
+});
+</script>
+
+<style scoped lang="scss">
+.sys-ctn {
+  width: 100%;
+  height: 100%;
+  overflow: scroll;
+}
+
+.sys-items {
+  width: 100%;
+  padding: 25rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 230rpx;
+
+  .sys-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+    padding: 20rpx;
+    border-bottom: 2rpx solid #eee;
+    background-color: #fff;
+    border-radius: 20rpx;
+    margin-bottom: 25rpx;
+    box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.3);
+
+    .icon {
+      width: 150rpx;
+      height: 150rpx;
+      margin-right: 20rpx;
+      .icon-img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+    .detail {
+      flex: 1;
+
+      .name {
+        font-size: 32rpx;
+        font-weight: bold;
+        margin-bottom: 10rpx;
+      }
+    }
+    .fold {
+      height: 50rpx;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .text-show {
+      color: var(--primary-color);
+      font-size: 32rpx;
+    }
+
+    .item-data {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      .price {
+        font-size: 32rpx;
+        margin-bottom: 20rpx;
+      }
+    }
+  }
+}
+
+.buy-info {
+  position: fixed;
+  bottom: 20rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 95%;
+  background-color: #fff;
+  box-shadow: 0 0 15rpx rgba(0, 0, 0, 0.5);
+  border-radius: 10rpx;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx;
+
+  .data {
+    display: flex;
+    .count {
+      margin-right: 20rpx;
+    }
+  }
+
+  .option {
+    display: flex;
+    .empty {
+      background-color: var(--contrast-color);
+    }
+    button {
+      background-color: var(--primary-color);
+      border: none;
+      color: #fff;
+      border-radius: 10rpx;
+      font-size: 32rpx;
+      padding: 0 1em;
+      margin-left: 10rpx;
+    }
+  }
+}
+</style>

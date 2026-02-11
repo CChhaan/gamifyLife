@@ -5,6 +5,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import type { Task, TaskCategory, TaskTag, Ticket } from "@/type/task.ts";
 import type { UserGrowth, UserInfo } from "@/type/user.ts";
+import { Inventory, Item } from "@/type/item.ts";
 
 type BaseModel<T extends {}> = ModelStatic<Model<T>> & {
   associate?: (db: Database) => void;
@@ -19,6 +20,8 @@ type ModelTypes = {
   UserGrowth: BaseModel<UserGrowth>;
   UserInfo: BaseModel<UserInfo>;
   AiDraftTasks: BaseModel<Task>;
+  Items: BaseModel<Item>;
+  UserInventories: BaseModel<Inventory>;
   // ... 添加其他可能的模型
 };
 

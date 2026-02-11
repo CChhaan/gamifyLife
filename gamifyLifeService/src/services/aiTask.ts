@@ -163,18 +163,33 @@ export default class AiTaskService {
   }
 
   // 应用AI工单下的所有临时草稿任务
-  async applyAITask(jobId: string) {
+  async applyAITask(userId: any, jobId: string) {
+    const t = await db.sequelize.transaction();
     try {
       const tasks = await db.AiDraftTasks.findAll({
         where: {
           ai_job_id: jobId,
         },
+        transaction: t,
       });
-      tasks.forEach(async (task) => {
-        await db.Tasks.create(task.dataValues);
-      });
+      for (const task of tasks) {
+        if (task.dataValues.status === "PENDING") {
+          continue;
+        }
+        await taskService.createTask(userId, task.dataValues);
+        await db.AiDraftTasks.update(
+          { status: "PENDING" },
+          { where: { id: task.dataValues.id }, transaction: t },
+        );
+      }
+      await db.AiWorkOrders.update(
+        { status: "CONSUMED" },
+        { where: { id: jobId }, transaction: t },
+      );
+      await t.commit();
       return "success";
     } catch (error: any) {
+      await t.rollback();
       console.log("应用AI创建的任务失败");
       throw new Error(error.message || "应用AI创建的任务失败");
     }

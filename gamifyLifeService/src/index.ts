@@ -11,8 +11,9 @@ import Koa from "koa";
 import bodyParser from "koa-bodyparser";
 import staticMiddleware from "koa-static";
 import errorHandler from "./middlewares/errorHandler.ts";
-import { syncDatabase } from "./shared/db.ts";
+import db, { syncDatabase } from "./shared/db.ts";
 import tokenAuth from "./middlewares/tokenAuth.ts";
+import items from "./shared/items.ts";
 
 const app = new Koa({});
 configDotenv();
@@ -36,11 +37,26 @@ async function loadRoutes() {
   }
 }
 
+// 动态加载系统道具
+async function loadItems() {
+  await db.Items.bulkCreate(items, {
+    updateOnDuplicate: [
+      "type",
+      "description",
+      "icon_url",
+      "price",
+      "status",
+      "effect",
+    ],
+  });
+}
+
 // 异步启动
 (async () => {
   try {
     await loadRoutes();
     await syncDatabase();
+    await loadItems();
     app.listen(3000, () => {
       console.log("Server is running on http://localhost:3000");
       console.log("加载环境变量", process.env.AI_TOKEN);

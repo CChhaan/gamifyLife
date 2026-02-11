@@ -30,10 +30,20 @@
               <text>{{ task.description }}</text>
             </view>
             <view class="options">
-              <button size="mini" @click="createTask(task)" class="btn use">
+              <button
+                size="mini"
+                @click="createTask(task)"
+                class="btn use"
+                v-if="task.status == 'UNUSED'"
+              >
                 单条应用
               </button>
-              <button size="mini" @click="editTask(task)" class="btn edit">
+              <button
+                size="mini"
+                @click="editTask(task)"
+                class="btn edit"
+                v-if="task.status == 'UNUSED'"
+              >
                 编辑
               </button>
               <button size="mini" @click="" class="btn delete">删除</button>
@@ -95,7 +105,7 @@ const createTask = async (task: Task) => {
   uni.showToast({
     title: "应用成功",
   });
-  getAiTaskListWithDraft();
+  createFresh();
 };
 
 const createFresh = () => {
@@ -104,12 +114,20 @@ const createFresh = () => {
 };
 
 const batchApply = async (id: number | string) => {
-  uni.showLoading({
-    title: "应用中...",
-    mask: true,
-  });
-  await http.post("/api/aiTask/applyAITask", { id });
-  uni.hideLoading();
+  try {
+    uni.showLoading({
+      title: "应用中...",
+      mask: true,
+    });
+    await http.post("/api/aiTask/applyAITask", { id });
+    createFresh();
+    uni.showToast({
+      title: "应用成功",
+    });
+  } catch (error) {
+  } finally {
+    uni.hideLoading();
+  }
 };
 
 onLoad(() => {

@@ -511,6 +511,10 @@ onHide(() => {
     margin-left: 10rpx;
   }
 
+  .task-title {
+    width: 60%;
+  }
+
   .task-tag {
     margin-left: 20rpx;
     padding: 5rpx 10rpx;

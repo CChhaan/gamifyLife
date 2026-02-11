@@ -1,18 +1,13 @@
 import db from "../shared/db.ts";
-import OpenAI from "openai";
-import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 import { taskAttr, taskExp, taskGold } from "../shared/growthCalc.ts";
 import dayjs from "dayjs";
 import { Task } from "@/type/task.ts";
-import sequelize from "@/shared/sequelize.ts";
-const openai = new OpenAI({
-  baseURL: "https://api.deepseek.com",
-  apiKey: process.env.AI_TOKEN,
-});
 
 export default class TaskService {
   // 创建任务
   async createTask(userId: number, taskData: Task): Promise<Task> {
+    const t = await db.sequelize.transaction();
+
     try {
       const { difficulty, tag_id_1, tag_id_2, due_time } = taskData;
       const finishTime = dayjs().diff(
@@ -52,16 +47,28 @@ export default class TaskService {
         }
       }
       const taskId = taskData.id || `${userId}-${Date.now()}`;
-      const newTask = await db.Tasks.create({
-        ...taskData,
-        id: taskId,
-        final_exp,
-        final_gold,
-        estimated_attr_gains: attrMap,
-        user_id: userId,
-      });
+      if (taskData.status === "UNUSED") {
+        await db.AiDraftTasks.update(
+          { status: "PENDING" },
+          { where: { id: taskData.id }, transaction: t },
+        );
+      }
+      const newTask = await db.Tasks.create(
+        {
+          ...taskData,
+          status: "PENDING",
+          id: taskId,
+          final_exp,
+          final_gold,
+          estimated_attr_gains: attrMap,
+          user_id: userId,
+        },
+        { transaction: t },
+      );
+      await t.commit();
       return newTask.dataValues;
     } catch (error: any) {
+      await t.rollback();
       console.error("新建任务失败", error);
       throw new Error(error.message || "新建任务失败");
     }
