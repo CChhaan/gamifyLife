@@ -98,7 +98,7 @@ export default class TaskService {
       );
       const { level } = (await db.UserGrowth.findByPk(userId))!.dataValues;
       const tag1 = (await db.TaskTags.findByPk(tag_id_1))!.dataValues;
-      const tag2 = (await db.TaskTags.findByPk(tag_id_2))!.dataValues;
+      const tag2 = (await db.TaskTags.findByPk(tag_id_2))?.dataValues;
       const final_exp = taskExp(difficulty, level, Math.ceil(-finishTime));
       const final_gold = taskGold(difficulty, Math.ceil(-finishTime));
 
@@ -158,7 +158,7 @@ export default class TaskService {
   }
 
   // 删除任务
-  async deleteTask(taskId: number) {
+  async deleteTask(taskId: string) {
     try {
       await db.Tasks.destroy({ where: { id: taskId } });
     } catch (error: any) {

@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import db from "../shared/db.ts";
 import { sha256 } from "../shared/security.ts";
+import { Pet } from "@/type/pets.ts";
 
 export default class UserAuthService {
   static tokenBlacklist = new Set();
@@ -39,6 +40,12 @@ export default class UserAuthService {
         {
           user_id: newUser.dataValues.id,
           nickname: `用户${newUser.dataValues.id}`,
+        },
+        { transaction },
+      );
+      newUser.dataValues.Pet = await db.Pets.create(
+        {
+          user_id: newUser.dataValues.id,
         },
         { transaction },
       );

@@ -52,6 +52,13 @@
         "navigationBarTitleText": "道具背包",
         "navigationStyle": "custom"
       }
+    },
+    {
+      "path": "pages/pet/pet",
+      "style": {
+        "navigationBarTitleText": "宠物",
+        "navigationStyle": "custom"
+      }
     }
   ],
   "globalStyle": {

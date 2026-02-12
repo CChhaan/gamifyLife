@@ -1,4 +1,3 @@
-import type { Task } from "@/type/task.ts";
 import { DataTypes as SequelizeDataTypes, Sequelize, Model } from "sequelize";
 import db from "../shared/db.ts";
 import { Item } from "@/type/item.ts";
@@ -32,7 +31,6 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
       name: {
         type: DataTypes.STRING(50),
         allowNull: false,
-        unique: true,
       },
       // 道具描述
       description: {
@@ -71,6 +69,13 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
       charset: "utf8mb4",
       collate: "utf8mb4_unicode_ci",
       paranoid: true,
+      indexes: [
+        {
+          name: "items_name_unique", // 固定索引名称
+          unique: true,
+          fields: ["name"],
+        },
+      ],
     },
   );
 

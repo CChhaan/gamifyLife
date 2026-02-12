@@ -83,9 +83,16 @@
     </view>
     <view class="card task-data">
       <view class="tasks">
-        <view class="task-item" v-for="task in taskList" :key="task.id">
+        <view
+          class="task-item"
+          v-for="task in taskList"
+          :key="task.id"
+          @click="gotoTaskDetail(task.id)"
+        >
           <text class="task-item-text">{{ task.title }}</text>
-          <radio style="transform: scale(0.7)" borderColor="#aaa" />
+          <view>
+            <u-icon name="arrow-right-double" color="#aaa" size="28"></u-icon
+          ></view>
         </view>
       </view>
       <view class="more">
@@ -101,14 +108,14 @@
 <script setup lang="ts">
 import FloatPet from "@/components/FloatPet.vue/FloatPet.vue";
 import { useUser } from "@/composables/useUser";
-import { onLoad } from "@dcloudio/uni-app";
+import { onShow } from "@dcloudio/uni-app";
 import { computed, ref } from "vue";
 import { InfluenceAttrTextMap } from "@/type/task";
 import { useTask } from "@/composables/useTask";
 
 const { userInfo, userGrowth, loadUserData } = useUser();
 const { taskCategories, taskList, loadTaskData } = useTask();
-onLoad(async () => {
+onShow(async () => {
   await loadUserData();
   await loadTaskData();
 });
@@ -127,6 +134,10 @@ const goToPersonal = () => {
 
 const gotoTask = () => {
   uni.switchTab({ url: "/pages/task/task" });
+};
+
+const gotoTaskDetail = (id: number) => {
+  uni.switchTab({ url: `/pages/task/task?id=${id}` });
 };
 </script>
 

@@ -12,7 +12,11 @@
           name="edit-pen"
           @click="taskEditShow = true"
         ></u-icon>
-        <u-icon class="option cancel" name="trash"></u-icon>
+        <u-icon
+          class="option cancel"
+          name="trash"
+          @click="handleDelete"
+        ></u-icon>
       </view>
     </view>
     <view class="task-detail">
@@ -87,11 +91,18 @@
       @close="taskEditShow = false"
       v-if="taskEditShow"
     />
+    <confirm-modal
+      :text="text"
+      v-if="confirmModalShow"
+      @close="confirmModalShow = false"
+      @confirm="deleteConfirm"
+    ></confirm-modal>
   </view>
 </template>
 
 <script setup lang="ts">
 import TaskEditCmp from "@/pages/task/taskCreate.vue";
+import ConfirmModal from "@/components/ConfirmModal/ConfirmModal.vue";
 
 import {
   InfluenceAttrTextMap,
@@ -101,6 +112,7 @@ import {
 } from "@/type/task";
 import dayjs from "dayjs";
 import { ref } from "vue";
+import http from "@/utils/http";
 
 const props = defineProps<{
   task: Task & { category?: string; tag1?: string; tag2?: string };
@@ -112,6 +124,26 @@ const emit = defineEmits<{
   (e: "close"): void;
   (e: "refresh"): void;
 }>();
+const confirmModalShow = ref(false);
+const text = ref<string>("");
+
+const handleDelete = () => {
+  text.value = `确定要删除任务 ⌈${props.task.title}⌋ 吗？`;
+  confirmModalShow.value = true;
+};
+
+const deleteConfirm = async () => {
+  try {
+    await http.delete(`/api/task/deleteTask/${props.task.id}`);
+    emit("refresh");
+    uni.showToast({ title: "删除成功", icon: "success", duration: 2000 });
+    emit("close");
+  } catch (error) {
+    console.log("删除失败", error);
+  } finally {
+    confirmModalShow.value = false;
+  }
+};
 
 const taskEditShow = ref(false);
 </script>

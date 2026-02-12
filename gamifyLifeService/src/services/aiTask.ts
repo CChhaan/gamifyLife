@@ -17,11 +17,13 @@ export default class AiTaskService {
     const t = await sequelize.transaction();
     try {
       // 用户标签列表
-      const tags = (await db.TaskTags.findAll()).map((tag) => tag.dataValues);
+      const tags = (
+        await db.TaskTags.findAll({ where: { user_id: userId } })
+      ).map((tag) => tag.dataValues);
       // 用户分类列表
-      const categories = (await db.TaskCategories.findAll()).map(
-        (category) => category.dataValues,
-      );
+      const categories = (
+        await db.TaskCategories.findAll({ where: { user_id: userId } })
+      ).map((category) => category.dataValues);
       const prompt = readPrompt("aiCreateTask")
         .replaceAll("${tags}", JSON.stringify(tags))
         .replaceAll("${categories}", JSON.stringify(categories))

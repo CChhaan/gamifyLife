@@ -77,18 +77,17 @@
           :key="task.id"
           @click="showTaskDetail(task.id!)"
         >
-          <radio style="transform: scale(0.7)" borderColor="#aaa" />
           <view class="task-detail">
             <view class="task-info">
               <text class="task-title">{{ task.title }}</text>
-              <view class="task-tag"
+              <!-- <view class="task-tag"
                 >#
                 {{ tags?.find((tag) => tag.id == task.tag_id_1)?.name }}</view
               >
               <view class="task-tag" v-if="task.tag_id_2"
                 >#
                 {{ tags?.find((tag) => tag.id == task.tag_id_2)?.name }}</view
-              >
+              > -->
             </view>
 
             <view class="task-data">
@@ -189,7 +188,7 @@ import TaskCreateCmp from "@/pages/task/taskCreate.vue";
 import TaskDetailCmp from "@/pages/task/taskDetail.vue";
 import AiTaskListCmp from "@/pages/task/taskAi.vue";
 import { TaskStatusTextMap, type Ticket, type Task } from "@/type/task";
-import { onHide, onLoad } from "@dcloudio/uni-app";
+import { onHide, onLoad, onShow } from "@dcloudio/uni-app";
 import { computed, onMounted, ref } from "vue";
 import { useTask } from "@/composables/useTask";
 import dayjs from "dayjs";
@@ -364,7 +363,7 @@ const getAIStatus = (jobId: number | string) => {
 
 const aiListShow = ref(false);
 
-onLoad(async () => {
+onShow(() => {
   loadTaskData();
 });
 onHide(() => {
@@ -512,7 +511,7 @@ onHide(() => {
   }
 
   .task-title {
-    width: 60%;
+    // width: 60%;
   }
 
   .task-tag {

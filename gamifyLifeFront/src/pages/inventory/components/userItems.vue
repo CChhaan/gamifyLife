@@ -29,7 +29,7 @@
           <view class="name">{{ selectedItem.item?.name }}</view>
           <view class="description">{{ selectedItem.item?.description }}</view>
         </view>
-        <view class="item-count" v-if="selectedItem.item?.type == 'FOOD'">
+        <view class="item-count" v-if="selectedItem.item?.type !== 'FOOD'">
           <u-number-box
             v-model="count"
             input-width="50"
@@ -38,7 +38,10 @@
         </view>
         <view class="options">
           <view class="option cancel" @click="cancel">取消</view>
-          <view class="option">使用</view>
+          <view class="option" v-if="selectedItem.item?.type !== 'FOOD'"
+            >使用</view
+          >
+          <view class="option" v-else>去使用</view>
         </view>
       </view>
     </view>

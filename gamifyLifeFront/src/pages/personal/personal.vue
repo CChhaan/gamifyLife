@@ -119,7 +119,7 @@
         />
       </view>
     </view>
-    <view class="card pet-entry">
+    <view class="card pet-entry" @click="gotoPet">
       <view class="pet-info">
         <view class="title">我的宠物</view>
         <view>
@@ -159,7 +159,7 @@
 </template>
 
 <script setup lang="ts">
-import { onLoad } from "@dcloudio/uni-app";
+import { onShow } from "@dcloudio/uni-app";
 import { computed, ref } from "vue";
 import EditUserInfo from "./editUserInfo.vue";
 import { useUser } from "@/composables/useUser";
@@ -175,7 +175,7 @@ const expWidth = computed(() => {
   return Math.min((exp / nextExp) * 100, 100);
 });
 
-onLoad(async () => {
+onShow(async () => {
   await loadUserData();
 });
 
@@ -188,6 +188,12 @@ const goToSetting = () => {
 const goToInventory = () => {
   uni.navigateTo({
     url: "/pages/inventory/inventory",
+  });
+};
+
+const gotoPet = () => {
+  uni.navigateTo({
+    url: "/pages/pet/pet",
   });
 };
 </script>

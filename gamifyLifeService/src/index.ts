@@ -14,8 +14,11 @@ import errorHandler from "./middlewares/errorHandler.ts";
 import db, { syncDatabase } from "./shared/db.ts";
 import tokenAuth from "./middlewares/tokenAuth.ts";
 import items from "./shared/items.ts";
+import ws from "koa-websocket";
 
 const app = new Koa({});
+const server = ws(app);
+
 configDotenv();
 
 app.use(errorHandler);
@@ -39,24 +42,39 @@ async function loadRoutes() {
 
 // 动态加载系统道具
 async function loadItems() {
-  await db.Items.bulkCreate(items, {
-    updateOnDuplicate: [
-      "type",
-      "description",
-      "icon_url",
-      "price",
-      "status",
-      "effect",
-    ],
-  });
+  if (!Array.isArray(items) || items.length === 0) {
+    console.warn("items数组为空，跳过加载道具");
+    return;
+  }
+
+  try {
+    await db.Items.bulkCreate(items, {
+      // 关键：以name为唯一键，冲突时更新指定字段
+      updateOnDuplicate: [
+        "type",
+        "description",
+        "icon_url",
+        "price",
+        "status",
+        "effect",
+        "updated_at",
+      ],
+      // 强制忽略重复键错误（兜底）
+      ignoreDuplicates: true,
+    });
+    console.log("道具数据加载/更新完成");
+  } catch (error: any) {
+    console.error("加载道具失败:", error);
+  }
 }
 
 // 异步启动
 (async () => {
   try {
     await loadRoutes();
-    await syncDatabase();
     await loadItems();
+    await syncDatabase();
+
     app.listen(3000, () => {
       console.log("Server is running on http://localhost:3000");
       console.log("加载环境变量", process.env.AI_TOKEN);

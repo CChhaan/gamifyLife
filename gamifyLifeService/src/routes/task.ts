@@ -56,4 +56,15 @@ router.put("/updateTask", async (ctx) => {
   }
 });
 
+// 删除任务接口
+router.delete("/deleteTask/:taskId", async (ctx) => {
+  try {
+    await taskService.deleteTask(ctx.params.taskId!);
+    ctx.body = success(null, "删除任务成功");
+  } catch (error: any) {
+    ctx.status = 400;
+    ctx.body = badRequest(error.message);
+  }
+});
+
 export default router;

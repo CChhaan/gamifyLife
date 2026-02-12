@@ -14,6 +14,10 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
         foreignKey: "user_id",
         sourceKey: "id",
       });
+      this.hasOne(models.Pets, {
+        foreignKey: "user_id",
+        sourceKey: "id",
+      });
       this.hasMany(models.TaskCategories, {
         foreignKey: "user_id",
         sourceKey: "id",
@@ -109,7 +113,10 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
   );
 
   UserAccounts.beforeSave((user: UserAccounts) => {
-    if (user.changed("password_hash" as keyof UserAccounts) && user.dataValues.password_hash!.length > 0) {
+    if (
+      user.changed("password_hash" as keyof UserAccounts) &&
+      user.dataValues.password_hash!.length > 0
+    ) {
       user.dataValues.password_hash = sha256(user.dataValues.password_hash);
     }
   });
