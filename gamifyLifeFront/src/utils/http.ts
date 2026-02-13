@@ -25,13 +25,18 @@ const http = <T = any>(options: UniApp.RequestOptions): Promise<T> => {
   return new Promise((resolve, reject) => {
     const requestOptions: UniApp.RequestOptions = {
       ...options,
+      //#ifdef H5
+      url: "/api" + options.url,
+      // #endif
       header: {
         "content-type": "application/json",
         Authorization: "Bearer " + getToken() || "",
         ...options.header,
       },
     };
-
+    // #ifndef H5
+    requestOptions.url = options.url;
+    // #endif
     uni.request({
       ...requestOptions,
       success(res) {

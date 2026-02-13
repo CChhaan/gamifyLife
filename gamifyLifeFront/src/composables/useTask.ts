@@ -10,18 +10,19 @@ export function useTask() {
   // 任务标签
   const tags = ref<TaskTag[] | null>();
 
+  // 任务列表
   const taskList = ref<Task[] | null>(null);
 
   const getTaskCategories = async () => {
-    taskCategories.value = await http.get<TaskCategory[]>("/api/taskCategory/");
+    taskCategories.value = await http.get<TaskCategory[]>("/taskCategory/");
   };
 
   const getTags = async () => {
-    tags.value = await http.get<TaskTag[] | null>("/api/taskTag/");
+    tags.value = await http.get<TaskTag[] | null>("/taskTag/");
   };
 
   const getTaskList = async () => {
-    taskList.value = await http.get("/api/task/");
+    taskList.value = await http.get("/task/");
     taskList.value?.forEach((task) => {
       task.due_time = dayjs(task.due_time).format("YYYY-MM-DD HH:mm");
     });

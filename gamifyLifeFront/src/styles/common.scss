@@ -1,0 +1,110 @@
+page {
+  --primary-color: #fe7a24;
+  --secondary-color: #ffb686;
+  --third-color: #ff9b5b;
+  --contrast-color: #5789d3;
+
+  --text-light-color: #666;
+
+  --bg-color: #fff;
+  --bg-color-page: #f8f7e6;
+  --background-second-color: #f8f2de;
+  --placeholder-color: #aaa;
+
+  --fontSize-normal: 32rpx;
+  --fontSize-small: 28rpx;
+  --fontSize-big: 36rpx;
+
+  --shadow: 2rpx 4rpx 10rpx #ccc;
+}
+
+@mixin full-screen {
+  width: 100vw;
+  height: 100vh;
+}
+
+@mixin overflow-hidden {
+  overflow: hidden;
+}
+
+.overflow-hidden {
+  @include overflow-hidden;
+}
+
+.text-ellipsis {
+  display: inline-block;
+  @include overflow-hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.h-full {
+  height: 100%;
+}
+
+// 解决 flex 子元素收缩问题（全局复用）
+.min-w-0 {
+  min-width: 0;
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.flex-justify__center {
+  justify-content: center;
+}
+
+.flex-justify__between {
+  justify-content: space-between;
+}
+
+.flex-justify__around {
+  justify-content: space-around;
+}
+
+.flex-justify__start {
+  justify-content: flex-start;
+}
+
+.flex-justify__end {
+  justify-content: flex-end;
+}
+
+.flex-align__start {
+  align-items: flex-start;
+}
+
+.flex-shrink-0 {
+  flex-shrink: 0;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.tab-page {
+  @include full-screen;
+  background-color: var(--bg-color-page);
+  padding-bottom: 140rpx;
+}
+
+.img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.circle {
+  border-radius: 50%;
+  @include overflow-hidden;
+}

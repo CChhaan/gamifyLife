@@ -74,7 +74,7 @@ import type { Task, TaskCategory, TaskTag, Ticket } from "@/type/task";
 import TaskEditCmp from "@/pages/task/taskCreate.vue";
 import { TicketStatus } from "@/type/task";
 import http from "@/utils/http";
-import { onLoad } from "@dcloudio/uni-app";
+import { onLoad, onShow } from "@dcloudio/uni-app";
 import { ref } from "vue";
 import dayjs from "dayjs";
 const props = defineProps<{
@@ -130,7 +130,7 @@ const batchApply = async (id: number | string) => {
   }
 };
 
-onLoad(() => {
+onShow(() => {
   getAiTaskListWithDraft();
 });
 </script>

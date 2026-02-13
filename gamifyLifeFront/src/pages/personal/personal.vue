@@ -1,53 +1,51 @@
 <template>
-  <view class="personal-content">
-    <view class="setting" @click="goToSetting">
+  <view class="tab-page personal-content flex flex-col flex-justify__start">
+    <!-- 设置 -->
+    <view
+      class="setting flex flex-justify__center flex-col"
+      @click="goToSetting"
+    >
       <image
         class="setting-icon"
         src="/static/imgs/setting.png"
-        mode="scaleToFill"
+        mode="aspectFit"
       />
       <text>设置</text>
     </view>
-    <view class="card">
-      <view class="personal-info">
-        <view class="avatar">
+    <!-- 个人信息 -->
+    <view class="personal_card">
+      <!-- 基本信息 -->
+      <view class="w-full flex flex-justify__between">
+        <view class="avatar circle flex flex-justify__center">
           <image
-            v-if="!userInfo?.avatar_url"
-            class="avatar-img"
-            src="https://p9-passport.byteacctimg.com/img/mosaic-legacy/3796/2975850990~120x256.image"
-            mode="scaleToFill"
-          />
-          <image
-            v-else
-            class="avatar-img"
-            :src="userInfo?.avatar_url"
-            mode="scaleToFill"
+            class="img"
+            :src="
+              userInfo?.avatar_url ||
+              'https://p9-passport.byteacctimg.com/img/mosaic-legacy/3796/2975850990~120x256.image'
+            "
+            mode="aspectFill"
           />
         </view>
-        <view class="info">
-          <view class="name-sex">
-            <text class="name">{{ userInfo?.nickname }}</text>
+        <view class="info flex flex-col flex-1 min-w-0 flex-align__start">
+          <view class="name-sex flex w-full">
+            <text class="name text-ellipsis w-full">{{
+              userInfo?.nickname
+            }}</text>
             <image
               v-if="userInfo?.gender == 1"
               class="sex"
-              src="/static/imgs/male.png"
-              mode="scaleToFill"
-            />
-            <image
-              v-else-if="userInfo?.gender == 2"
-              class="sex"
-              src="/static/imgs/female.png"
+              :src="`/static/imgs/${userInfo?.gender == 1 ? 'male' : 'female'}.png`"
               mode="scaleToFill"
             />
             <view v-else class="sex"></view>
           </view>
-          <text class="sign">{{
+          <text class="sign text-ellipsis w-full">{{
             userInfo?.bio || "这个人很懒，什么都没有留下"
           }}</text>
           <view class="birth">
             <text>生日: {{ userInfo?.birthday || "- 年 - 月 - 日" }}</text>
           </view>
-          <view class="gold">
+          <view class="flex">
             <image
               class="gold-icon"
               src="/static/imgs/financing.png"
@@ -57,43 +55,42 @@
           </view>
         </view>
       </view>
-      <view class="personal-data">
-        <view class="attr">
+      <!-- 等级属性 -->
+      <view class="info-data w-full flex flex-justify__between">
+        <view class="attr flex flex-col">
           <text class="attr-name">心智</text>
           <text class="attr-value">{{ userGrowth?.mind }}</text>
         </view>
-        <view class="attr">
+        <view class="attr flex flex-col">
           <text class="attr-name">体魄</text>
           <text class="attr-value">{{ userGrowth?.body }}</text>
         </view>
-        <view class="level">
+        <view class="level flex flex-col flex-justify__center">
           <text class="level-value">{{ userGrowth?.level }}</text>
           <text class="level-name">等级</text>
         </view>
-        <view class="attr">
+        <view class="attr flex flex-col">
           <text class="attr-name">社交</text>
           <text class="attr-value">{{ userGrowth?.social }}</text>
         </view>
-        <view class="attr">
+        <view class="attr flex flex-col">
           <text class="attr-name">自律</text>
           <text class="attr-value">{{ userGrowth?.discipline }}</text>
         </view>
       </view>
-      <view class="exp">
+      <!-- 经验值 -->
+      <view class="w-full">
         <view class="exp-value">
-          {{ userGrowth?.total_experience }}/{{ userGrowth?.nextLevelExp }}
+          exp: {{ userGrowth?.total_experience }}/{{ userGrowth?.nextLevelExp }}
         </view>
-        <view class="exp-line">
-          <text>EXP</text>
-          <view class="exp-sum">
-            <view class="exp-now" :style="{ width: expWidth + '%' }"></view>
-          </view>
-        </view>
+        <exp-line-cmp
+          :total-experience="userGrowth?.total_experience"
+          :next-level-exp="userGrowth?.nextLevelExp"
+        />
       </view>
-      <view class="info-setting">
+      <view class="info-setting w-full flex flex-justify__end">
         <button
           size="mini"
-          plain="true"
           class="info-setting-btn"
           @click="editInfoShow = true"
         >
@@ -101,8 +98,9 @@
         </button>
       </view>
     </view>
-    <view class="other-entry">
-      <view class="entry-item achieve">
+    <!-- 其他功能入口 -->
+    <view class="other-entry flex flex-justify__between">
+      <view class="entry-item flex flex-justify__between">
         <text>个人成就</text>
         <image
           class="entry-icon"
@@ -110,7 +108,10 @@
           mode="scaleToFill"
         />
       </view>
-      <view class="entry-item bag" @click="goToInventory">
+      <view
+        class="entry-item flex flex-justify__between"
+        @click="goToInventory"
+      >
         <text>道具背包</text>
         <image
           class="entry-icon"
@@ -119,8 +120,12 @@
         />
       </view>
     </view>
-    <view class="card pet-entry" @click="gotoPet">
-      <view class="pet-info">
+    <!-- 宠物入口 -->
+    <view
+      class="personal_card pet-entry flex flex-justify__between"
+      @click="gotoPet"
+    >
+      <view class="pet-info flex flex-col flex-align__start">
         <view class="title">我的宠物</view>
         <view>
           <view>
@@ -132,18 +137,19 @@
       </view>
       <image class="pet-img" src="/static/pet_baby.png" mode="scaleToFill" />
     </view>
-    <view class="ranks">
-      <div class="rank-item">
+    <!-- 排行榜 -->
+    <view class="ranks flex flex-justify__around flex-1 w-full">
+      <div class="rank-item flex flex-col flex-justify__center">
         <text class="title">XXX排行榜</text>
         <image class="rank-icon" src="/static/imgs/medal.png" mode="widthFix" />
         <text class="position">第XXX名</text>
       </div>
-      <div class="rank-item">
+      <div class="rank-item flex flex-col flex-justify__center">
         <text class="title">XXX排行榜</text>
         <image class="rank-icon" src="/static/imgs/medal.png" mode="widthFix" />
         <text class="position">第XXX名</text>
       </div>
-      <div class="rank-item">
+      <div class="rank-item flex flex-col flex-justify__center">
         <text class="title">XXX排行榜</text>
         <image class="rank-icon" src="/static/imgs/medal.png" mode="widthFix" />
         <text class="position">第XXX名</text>
@@ -163,6 +169,7 @@ import { onShow } from "@dcloudio/uni-app";
 import { computed, ref } from "vue";
 import EditUserInfo from "./editUserInfo.vue";
 import { useUser } from "@/composables/useUser";
+import ExpLineCmp from "@/components/ExpLine/ExpLine.vue";
 
 const editInfoShow = ref(false);
 
@@ -199,46 +206,29 @@ const gotoPet = () => {
 </script>
 
 <style scoped lang="scss">
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
-
 .personal-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: start;
-  height: 100vh;
   overflow: auto;
-  background-color: var(--background-second-color);
 }
 
-.card {
-  background-color: #fff;
-  // width: calc(100% - 100rpx);
-  width: 85vw;
+.personal_card {
+  background-color: var(--bg-color);
+  width: 88vw;
   border-radius: 20rpx;
-  box-shadow: 0 6rpx 10rpx #ccc;
-  padding: 30rpx;
+  box-shadow: var(--shadow);
+  padding: 30rpx 40rpx;
   margin: 40rpx 0;
 }
 
+// 设置
 .setting {
   position: fixed;
   top: 10rpx;
   right: 10rpx;
-  box-shadow: 0 2rpx 10rpx #aaa;
-  background-color: #fff;
+  box-shadow: var(--shadow);
+  background-color: var(--bg-color);
   border-radius: 10rpx;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  /* width: 100rpx; */
   padding: 10rpx 20rpx;
-  font-size: 24rpx;
+  font-size: var(--fontSize-small);
 
   .setting-icon {
     width: 40rpx;
@@ -246,221 +236,134 @@ const gotoPet = () => {
   }
 }
 
-.personal-info {
-  display: flex;
-  padding-bottom: 20rpx;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
+// 个人信息
+.avatar {
+  width: 180rpx;
+  height: 180rpx;
+}
 
-  .avatar {
-    width: 180rpx;
-    height: 180rpx;
-    // background-color: var(--primary-color);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.info {
+  margin-left: 20rpx;
+  color: var(--text-light-color);
+  font-size: var(--fontSize-small);
+  width: calc(100% - 200rpx);
 
-    .avatar-img {
-      width: 170rpx;
-      height: 170rpx;
-      border: 5rpx solid #fed;
-      border-radius: 50%;
+  .name-sex {
+    margin-bottom: 8rpx;
+    padding-right: 50rpx;
+
+    .name {
+      font-size: var(--fontSize-big);
+    }
+
+    .sex {
+      width: 45rpx;
+      height: 45rpx;
+      margin-left: 10rpx;
     }
   }
 
-  .info {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-width: 0;
-    margin-left: 20rpx;
-    color: #888;
-    font-size: 28rpx;
-    width: calc(100% - 200rpx);
+  .sign,
+  .birth {
+    margin-bottom: 8rpx;
+  }
 
-    .name-sex {
-      display: flex;
-      align-items: center;
-      color: #000;
-      margin-bottom: 8rpx;
-      padding-right: 50rpx;
-
-      .name {
-        font-size: 36rpx;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        max-width: calc(100% - 50rpx);
-        // font-weight: bold;
-      }
-
-      .sex {
-        width: 35rpx;
-        height: 35rpx;
-        margin-left: 10rpx;
-        // vertical-align: middle;
-      }
-    }
-
-    .sign {
-      margin-bottom: 8rpx;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      // white-space: nowrap;
-    }
-
-    .birth {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 8rpx;
-    }
-
-    .gold {
-      display: flex;
-      align-items: center;
-      color: #000;
-
-      .gold-icon {
-        width: 36rpx;
-        height: 36rpx;
-        vertical-align: middle;
-        margin-right: 10rpx;
-      }
-    }
+  .gold-icon {
+    width: 36rpx;
+    height: 36rpx;
+    vertical-align: middle;
+    margin-right: 10rpx;
   }
 }
 
-.personal-data {
-  padding: 20rpx 0;
-  display: flex;
-  align-items: center;
-  width: 100%;
-  justify-content: space-between;
+// 等级属性
+.info-data {
+  padding: 40rpx 0;
 
   .attr {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     background-color: #eec;
-    padding: 10rpx 20rpx;
+    padding: 10rpx 15rpx;
     border-radius: 20rpx;
     box-shadow: inset 0 2rpx 5rpx 3rpx #ddc;
 
     .attr-name {
-      font-size: 24rpx;
-      // font-weight: bold;
+      font-size: var(--fontSize-small);
       color: #a98;
     }
 
     .attr-value {
-      font-size: 32rpx;
-      // font-weight: bold;
-      color: #100;
+      font-size: var(--fontSize-normal);
       margin-top: 5rpx;
     }
   }
 
   .level {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    height: 120rpx;
-
     .level-value {
-      font-size: 32rpx;
-      color: #100;
-      // font-weight: bold;
+      font-size: var(--fontSize-big);
     }
 
     .level-name {
-      font-size: 24rpx;
       color: #a98;
     }
   }
 }
 
-.exp {
-  width: 100%;
-
-  .exp-line {
-    width: 100%;
-    display: flex;
-    align-items: center;
-
-    .exp-sum {
-      flex: 1;
-      height: 20rpx;
-      background-color: #eed;
-      border-radius: 10rpx;
-      margin-left: 20rpx;
-      box-shadow: 0 2rpx 5rpx #ccc;
-    }
-
-    .exp-now {
-      height: 100%;
-      background-color: var(--primary-color);
-      border-radius: 10rpx;
-    }
-  }
-
-  .exp-value {
-    text-align: left;
-    margin-left: 3em;
-    font-size: 28rpx;
-    color: #888;
-  }
+// 经验值
+.exp-value {
+  font-size: var(--fontSize-small);
+  margin-bottom: 10rpx;
 }
 
 .info-setting {
-  width: 100%;
-  height: 60rpx;
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 10rpx;
+  margin-top: 25rpx;
 
   .info-setting-btn {
-    width: 6em;
-    padding: 0;
-    border: 2rpx solid #888;
-    display: flex;
-    font-size: 24rpx;
-    align-items: center;
-    justify-content: center;
+    background-color: var(--primary-color);
+    color: #fff;
+    padding: 0 0.75em;
+    margin: 0;
   }
 }
 
+// 其他功能入口
+.other-entry {
+  width: 88vw;
+  margin: 10rpx 0;
+
+  .entry-item {
+    background-color: var(--bg-color);
+    width: 48%;
+    box-shadow: var(--shadow);
+    border-radius: 20rpx;
+    padding: 20rpx 40rpx;
+    font-size: var(--fontSize-big);
+
+    .entry-icon {
+      width: 60rpx;
+      height: 60rpx;
+    }
+  }
+}
+
+// 宠物入口
 .pet-entry {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  /* overflow: hidden; */
   padding: 20rpx 40rpx;
   z-index: 5;
 
   .pet-info {
-    display: flex;
-    flex-direction: column;
-
     .title {
-      font-size: 40rpx;
-      // font-weight: bold;
+      font-size: var(--fontSize-big);
       margin-bottom: 20rpx;
     }
 
     .name {
-      font-size: 32rpx;
-      // font-weight: bold;
+      font-size: var(--fontSize-normal);
     }
 
     .state {
       display: inline-block;
       padding: 4rpx 15rpx;
       border-radius: 10rpx;
-      font-size: 28rpx;
       margin-left: 15rpx;
     }
 
@@ -477,51 +380,16 @@ const gotoPet = () => {
   }
 }
 
-.other-entry {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  // width: calc(100% - 70rpx);
-  width: 85vw;
-  margin: 10rpx 0;
-
-  .entry-item {
-    background-color: #fff;
-    width: 48%;
-    box-shadow: 0 6rpx 10rpx #ccc;
-    border-radius: 20rpx;
-    padding: 20rpx 40rpx;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 36rpx;
-    // font-weight: bold;
-
-    .entry-icon {
-      width: 60rpx;
-      height: 60rpx;
-    }
-  }
-}
-
+// 排行榜
 .ranks {
   background: url("../../static/imgs/reward_bg.png") no-repeat;
   background-size: 100% 100%;
-  flex: 1;
-  width: 100%;
   margin: -120rpx 0 0 0;
   z-index: 1;
-  padding: 120rpx 0 180rpx;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
+  padding: 120rpx 0 40rpx;
   border-radius: 20rpx 20rpx 0 0;
 
   .rank-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
     background: url("../../static/imgs/rank_bg.png") no-repeat;
     background-size: 100% 100%;
     border-radius: 10rpx;
@@ -534,13 +402,10 @@ const gotoPet = () => {
     }
 
     .title {
-      font-size: 32rpx;
-      // font-weight: bold;
+      font-size: var(--fontSize-normal);
     }
 
     .position {
-      font-size: 28rpx;
-      // font-weight: bold;
       color: #cdb271;
     }
   }

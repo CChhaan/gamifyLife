@@ -32,10 +32,7 @@ export interface TaskTag {
   secondary_attr?: InfluenceAttr | null | "";
 }
 
-/**
- * 任务接口定义
- * 用于描述任务的各种属性和状态
- */
+// 任务接口定义
 export interface Task {
   id?: number; // 任务ID，可选
   user_id?: number; // 用户ID，可选
@@ -66,15 +63,10 @@ export interface Task {
 
 // 工单状态枚举
 export enum TicketStatus {
-  // 待处理
   PENDING = "待处理",
-  // 处理中
   PROCESSING = "处理中",
-  // 处理成功
   SUCCESS = "处理成功",
-  // 处理失败
   FAILED = "处理失败",
-  // 已消费（任务已被使用）
   CONSUMED = "已使用",
 }
 
@@ -88,10 +80,8 @@ export interface Ticket {
   input_goal: string;
   /** 处理状态 */
   status: "PENDING" | "PROCESSING" | "SUCCESS" | "FAILED" | "CONSUMED";
-
   /** 失败信息（成功/处理中时为 null） */
   error_message: string | null;
-
   // 补充 Sequelize 自动生成的字段
   /** 创建时间 */
   createdAt?: string;

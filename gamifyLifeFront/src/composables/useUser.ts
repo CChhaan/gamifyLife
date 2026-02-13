@@ -4,15 +4,18 @@ import type { UserGrowth, UserInfo } from "@/type/user";
 import { saveUserData } from "@/utils/growthCal";
 
 export function useUser() {
+  // 用户信息
   const userInfo = ref<UserInfo | null>(null);
+
+  // 用户成长信息
   const userGrowth = ref<UserGrowth | null>(null);
 
   const getUserInfo = async () => {
-    userInfo.value = await http.get<UserInfo>("/api/userInfo/");
+    userInfo.value = await http.get<UserInfo>("/userInfo/");
   };
 
   const getUserGrowth = async () => {
-    userGrowth.value = await http.get<UserGrowth>("/api/userGrowth/");
+    userGrowth.value = await http.get<UserGrowth>("/userGrowth/");
     saveUserData(userGrowth.value.level, userGrowth.value.total_experience);
   };
 

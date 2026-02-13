@@ -1,59 +1,63 @@
 <template>
-  <movable-area class="index-content">
-    <view class="card personal-data">
-      <view class="info">
-        <view class="left">
-          <view class="avatar">
+  <movable-area class="tab-page flex flex-col flex-justify__center">
+    <!-- 用户卡片 -->
+    <view class="index_card user-card flex flex-col flex-justify__between">
+      <!-- 基本信息 -->
+      <view class="user-card_info flex flex-justify__between w-full">
+        <view class="flex flex-1 overflow-hidden">
+          <view class="avatar circle flex flex-justify__center flex-shrink-0">
             <image
-              class="avatar-img"
+              class="img"
               src="https://p9-passport.byteacctimg.com/img/mosaic-legacy/3796/2975850990~120x256.image"
               mode="scaleToFill"
             />
           </view>
-          <view class="center">
-            <view class="username">
-              <text class="username-text">{{ userInfo?.nickname }}</text>
+          <view class="user-info min-w-0 flex-1">
+            <view class="w-full">
+              <text class="user-name text-ellipsis w-full">{{
+                userInfo?.nickname
+              }}</text>
             </view>
-            <view class="level">
-              <text>Lv. {{ userGrowth?.level }}</text>
+            <view>
+              <text class="level">Lv. {{ userGrowth?.level }}</text>
             </view>
           </view>
         </view>
-        <view class="more">
-          <button
-            size="mini"
-            plain="true"
-            class="personal-more"
-            @click="goToPersonal"
-          >
-            查看详情
-          </button>
-        </view>
+        <button
+          size="mini"
+          class="personal-more flex-shrink-0"
+          @click="goToPersonal"
+        >
+          查看详情
+        </button>
       </view>
-      <view class="exp">
-        <view class="data">
-          <view class="exp-data">
+      <!-- 经验值 -->
+      <view class="user-card_exp w-full">
+        <view class="exp-data w-full flex flex-justify__between">
+          <view>
             <text>
               exp: {{ userGrowth?.total_experience }}/{{
                 userGrowth?.nextLevelExp
               }}
             </text>
           </view>
-          <view class="gold-data">
+          <view>
             <text> $ {{ userGrowth?.gold }} </text>
           </view>
         </view>
-        <view class="exp-line">
-          <view class="now" :style="{ width: expWidth + '%' }"></view>
-        </view>
+        <exp-line-cmp
+          :total-experience="userGrowth?.total_experience"
+          :next-level-exp="userGrowth?.nextLevelExp"
+        />
       </view>
-      <view class="attr-data">
+      <!-- 属性值 -->
+      <view class="user-card_attr w-full flex flex-justify__between">
         <view
-          class="attr-item"
+          class="attr-item flex flex-justify__between"
           v-for="(name, key) in InfluenceAttrTextMap"
           :key="key"
         >
-          <view class="attr-item-name">
+          <view class="flex">
             <image :src="`/static/imgs/${key}.png`" class="attr-item-icon" />
             <text>{{ name }}</text>
           </view>
@@ -61,72 +65,71 @@
         </view>
       </view>
     </view>
-    <view class="task-category">
+    <!-- 任务分类 -->
+    <view class="task-category-list flex">
       <view
-        class="task-category-item"
-        :class="selectedCategory == 'all' && 'selected'"
+        class="task-category"
+        :class="{ selected: selectedCategory == 'all' }"
         @click="selectedCategory = 'all'"
-        ><text class="task-category-item-text">全部</text></view
       >
+        <text>全部</text>
+      </view>
       <view
-        class="task-category-item"
+        class="task-category"
         :class="selectedCategory == value.id && 'selected'"
         v-for="value in taskCategories?.slice(0, 3)"
         :key="value.id"
         @click="selectedCategory = value.id"
       >
-        <text class="task-category-item-text">{{ value.name }}</text>
+        <text>{{ value.name }}</text>
       </view>
-      <view class="task-category-item" @click="gotoTask">
-        <text class="task-category-item-text">更多</text>
+      <view
+        class="task-category more"
+        v-if="taskCategories && taskCategories.length > 3"
+        @click="gotoTask"
+      >
+        <text>更多</text>
       </view>
     </view>
-    <view class="card task-data">
-      <view class="tasks">
+    <!-- 任务列表 -->
+    <view class="index_card task-data flex flex-col flex-justify__between">
+      <view class="task-data_task-list w-full">
         <view
-          class="task-item"
+          class="task flex flex-justify__between w-full"
           v-for="task in taskList"
           :key="task.id"
-          @click="gotoTaskDetail(task.id)"
+          @click="gotoTask"
         >
-          <text class="task-item-text">{{ task.title }}</text>
-          <view>
-            <u-icon name="arrow-right-double" color="#aaa" size="28"></u-icon
-          ></view>
+          <text class="task-text text-ellipsis w-full">{{ task.title }}</text>
+          <u-icon name="arrow-right-double" color="#aaa" size="28"></u-icon>
         </view>
       </view>
-      <view class="more">
-        <button size="mini" class="task-more" @click="gotoTask">
-          查看更多
-        </button>
-      </view>
+      <button size="mini" class="task-data_more" @click="gotoTask">
+        查看更多
+      </button>
     </view>
     <FloatPet />
   </movable-area>
 </template>
 
 <script setup lang="ts">
-import FloatPet from "@/components/FloatPet.vue/FloatPet.vue";
+import FloatPet from "@/components/FloatPet/FloatPet.vue";
+import ExpLineCmp from "@/components/ExpLine/ExpLine.vue";
+import { InfluenceAttrTextMap } from "@/type/task";
 import { useUser } from "@/composables/useUser";
+import { useTask } from "@/composables/useTask";
 import { onShow } from "@dcloudio/uni-app";
 import { computed, ref } from "vue";
-import { InfluenceAttrTextMap } from "@/type/task";
-import { useTask } from "@/composables/useTask";
 
 const { userInfo, userGrowth, loadUserData } = useUser();
 const { taskCategories, taskList, loadTaskData } = useTask();
+
 onShow(async () => {
   await loadUserData();
   await loadTaskData();
 });
-const selectedCategory = ref<number | string>("all");
 
-const expWidth = computed(() => {
-  if (!userGrowth.value) return 0;
-  const exp = userGrowth.value.total_experience;
-  const nextExp = userGrowth.value.nextLevelExp;
-  return Math.min((exp / nextExp) * 100, 100);
-});
+const selectedCategory = ref<number | string>("all");
 
 const goToPersonal = () => {
   uni.switchTab({ url: "/pages/personal/personal" });
@@ -135,174 +138,88 @@ const goToPersonal = () => {
 const gotoTask = () => {
   uni.switchTab({ url: "/pages/task/task" });
 };
-
-const gotoTaskDetail = (id: number) => {
-  uni.switchTab({ url: `/pages/task/task?id=${id}` });
-};
 </script>
 
 <style scoped lang="scss">
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
-
-.index-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding-bottom: 140rpx;
-  width: 100vw;
-  height: 100vh;
-  background-color: var(--background-color);
-}
-
-.card {
-  background-color: #fff;
-  width: 85vw;
+.index_card {
+  background-color: var(--bg-color);
+  width: 88vw;
   border-radius: 20rpx;
-  box-shadow: 0 6rpx 10rpx #ccc;
-  padding: 30rpx;
+  box-shadow: var(--shadow);
+  padding: 30rpx 40rpx;
 }
 
-.personal-data {
+// 用户卡片
+.user-card {
   height: 35vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
 
-  .info {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  // 基本信息
+  &_info {
+    .avatar {
+      width: 120rpx;
+      height: 120rpx;
+    }
 
-    .left {
-      display: flex;
-      align-items: center;
-
-      .avatar {
-        width: 120rpx;
-        height: 120rpx;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        .avatar-img {
-          width: 120rpx;
-          height: 120rpx;
-          border-radius: 50%;
-        }
-      }
-
-      .center {
-        margin-left: 30rpx;
-        font-size: 36rpx;
-
-        .username {
-          .username-text {
-            display: inline-block;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            width: 35vw;
-            vertical-align: middle;
-          }
-        }
+    .user-info {
+      margin-left: 30rpx;
+      .user-name,
+      .level {
+        display: inline-block;
+        font-size: var(--fontSize-big);
       }
     }
 
     .personal-more {
-      border: 2rpx solid #888;
+      background-color: var(--primary-color);
+      color: #fff;
       padding: 0 0.75em;
-      display: flex;
-      align-items: center;
     }
   }
 
-  .exp {
-    width: 100%;
-
-    .data {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
+  // 经验值
+  &_exp {
+    .exp-data {
       margin-bottom: 10rpx;
-      font-size: 28rpx;
-    }
-
-    .exp-line {
-      width: 100%;
-      background-color: #e2ecf8;
-      height: 20rpx;
-      border-radius: 10rpx;
-      box-shadow: 0 2rpx 5rpx #ccc;
-
-      .now {
-        height: 100%;
-        background-color: var(--primary-color);
-        border-radius: 10rpx;
-      }
+      font-size: var(--fontSize-small);
     }
   }
 
-  .attr-data {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
+  // 属性值
+  &_attr {
     flex-wrap: wrap;
-    gap: 20rpx;
 
     .attr-item {
-      /* font-size: 38rpx; */
       width: 47%;
       padding: 10rpx 20rpx;
       border-radius: 10rpx;
-      box-shadow: 0 4rpx 10rpx #ccc;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20rpx;
-
-      .attr-item-name {
-        display: flex;
-        align-items: center;
-        gap: 15rpx;
-
-        .attr-item-icon {
-          width: 45rpx;
-          height: 45rpx;
-        }
+      box-shadow: var(--shadow);
+      margin-bottom: 30rpx;
+      &:nth-child(n + 3) {
+        margin-bottom: 0;
+      }
+      .attr-item-icon {
+        width: 45rpx;
+        height: 45rpx;
+        margin-right: 15rpx;
       }
     }
   }
 }
 
-.task-category {
-  width: 85vw;
-  display: flex;
-  align-items: center;
-  // justify-content: space-between;
+// 任务分类
+.task-category-list {
+  width: 88vw;
   overflow: auto;
-  gap: 15rpx;
-  padding: 20rpx 0;
-  margin: 20rpx 0;
+  padding: 0 0 20rpx;
+  margin: 40rpx 0 0;
 
-  .task-category-item {
+  .task-category {
     border-radius: 20rpx;
-    background-color: #fcfcfc;
-    border-radius: 20rpx;
-    font-size: 28rpx;
-    box-shadow: 0 6rpx 10rpx #ccc;
-    padding: 20rpx;
-  }
-
-  .task-category-item-text {
-    white-space: nowrap;
+    background-color: var(--bg-color);
+    font-size: var(--fontSize-normal);
+    box-shadow: var(--shadow);
+    padding: 15rpx 30rpx;
+    margin-right: 20rpx;
   }
 
   .selected {
@@ -311,69 +228,45 @@ const gotoTaskDetail = (id: number) => {
   }
 
   .more {
-    background-color: #d0d0d0;
+    background-color: var(--contrast-color);
+    color: #fff;
   }
 }
 
+// 任务列表
 .task-data {
-  height: 35vh;
-  /* box-shadow: inset 0 0 0 10rpx var(--primary-color)cc; */
-  border-top: 14rpx solid var(--primary-color) cc;
-  padding-top: 10rpx;
-  padding-bottom: 15rpx;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-around;
+  height: 40vh;
+  // border-top: 14rpx solid var(--primary-color);
+  padding-top: 20rpx;
+  padding-bottom: 20rpx;
 
-  .tasks {
+  &_task-list {
     height: 80%;
-    width: 100%;
     overflow: auto;
-  }
 
-  .task-item {
-    padding: 20rpx;
-    border-bottom: 2rpx solid #ddd;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
+    .task {
+      padding: 20rpx 10rpx;
+      border-bottom: 2rpx solid #ddd;
 
-    .task-item-text {
-      line-height: 1.5;
-      white-space: nowrap;
-      width: 85%;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      vertical-align: middle;
+      .task-text {
+        line-height: 1.5;
+        white-space: nowrap;
 
-      &::before {
-        content: " ";
-        display: inline-block;
-        width: 10rpx;
-        height: 28rpx;
-        background-color: var(--primary-color);
-        margin-right: 20rpx;
+        &::before {
+          content: " ";
+          display: inline-block;
+          width: 10rpx;
+          height: 28rpx;
+          background-color: var(--primary-color);
+          margin-right: 20rpx;
+        }
       }
     }
   }
-
-  .more {
-    /* margin: 15rpx; */
-    text-align: center;
-    font-size: 28rpx;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    .task-more {
-      background-color: var(--primary-color);
-      color: #fff;
-      border-radius: 20rpx;
-      font-size: 30rpx;
-    }
+  &_more {
+    background-color: var(--primary-color);
+    color: #fff;
+    font-size: var(--fontSize-normal);
   }
 }
 </style>
