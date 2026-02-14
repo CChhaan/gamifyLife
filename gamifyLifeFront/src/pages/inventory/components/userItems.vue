@@ -1,47 +1,56 @@
 <template>
-  <view class="bag-ctn">
-    <view class="bag">
+  <view class="user-items w-full h-full">
+    <view class="item-list">
       <view
-        class="bag-item"
+        class="item w-full"
         v-for="item in userItems"
         :key="item.id"
         @click="selectedItem = item"
       >
-        <view class="item">
+        <view class="w-full h-full flex flex-col flex-justify__center">
           <image
-            class="item-image"
+            class="img"
             :src="'http://localhost:3000' + item.item?.icon_url"
-            mode="aspectFill"
+            mode="aspectFit"
           />
           <view class="name">{{ item.item?.name }}</view>
         </view>
-        <view class="count">{{ item.quantity }}</view>
+        <view class="count flex flex-justify__center circle">{{
+          item.quantity
+        }}</view>
       </view>
       <view class="cover" v-if="selectedItem"></view>
-      <view class="item-info" v-if="selectedItem">
-        <view class="detail">
-          <view class="pic"
-            ><image
-              class="item-image"
-              :src="'http://localhost:3000' + selectedItem.item?.icon_url"
-              mode="aspectFill"
-          /></view>
-          <view class="name">{{ selectedItem.item?.name }}</view>
-          <view class="description">{{ selectedItem.item?.description }}</view>
+      <view class="item-detail modal flex flex-col" v-if="selectedItem">
+        <view class="pic">
+          <image
+            class="img"
+            :src="'http://localhost:3000' + selectedItem.item?.icon_url"
+            mode="aspectFit"
+          />
         </view>
-        <view class="item-count" v-if="selectedItem.item?.type !== 'FOOD'">
+        <view class="name">{{ selectedItem.item?.name }}</view>
+        <view class="description">{{ selectedItem.item?.description }}</view>
+
+        <view v-if="selectedItem.item?.type == 'FOOD'">
           <u-number-box
             v-model="count"
-            input-width="50"
             :max="selectedItem.quantity"
           ></u-number-box>
         </view>
-        <view class="options">
-          <view class="option cancel" @click="cancel">取消</view>
-          <view class="option" v-if="selectedItem.item?.type !== 'FOOD'"
+        <view class="options flex w-full">
+          <view
+            class="option cancel flex flex-justify__center flex-1"
+            @click="cancel"
+            >取消</view
+          >
+          <view
+            class="option flex flex-justify__center flex-1"
+            v-if="selectedItem.item?.type !== 'FOOD'"
             >使用</view
           >
-          <view class="option" v-else>去使用</view>
+          <view class="option flex flex-justify__center flex-1" v-else
+            >去使用</view
+          >
         </view>
       </view>
     </view>
@@ -59,7 +68,7 @@ const selectedItem = ref<Inventory>();
 const count = ref<number>(0);
 
 const getUserItems = async () => {
-  userItems.value = await http.get<Inventory[]>("/api/items/userItems");
+  userItems.value = await http.get<Inventory[]>("/items/userItems");
 };
 
 onLoad(() => {
@@ -73,127 +82,74 @@ const cancel = () => {
 </script>
 
 <style scoped lang="scss">
-.bag-ctn {
-  width: 100%;
-  height: 100%;
+.user-items {
   overflow: auto;
 }
 
-.bag {
+.item-list {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-gap: 30rpx;
+  grid-gap: 20rpx;
   margin: 40rpx 20rpx;
 }
 
-.bag-item {
+.item {
   aspect-ratio: 1/1;
-  height: auto;
   position: relative;
   border-radius: 15rpx;
-  width: 100%;
-  height: 100%;
-  background-color: #fff;
+  background-color: var(--bg-color);
   padding: 10rpx;
-  box-shadow: 5rpx 5rpx 10rpx rgba(0, 0, 0, 0.2);
-}
+  box-shadow: var(--shadow);
 
-.item {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  .item-image {
-    width: 80%;
-    height: 80%;
-  }
   .name {
-    font-size: 28rpx;
+    font-size: var(--fontSize-small);
     font-weight: 600;
     margin-top: 10rpx;
   }
+
+  .count {
+    position: absolute;
+    top: -10rpx;
+    right: -10rpx;
+    background: var(--primary-color);
+    color: #fff;
+    padding: 3rpx 15rpx;
+  }
 }
 
-.count {
-  position: absolute;
-  top: -10rpx;
-  right: -10rpx;
-  background: var(--primary-color);
-  color: #fff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 20rpx;
-  height: 40rpx;
-  padding: 10rpx;
-}
 .cover {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
   z-index: 5;
 }
-.item-info {
-  position: fixed;
-  top: 50%;
-  left: 50%;
+.item-detail {
   width: 75vw;
-  transform: translate(-50%, -50%);
-  background: #fff;
   padding: 20rpx;
   border-radius: 10rpx;
-  box-shadow: 5rpx 5rpx 10rpx rgba(0, 0, 0, 0.2);
   z-index: 10;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 
-  .detail {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-    margin-bottom: 20rpx;
-    .pic {
-      width: 50vw;
-      height: 50vw;
-    }
-    .item-image {
-      width: 100%;
-      height: 100%;
-    }
-    .name {
-      margin-top: 10rpx;
-      font-size: 36rpx;
-      font-weight: 600;
-    }
-    .description {
-      margin-top: 10rpx;
-      color: #666;
-    }
+  .pic {
+    width: 50vw;
+    height: 50vw;
+  }
+
+  .name {
+    margin: 10rpx;
+    font-size: var(--fontSize-big);
+    font-weight: 600;
+  }
+  .description {
+    color: var(--text-light-color);
+    margin-bottom: 10rpx;
   }
 
   .options {
-    display: flex;
-    width: 100%;
     margin-top: 20rpx;
 
     .option {
-      flex: 1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       padding: 10rpx;
       border-radius: 10rpx;
       background: var(--primary-color);
       color: #fff;
-      font-size: 32rpx;
+      font-size: var(--fontSize-normal);
       font-weight: 600;
     }
     .cancel {

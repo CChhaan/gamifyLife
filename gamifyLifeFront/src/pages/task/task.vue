@@ -1,86 +1,91 @@
 <template>
-  <view class="task-page">
+  <view class="tab-page flex flex-col">
     <u-top-tips ref="uTipsRef"></u-top-tips>
-    <view class="banner">
+    <!-- 头部 -->
+    <view class="task-banner w-full flex">
       <button size="mini" @click="taskTagMngShow = true">标签管理</button>
       <button size="mini" @click="taskCategoryMngShow = true">分类管理</button>
       <button size="mini" @click="aiListShow = true">AI任务队列</button>
-      <u-icon class="banner-icon" name="question-circle-fill"></u-icon>
+      <u-icon class="task-banner_icon" name="question-circle-fill"></u-icon>
     </view>
-    <view class="task-category">
+    <!-- 任务分类 -->
+    <view class="task-category-list flex flex-justify__start">
       <view
-        class="task-category-item"
-        :class="selectedCategory == 'all' && 'selected'"
+        class="task-category"
+        :class="{ selected: selectedCategory == 'all' }"
         @click="selectedCategory = 'all'"
-        ><text class="task-category-item-text">全部</text></view
       >
+        <text>全部</text>
+      </view>
       <view
-        class="task-category-item"
-        :class="selectedCategory == value.id && 'selected'"
+        class="task-category"
+        :class="{ selected: selectedCategory == value.id }"
         v-for="value in taskCategories"
         :key="value.id"
         @click="selectedCategory = value.id"
       >
-        <text class="task-category-item-text">{{ value.name }}</text>
+        <text>{{ value.name }}</text>
       </view>
     </view>
-    <view class="task-list">
-      <view class="timeFilter">
+    <!-- 任务列表 -->
+    <view class="task-list flex-1">
+      <view class="task-list_timeFilter flex flex-justify__between">
         <view
           class="time"
-          :class="selectedTime == 'all' && 'selected'"
+          :class="{ selected: selectedTime == 'all' }"
           @click="selectedTime = 'all'"
           >全部</view
         >
         <view
           class="time"
-          :class="selectedTime == 'overdue' && 'selected'"
+          :class="{ selected: selectedTime == 'overdue' }"
           @click="selectedTime = 'overdue'"
         >
           已逾期
         </view>
         <view
           class="time"
-          :class="selectedTime == 'finished' && 'selected'"
+          :class="{ selected: selectedTime == 'finished' }"
           @click="selectedTime = 'finished'"
           >已结束</view
         >
         <view
           class="time"
-          :class="selectedTime == 'today' && 'selected'"
+          :class="{ selected: selectedTime == 'today' }"
           @click="selectedTime = 'today'"
           >今天</view
         >
         <view
           class="time"
-          :class="selectedTime == 'week' && 'selected'"
+          :class="{ selected: selectedTime == 'week' }"
           @click="selectedTime = 'week'"
           >本周</view
         >
         <view
           class="time"
-          :class="selectedTime == 'month' && 'selected'"
+          :class="{ selected: selectedTime == 'month' }"
           @click="selectedTime = 'month'"
           >本月</view
         >
         <view
           class="time"
-          :class="selectedTime == 'year' && 'selected'"
+          :class="{ selected: selectedTime == 'year' }"
           @click="selectedTime = 'year'"
           >今年</view
         >
       </view>
-      <view class="tasks">
+      <view class="task-list_tasks">
         <view
-          class="task-item"
+          class="task-item w-full"
           v-for="task in filterTaskList"
           :key="task.id"
           @click="showTaskDetail(task.id!)"
         >
-          <view class="task-detail">
-            <view class="task-info">
-              <text class="task-title">{{ task.title }}</text>
-              <!-- <view class="task-tag"
+          <view class="task-info w-full">
+            <text class="text-ellipsis w-full"
+              >{{ task.title }}{{ task.title }}</text
+            >
+            <!-- <view class="task-tag"
                 >#
                 {{ tags?.find((tag) => tag.id == task.tag_id_1)?.name }}</view
               >
@@ -88,54 +93,60 @@
                 >#
                 {{ tags?.find((tag) => tag.id == task.tag_id_2)?.name }}</view
               > -->
-            </view>
+          </view>
 
-            <view class="task-data">
-              <view class="task-data-item">
-                <view class="task-due-time">{{
-                  dayjs(task.due_time).format("YYYY-MM-DD HH:mm")
-                }}</view>
-                <view class="task-reward">
-                  <view class="reward-item">
-                    <view class="reward-item-title">exp</view>
-                    <view class="reward-item-value">{{ task.final_exp }}</view>
-                  </view>
-                  <view class="reward-item">
-                    <view class="reward-item-title">$ </view>
-                    <view class="reward-item-value">{{ task.final_gold }}</view>
-                  </view>
-                  <view
-                    class="reward-item"
-                    v-for="(name, key) in task.estimated_attr_gains"
-                    :key="key"
-                  >
-                    <view class="attr-item-name">
-                      <image
-                        :src="`/static/imgs/${key}.png`"
-                        class="attr-item-icon"
-                      />
-                      <!-- <text>{{ name }}</text> -->
-                    </view>
-                  </view>
+          <view class="task-data flex flex-justify__between">
+            <view>
+              <view class="task-due-time flex">
+                <u-icon name="calendar" class="time-icon"></u-icon>
+                <text>
+                  {{ dayjs(task.due_time).format("YYYY-MM-DD HH:mm") }}
+                </text>
+              </view>
+              <view class="task-reward flex">
+                <view class="reward-item flex">
+                  <view class="reward-item-title">exp</view>
+                  <view class="reward-item-value">{{ task.final_exp }}</view>
+                </view>
+                <view class="reward-item flex">
+                  <view class="reward-item-title">$ </view>
+                  <view class="reward-item-value">{{ task.final_gold }}</view>
+                </view>
+                <view
+                  class="reward-item flex"
+                  v-for="(name, key) in task.estimated_attr_gains"
+                  :key="key"
+                >
+                  <image
+                    :src="`/static/imgs/${key}.png`"
+                    class="attr-item-icon"
+                  />
                 </view>
               </view>
-              <view
-                v-if="task.status != 'PENDING'"
-                class="task-status"
-                :class="taskStatusClass(task.status)"
-              >
-                {{ TaskStatusTextMap[task.status] }}
-              </view>
+            </view>
+            <view
+              v-if="task.status != 'PENDING'"
+              class="task-status flex flex-justify__center"
+              :class="taskStatusClass(task.status)"
+            >
+              {{ TaskStatusTextMap[task.status] }}
             </view>
           </view>
         </view>
       </view>
     </view>
-    <view class="add-task" @click="taskCreateShow = true">
-      <button>+</button>
+    <!-- 悬浮按钮 -->
+    <view
+      class="add-task flex flex-justify__center circle"
+      @click="taskCreateShow = true"
+    >
+      <u-icon name="plus"></u-icon>
     </view>
-    <view class="ai-create" @click="aiGenShow = true">
-      <button>AI</button>
+    <view
+      class="ai-create flex flex-justify__center circle"
+      @click="aiGenShow = true"
+    >
+      AI
     </view>
     <task-category-cmp
       @close="taskCategoryMngShow = false"
@@ -182,13 +193,13 @@
 </template>
 
 <script setup lang="ts">
-import TaskCategoryCmp from "@/pages/task/taskCategory.vue";
-import TaskTagCmp from "@/pages/task/taskTag.vue";
-import TaskCreateCmp from "@/pages/task/taskCreate.vue";
-import TaskDetailCmp from "@/pages/task/taskDetail.vue";
-import AiTaskListCmp from "@/pages/task/taskAi.vue";
+import TaskCategoryCmp from "@/pages/task/components/taskCategory.vue";
+import TaskTagCmp from "@/pages/task/components/taskTag.vue";
+import TaskCreateCmp from "@/pages/task/components/taskCreate.vue";
+import TaskDetailCmp from "@/pages/task/components/taskDetail.vue";
+import AiTaskListCmp from "@/pages/task/components/taskAi.vue";
 import { TaskStatusTextMap, type Ticket, type Task } from "@/type/task";
-import { onHide, onLoad, onShow } from "@dcloudio/uni-app";
+import { onHide, onShow } from "@dcloudio/uni-app";
 import { computed, onMounted, ref } from "vue";
 import { useTask } from "@/composables/useTask";
 import dayjs from "dayjs";
@@ -318,15 +329,6 @@ const showTaskDetail = (id: number) => {
   taskId.value = id;
   taskDetailShow.value = true;
   detail.value = taskList.value!.find((task) => task.id == id)!;
-  detail.value.category = taskCategories.value!.find(
-    (cate) => cate.id == detail.value?.category_id,
-  )?.name;
-  detail.value.tag1 = tags.value!.find(
-    (tag) => tag.id == detail.value?.tag_id_1,
-  )?.name;
-  detail.value.tag2 = tags.value!.find(
-    (tag) => tag.id == detail.value?.tag_id_2,
-  )?.name;
 };
 
 // AI生成任务
@@ -340,17 +342,17 @@ const getAIStatus = (jobId: number | string) => {
     duration: "2300",
   });
   const timer = setInterval(async () => {
-    const aijob = await http.get<Ticket>(
-      "/api/aiTask/aiTaskStatus?taskId=" + jobId,
+    const aiJob = await http.get<Ticket>(
+      "/aiTask/aiTaskStatus?taskId=" + jobId,
     );
-    if (aijob.status == "SUCCESS") {
+    if (aiJob.status == "SUCCESS") {
       clearInterval(timer);
       uTipsRef.value?.show({
         title: "AI规划完成，可在AI任务队列页面查看",
         type: "success",
         duration: "2300",
       });
-    } else if (aijob.status == "FAILED") {
+    } else if (aiJob.status == "FAILED") {
       clearInterval(timer);
       uTipsRef.value?.show({
         title: "AI规划失败",
@@ -378,213 +380,145 @@ onHide(() => {
 </script>
 
 <style scoped lang="scss">
-.task-page {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-bottom: 140rpx;
-  background-color: var(--background-color);
-}
-
-.banner {
-  width: 100%;
+// 头部
+.task-banner {
   height: 100rpx;
-  background-color: var(--third-color);
-  display: flex;
-  align-items: center;
+  background-color: var(--primary-color);
   padding: 0 20rpx;
   button {
     margin: 0 10rpx;
   }
 
-  .banner-icon {
+  &_icon {
     font-size: 48rpx;
     margin-left: 10rpx;
     color: #fff;
   }
 }
 
-.task-category {
-  width: calc(100% - 50rpx);
-  display: flex;
-  align-items: center;
-  justify-content: start;
+// 任务分类
+.task-category-list {
+  width: 90vw;
   overflow: auto;
-  gap: 15rpx;
-  padding: 30rpx 0;
+  padding: 25rpx 0;
 
-  .task-category-item {
-    background-color: #fcfcfc;
+  .task-category {
+    background-color: var(--bg-color);
     border-radius: 20rpx;
-    font-size: 32rpx;
-    box-shadow: 0 6rpx 10rpx #ccc;
-    padding: 10rpx 30rpx;
-  }
-
-  .task-category-item-text {
-    white-space: nowrap;
+    font-size: var(--fontSize-normal);
+    box-shadow: var(--shadow);
+    padding: 15rpx 30rpx;
+    margin-right: 20rpx;
   }
 
   .selected {
     background-color: var(--primary-color);
     color: #fff;
   }
-
-  .more {
-    background-color: #d0d0d0;
-  }
 }
 
+// 任务列表
 .task-list {
-  width: calc(100% - 50rpx);
-  background-color: #fff;
+  width: 93vw;
+  background-color: var(--bg-color);
   border-radius: 40rpx;
-  box-shadow: 0 6rpx 10rpx #ccc;
+  box-shadow: var(--shadow);
   padding: 20rpx;
-  height: calc(100vh - 390rpx);
-  overflow: auto;
-}
-
-.timeFilter {
-  width: 100%;
-  font-size: 28rpx;
-  color: #999;
-  margin-bottom: 30rpx;
-  display: flex;
-  overflow: auto;
-  font-size: 32rpx;
-  justify-content: space-between;
-  border-bottom: 2rpx solid #eee;
-  .time {
-    padding: 5rpx 20rpx 10rpx;
-    white-space: nowrap;
-  }
-  .selected {
-    color: var(--primary-color);
-    border-bottom: 6rpx solid var(--primary-color);
-  }
-}
-
-.tasks {
-  height: calc(100% - 85rpx);
+  margin-bottom: 40rpx;
   overflow: auto;
 
-  .task-item {
-    display: flex;
-    align-items: center;
-    font-size: 32rpx;
-    margin-bottom: 30rpx;
+  &_timeFilter {
     width: 100%;
-
-    .task-detail {
-      flex: 1;
+    font-size: var(--fontSize-small);
+    color: var(--text-light-color);
+    margin-bottom: 25rpx;
+    overflow: auto;
+    border-bottom: 2rpx solid #eee;
+    .time {
+      padding: 5rpx 20rpx 10rpx;
+      white-space: nowrap;
+    }
+    .selected {
+      color: var(--primary-color);
+      border-bottom: 6rpx solid var(--primary-color);
     }
   }
 
-  .reward-item {
-    display: flex;
-    margin-right: 15rpx;
-    border-radius: 10rpx;
-    font-size: 32rpx;
-    color: var(--third-color);
-    .reward-item-value {
-      margin-left: 5rpx;
+  &_tasks {
+    height: calc(100% - 90rpx);
+    overflow: auto;
+    padding: 0 10rpx;
+
+    .task-item {
+      font-size: var(--fontSize-normal);
+      margin-bottom: 30rpx;
     }
 
-    .attr-item-name {
-      display: flex;
-      align-items: center;
-
-      .attr-item-icon {
-        margin-right: 5rpx;
-        width: 45rpx;
-        height: 45rpx;
-      }
-    }
-  }
-
-  .task-info,
-  .task-reward {
-    display: flex;
-    align-items: center;
-    margin-left: 10rpx;
-  }
-
-  .task-title {
-    // width: 60%;
-  }
-
-  .task-tag {
-    margin-left: 20rpx;
-    padding: 5rpx 10rpx;
-    border-radius: 10rpx;
-    font-size: 24rpx;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--third-color);
-    color: #fff;
-  }
-
-  .task-data {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    .task-due-time {
-      font-size: 24rpx;
-      color: #999;
+    .task-info,
+    .task-reward {
       margin-left: 10rpx;
     }
 
-    .task-status {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 10rpx;
-      padding: 5rpx 20rpx;
-    }
+    .task-data {
+      .task-due-time {
+        font-size: var(--fontSize-small);
+        color: #999;
+        margin-left: 10rpx;
+        .time-icon {
+          margin-right: 5rpx;
+        }
+      }
 
-    .finished {
-      color: #03db6c;
-      border: 3rpx solid #03db6c;
+      .reward-item {
+        margin-right: 20rpx;
+        border-radius: 10rpx;
+
+        .reward-item-title {
+          color: var(--third-color);
+        }
+        .reward-item-value {
+          font-size: var(--fontSize-normal);
+          color: var(--primary-color);
+          margin-left: 5rpx;
+        }
+
+        .attr-item-icon {
+          width: 45rpx;
+          height: 45rpx;
+        }
+      }
+
+      .task-status {
+        border-radius: 10rpx;
+        padding: 5rpx 20rpx;
+      }
+
+      .finished {
+        color: #03db6c;
+        border: 3rpx solid #03db6c;
+      }
     }
   }
 }
 
-.add-task {
-  position: fixed;
-  bottom: 200rpx;
-  right: 50rpx;
-  button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 80rpx;
-    height: 80rpx;
-    border-radius: 50%;
-    background-color: var(--primary-color);
-    color: #fff;
-    font-size: 80rpx;
-  }
-}
-
+// 悬浮按钮
+.add-task,
 .ai-create {
   position: fixed;
   bottom: 350rpx;
   right: 50rpx;
-  button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 80rpx;
-    height: 80rpx;
-    border-radius: 50%;
-    background-color: var(--contrast-color);
-    box-shadow: 0 0 10rpx rgba(0, 0, 0, 0.2);
-    color: #fff;
-    font-size: 40rpx;
-    font-weight: bold;
-  }
+  width: 80rpx;
+  height: 80rpx;
+  background-color: var(--contrast-color);
+  box-shadow: var(--shadow);
+  color: #fff;
+  font-size: 40rpx;
+  font-weight: bold;
+}
+
+.add-task {
+  bottom: 200rpx;
+  background-color: var(--primary-color);
+  color: #fff;
 }
 </style>

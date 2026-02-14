@@ -1,9 +1,10 @@
 <template>
-  <view class="confirm-ctn">
+  <view class="cover"></view>
+  <view class="confirm-modal modal">
     <view class="main">
       {{ text }}
     </view>
-    <view class="confirm-btn-group">
+    <view class="confirm-btn-group flex flex-justify__around">
       <button class="confirm-button" @click="$emit('confirm')">确定</button>
       <button class="confirm-button" @click="$emit('close')">取消</button>
     </view>
@@ -21,40 +22,30 @@ defineEmits<{
 </script>
 
 <style scoped lang="scss">
-.confirm-ctn {
+.confirm-modal {
   width: 60vw;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #f8f2de;
   border-radius: 16rpx;
-  border-top: 6rpx solid #f9f9f0;
-  border-bottom: 6rpx solid #eddebb;
-  box-shadow: 0 4rpx 16rpx #e4d4b7;
   padding: 20rpx;
   z-index: 10;
 }
 
 .main {
-  padding: 20rpx 0;
+  padding: 20rpx;
   text-align: center;
-  font-size: 40rpx;
+  font-size: var(--fontSize-large);
   font-weight: bold;
   color: #8c6e52;
 }
 
 .confirm-btn-group {
-  display: flex;
-  justify-content: space-around;
   margin-top: 20rpx;
 }
 
 .confirm-button {
-  padding: 0 1em;
-  background-color: #fe7a24;
+  padding: 0 1.2em;
+  background-color: var(--primary-color);
   color: #fff;
-  font-size: 32rpx;
+  font-size: var(--fontSize-normal);
   line-height: 2;
 }
 </style>

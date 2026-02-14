@@ -1,6 +1,7 @@
 <template>
-  <view class="ai-task">
-    <view class="ai-task-content">
+  <view>
+    <view class="cover"></view>
+    <view class="ai-task-content modal">
       <view class="title">AI智能任务规划</view>
       <view>
         <u-input
@@ -33,7 +34,7 @@ const aiGen = async () => {
   if (prompt.value) {
     // 调用AI接口
     http
-      .post("/api/aiTask/aiCreateTask", {
+      .post("/aiTask/aiCreateTask", {
         content: prompt.value,
       })
       .then((res) => {
@@ -45,40 +46,23 @@ const aiGen = async () => {
 </script>
 
 <style scoped lang="scss">
-.ai-task {
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  z-index: 20;
-  background-color: rgba($color: #000000, $alpha: 0.3);
-}
 .ai-task-content {
   width: 80%;
-  height: 50%;
-  background-color: #fff;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
   padding: 40rpx;
   overflow: auto;
+  border-radius: 15rpx;
 
   .title {
-    font-size: 36rpx;
+    font-size: var(--fontSize-big);
     font-weight: bold;
     margin-bottom: 40rpx;
     text-align: center;
   }
 
   .ai-btn {
-    border: none;
     color: #fff;
     background-color: var(--primary-color);
-    font-size: 36rpx;
+    font-size: var(--fontSize-big);
     width: 100%;
     margin-top: 20rpx;
   }

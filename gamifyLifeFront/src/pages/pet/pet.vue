@@ -66,7 +66,7 @@ const goBack = () => {
   justify-content: center;
   height: 100vh;
   overflow: auto;
-  background-color: var(--background-second-color);
+  background-color: var(--bg-second-color);
 }
 
 .go-back {

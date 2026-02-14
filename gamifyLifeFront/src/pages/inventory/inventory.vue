@@ -1,14 +1,14 @@
 <template>
-  <view class="inventory-ctn">
-    <view class="tabbar">
+  <view class="inventory flex flex-col">
+    <view class="inventory_tabbar flex flex-justify__around w-full">
       <view
-        class="tab"
+        class="tab flex flex-justify__center h-full flex-1"
         :class="{ selected: selected == 'userItem' }"
         @click="selected = 'userItem'"
         >个人背包</view
       >
       <view
-        class="tab"
+        class="tab flex flex-justify__center h-full flex-1"
         :class="{ selected: selected == 'sysShop' }"
         @click="selected = 'sysShop'"
         >道具商城</view
@@ -17,7 +17,7 @@
     <sys-shop-cmp v-if="selected == 'sysShop'"></sys-shop-cmp>
     <user-item-cmp v-if="selected == 'userItem'"></user-item-cmp>
     <view class="go-back" @click="goBack">
-      <button>
+      <button class="flex flex-justify__center">
         <u-icon name="arrow-leftward"></u-icon>
         <span style="margin-left: 5rpx">返回首页</span>
       </button>
@@ -37,36 +37,23 @@ const goBack = () => {
 </script>
 
 <style scoped lang="scss">
-.inventory-ctn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: start;
+.inventory {
   height: 100vh;
   overflow: auto;
-  background-color: var(--background-second-color);
-}
+  background-color: var(--bg-color-page);
 
-.tabbar {
-  display: flex;
-  justify-content: space-around;
-  width: 100%;
-  height: 100rpx;
-  background-color: var(--background-color);
-  border-bottom: 2rpx solid var(--border-color);
-  .tab {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 50%;
-    height: 100%;
-    font-size: 36rpx;
-    font-weight: bold;
-    color: var(--text-color);
-  }
-  .selected {
-    background-color: var(--primary-color);
-    color: #fff;
+  &_tabbar {
+    height: 100rpx;
+    background-color: var(--bg-second-color);
+    border-bottom: 2rpx solid #ddd;
+    .tab {
+      font-size: var(--fontSize-big);
+      font-weight: bold;
+    }
+    .selected {
+      background-color: var(--primary-color);
+      color: #fff;
+    }
   }
 }
 
@@ -76,15 +63,12 @@ const goBack = () => {
   left: 15rpx;
   z-index: 20;
   button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
     height: 80rpx;
     border-radius: 20rpx;
     background-color: var(--primary-color);
-    box-shadow: 0 0 10rpx rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow);
     color: #fff;
-    font-size: 40rpx;
+    font-size: var(--fontSize-large);
     font-weight: bold;
   }
 }

@@ -1,7 +1,7 @@
 <template>
-  <view class="category-ctn">
+  <view class="category tab-page">
     <view class="title">分类管理</view>
-    <view class="back" @click="$emit('close')">
+    <view class="back flex" @click="$emit('close')">
       <u-icon name="arrow-left-double"></u-icon>
       <text class="back-text">返回</text>
     </view>
@@ -16,11 +16,7 @@
         @input-save="addSave"
         @cancel-input="cancelAdd"
       />
-      <template
-        v-for="item in taskCategories"
-        :key="item.id"
-        class="category-item"
-      >
+      <template v-for="item in taskCategories" :key="item.id">
         <category-item-cmp
           :item
           v-model="editName"
@@ -43,7 +39,7 @@
 
 <script setup lang="ts">
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal.vue";
-import CategoryItemCmp from "./components/categoryItemCmp.vue";
+import CategoryItemCmp from "./categoryItemCmp.vue";
 import { type TaskCategory } from "@/type/task";
 import http from "@/utils/http";
 import { ref } from "vue";
@@ -65,7 +61,7 @@ const addSave = async () => {
   try {
     if (!addName.value.trim()) return;
 
-    await http.post("/api/taskCategory/createTaskCategory", {
+    await http.post("/taskCategory/createTaskCategory", {
       name: addName.value,
     });
 
@@ -95,7 +91,7 @@ const editSave = async () => {
   try {
     if (!editName.value.trim()) return;
 
-    await http.put(`/api/taskCategory/updateTaskCategory/${editId.value}`, {
+    await http.put(`/taskCategory/updateTaskCategory/${editId.value}`, {
       name: editName.value,
     });
     cancelEdit();
@@ -118,13 +114,13 @@ const confirmModalShow = ref<boolean>(false);
 
 const openDeleteModal = (id: number, name: string) => {
   deleteId.value = id;
-  text.value = `确定要删除[${name}]分类吗？`;
+  text.value = `确定要删除「${name}」分类吗？`;
   confirmModalShow.value = true;
 };
 
 const deleteConfirm = async () => {
   try {
-    await http.delete(`/api/taskCategory/deleteTaskCategory/${deleteId.value}`);
+    await http.delete(`/taskCategory/deleteTaskCategory/${deleteId.value}`);
     deleteId.value = null;
     confirmModalShow.value = false;
     emit("refresh");
@@ -136,19 +132,15 @@ const deleteConfirm = async () => {
 </script>
 
 <style scoped lang="scss">
-.category-ctn {
-  width: 100%;
-  height: 100%;
-  background-color: var(--background-second-color);
+.category {
   padding: 20rpx;
-  box-sizing: border-box;
   overflow: auto;
   position: fixed;
   z-index: 10;
 }
 
 .title {
-  font-size: 40rpx;
+  font-size: var(--fontSize-large);
   font-weight: bold;
   text-align: center;
   margin-bottom: 30rpx;
@@ -158,10 +150,9 @@ const deleteConfirm = async () => {
   position: absolute;
   top: 25rpx;
   left: 25rpx;
-  display: flex;
   .back-text {
     margin-left: 10rpx;
-    font-size: 32rpx;
+    font-size: var(--fontSize-normal);
   }
 }
 
@@ -169,9 +160,8 @@ const deleteConfirm = async () => {
   background-color: var(--primary-color);
   color: #fff;
   border-radius: 15rpx;
-  font-size: 36rpx;
+  font-size: var(--fontSize-large);
   line-height: 2;
   padding: 0.25em 1.5em;
-  height: auto;
 }
 </style>

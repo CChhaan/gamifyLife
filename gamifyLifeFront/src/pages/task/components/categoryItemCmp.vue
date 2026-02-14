@@ -1,5 +1,5 @@
 <template>
-  <view class="category-item">
+  <view class="category-item flex flex-justify__between">
     <view>
       <u-input
         v-model="inputName"
@@ -9,7 +9,7 @@
       ></u-input>
       <text v-show="!isInputStatus">{{ item?.name }}</text>
     </view>
-    <view class="operation">
+    <view class="operation flex flex-justify__end">
       <template v-if="!isInputStatus">
         <u-icon
           name="edit-pen"
@@ -17,6 +17,7 @@
         ></u-icon>
 
         <u-icon
+          class="icon"
           name="trash"
           color="#ff0000"
           @click="$emit('deleteIconEvt', item!.id, item!.name)"
@@ -65,17 +66,13 @@ const inputName = defineModel<string>({ default: "" });
 
 <style scoped lang="scss">
 .category-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   border: 3rpx solid var(--secondary-color);
   border-left: 10rpx solid var(--primary-color);
   padding: 30rpx;
   margin: 20rpx 0;
-  background-color: #fff;
-  font-size: 36rpx;
+  background-color: var(--bg-color);
+  font-size: var(--fontSize-big);
   border-radius: 10rpx;
-  color: #444;
   .edit-input {
     width: 80%;
     border-bottom: 3rpx solid;
@@ -85,17 +82,14 @@ const inputName = defineModel<string>({ default: "" });
 }
 
 .operation {
-  display: flex;
-  width: 45%;
-  align-items: center;
-  justify-content: end;
-  .u-icon {
+  width: 50%;
+  .icon {
     margin-left: 30rpx;
   }
   .operation-btn {
     border: none;
     color: #fff;
-    font-size: 28rpx;
+    font-size: var(--fontSize-normal);
     line-height: 1.5;
     padding: 0.25em 1em;
   }

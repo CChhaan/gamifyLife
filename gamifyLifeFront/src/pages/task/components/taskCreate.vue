@@ -1,14 +1,14 @@
 <template>
-  <view class="task-create-ctn">
-    <view class="task-create-header">{{
+  <view class="task-create tab-page flex flex-col">
+    <view class="task-create_header">{{
       type === "create" ? "创建任务" : "编辑任务"
     }}</view>
-    <view class="back" @click="$emit('close')">
+    <view class="task-create_back flex" @click="$emit('close')">
       <u-icon name="arrow-left-double"></u-icon>
       <text class="back-text">返回</text>
     </view>
 
-    <view class="add-task-form">
+    <view class="add-task-form w-full flex flex-col flex-align__stretch">
       <u-form
         :model="task"
         ref="taskCreateForm"
@@ -99,29 +99,28 @@
         <view class="tip"
           >收益由所选难度、标签、完成时间、用户等级等多方面因素计算所得,请以最后实际结果为准</view
         >
-        <view class="rewards">
-          <view class="reward-item">
-            <view class="reward-item-title">$ </view>
+        <view class="flex flex-justify__around">
+          <view class="flex">
+            <view>$ </view>
             <view class="reward-item-value">{{ rewardMoney }}</view>
           </view>
-          <view class="reward-item">
-            <view class="reward-item-title">exp</view>
+          <view class="flex">
+            <view>exp</view>
             <view class="reward-item-value">{{ rewardExp }}</view>
           </view>
           <view
-            class="reward-item"
+            class="flex flex-col"
             v-for="(name, key) in InfluenceAttrTextMap"
             :key="key"
           >
-            <view class="attr-item-name">
+            <view class="flex">
               <image :src="`/static/imgs/${key}.png`" class="attr-item-icon" />
-              <!-- <text>{{ name }}</text> -->
             </view>
             <view class="reward-item-value">{{ rewardAttrMap[key] }}</view>
           </view>
         </view>
       </view>
-      <view class="add-operation">
+      <view class="add-operation w-full">
         <button class="operation-btn" @click="submitTask">
           {{ type == "create" ? "创建" : "保存" }}
         </button>
@@ -308,11 +307,11 @@ const submitTask = async () => {
     if (valid) {
       try {
         if (props.type == "create") {
-          await http.post("/api/task/createTask", task.value);
+          await http.post("/task/createTask", task.value);
         } else if (props.type == "edit") {
-          await http.put("/api/task/updateTask", task.value);
+          await http.put("/task/updateTask", task.value);
         } else {
-          await http.put("/api/aiTask/updateAITask", task.value);
+          await http.put("/aiTask/updateAITask", task.value);
         }
         task.value = {
           title: "",
@@ -351,101 +350,80 @@ onShow(() => {
 </script>
 
 <style scoped lang="scss">
-.task-create-ctn {
-  width: 100vw;
-  height: 100vh;
-  background-color: #f1ede2;
+.task-create {
+  background-color: var(--bg-third-color);
   padding: 20rpx;
   padding-bottom: 155rpx;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  overflow-y: auto;
+  overflow: auto;
   position: fixed;
   z-index: 20;
   top: 0;
   left: 0;
-}
 
-.task-create-header {
-  font-size: 48rpx;
-  font-weight: bold;
-  margin-bottom: 20rpx;
-}
-.back {
-  position: absolute;
-  top: 25rpx;
-  left: 25rpx;
-  display: flex;
-  .back-text {
-    margin-left: 10rpx;
-    font-size: 32rpx;
+  &_header {
+    font-size: var(--fontSize-large);
+    font-weight: bold;
+    margin-bottom: 20rpx;
+  }
+
+  &_back {
+    position: absolute;
+    top: 25rpx;
+    left: 25rpx;
+    .back-text {
+      margin-left: 10rpx;
+      font-size: var(--fontSize-normal);
+    }
   }
 }
+
 .add-task-form {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  background-color: #fff;
+  background-color: var(--bg-color);
   border-radius: 30rpx;
   padding: 10rpx 30rpx;
-  box-sizing: border-box;
   overflow-y: auto;
-  box-shadow: 0 6rpx 10rpx #ccc;
+  box-shadow: var(--shadow);
 
   .form-item {
     border: 3rpx solid #c6c0b3;
     border-radius: 10rpx;
     padding: 10rpx 20rpx;
-    background-color: #fff;
-    font-size: 32rpx;
+    background-color: var(--bg-color);
+    font-size: var(--fontSize-normal);
   }
 }
 
 .reward-count {
   .title {
-    font-size: 32rpx;
+    font-size: var(--fontSize-normal);
     margin-top: 10rpx;
   }
   .tip {
-    color: #666;
-    font-size: 24rpx;
+    color: var(--text-light-color);
+    font-size: var(--fontSize-mini);
+    margin: 10rpx 0;
   }
-  .rewards {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 10rpx;
+
+  .reward-item-value {
+    margin-left: 5rpx;
   }
-  .reward-item {
-    display: flex;
-    .reward-item-value {
-      margin-left: 5rpx;
-    }
 
-    .attr-item-name {
-      display: flex;
-      align-items: center;
-
-      .attr-item-icon {
-        margin-right: 5rpx;
-        width: 45rpx;
-        height: 45rpx;
-      }
-    }
+  .attr-item-icon {
+    margin-right: 5rpx;
+    width: 45rpx;
+    height: 45rpx;
   }
 }
 
 .add-operation {
-  width: 100%;
   margin: 20rpx 0;
-}
 
-.operation-btn {
-  border: none;
-  color: #fff;
-  background-color: var(--primary-color);
-  font-size: 36rpx;
-  width: 80%;
+  .operation-btn {
+    border: none;
+    color: #fff;
+    background-color: var(--primary-color);
+    font-size: var(--fontSize-big);
+    width: 80%;
+  }
 }
 </style>

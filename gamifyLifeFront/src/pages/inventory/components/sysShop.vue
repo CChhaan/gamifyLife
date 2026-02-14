@@ -113,7 +113,7 @@ const buyItems = async () => {
         quantity: count,
       }),
     );
-    await http.post("api/items/buyItem", purchaseItems);
+    await http.post("items/buyItem", purchaseItems);
     uni.showToast({
       title: "购买成功",
       icon: "success",
@@ -125,7 +125,7 @@ const buyItems = async () => {
 };
 
 const getSysItems = async () => {
-  sysItems.value = await http.get<Item[]>("api/items");
+  sysItems.value = await http.get<Item[]>("items");
 };
 
 onLoad(() => {

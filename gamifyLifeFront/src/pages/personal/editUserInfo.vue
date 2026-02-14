@@ -1,21 +1,22 @@
 <template>
   <view>
-    <view class="edit-user-info">
-      <view class="title">编辑个人资料</view>
-      <view class="close" @click="$emit('close')">
-        <image
-          class="close-icon"
-          src="/static/imgs/close.png"
-          mode="scaleToFill"
-        />
+    <view class="cover"></view>
+    <view class="modal user-info-edit_content">
+      <view class="user-info-edit_head">
+        <view class="title">编辑个人资料</view>
+        <view
+          class="close flex flex-justify__center circle"
+          @click="$emit('close')"
+        >
+          <u-icon name="close" color="#fff" size="25"></u-icon>
+        </view>
       </view>
-      <view class="form">
+      <view class="user-info-edit_form">
         <u-form
           :model="userInfoFormData"
           ref="userInfoForm"
           :rules="userInfoRules"
           label-width="140"
-          label-align="center"
         >
           <u-form-item label="昵称" prop="nickname" :border-bottom="false">
             <u-input
@@ -59,9 +60,11 @@
             </u-input>
           </u-form-item>
         </u-form>
-        <view class="form-btn-group">
+        <view class="form-btn-group flex flex-justify__around">
           <button class="form-button" @click="handlerSave">保存</button>
-          <button class="form-button" @click="$emit('close')">取消</button>
+          <button class="form-button cancel" @click="$emit('close')">
+            取消
+          </button>
         </view>
       </view>
     </view>
@@ -97,13 +100,9 @@ const emit = defineEmits<{
   (e: "success"): void;
 }>();
 
-const birthdayText = computed(() =>
-  userInfoFormData.value.birthday
-    ? dayjs(userInfoFormData.value.birthday).format("YYYY年MM月DD日")
-    : "",
-);
-
 const userInfoForm = ref();
+
+const userInfoRules = {};
 
 const userInfoFormData = ref<UserInfo>({
   nickname: "",
@@ -111,12 +110,10 @@ const userInfoFormData = ref<UserInfo>({
   birthday: null,
   bio: null,
 });
+
 onShow(() => {
-  if (props.userInfo) {
-    userInfoFormData.value = { ...props.userInfo };
-  }
+  props.userInfo && (userInfoFormData.value = { ...props.userInfo });
 });
-const calendarShow = ref(false);
 
 const genderRange = ref([
   {
@@ -133,7 +130,12 @@ const genderRange = ref([
   },
 ]);
 
-const userInfoRules = {};
+const calendarShow = ref(false);
+const birthdayText = computed(() =>
+  userInfoFormData.value.birthday
+    ? dayjs(userInfoFormData.value.birthday).format("YYYY年MM月DD日")
+    : "",
+);
 
 const handlerBirthChange = (e: any) => {
   userInfoFormData.value.birthday = dayjs(
@@ -145,12 +147,8 @@ const handlerSave = async () => {
   userInfoForm.value?.validate(async (valid: boolean, errors: any[]) => {
     if (valid) {
       try {
-        await http({
-          url: "/api/userInfo/updateUserInfo",
-          method: "POST",
-          data: {
-            ...userInfoFormData.value,
-          },
+        await http.post("userInfo/updateUserInfo", {
+          ...userInfoFormData.value,
         });
         emit("success"); // 先触发success事件
         setTimeout(() => {
@@ -168,79 +166,57 @@ const handlerSave = async () => {
 </script>
 
 <style scoped lang="scss">
-.edit-user-info {
-  width: 90vw;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #f8f2de;
-  border-radius: 16rpx;
-  border-top: 6rpx solid #f9f9f0;
-  border-bottom: 6rpx solid #eddebb;
-  box-shadow: 0 4rpx 16rpx #e4d4b7;
-  padding: 20rpx;
+.cover {
   z-index: 10;
 }
 
-.title {
-  font-size: 32rpx;
-  text-align: center;
+.user-info-edit_content {
+  width: 90vw;
+  border-radius: 16rpx;
+  padding: 20rpx 25rpx 30rpx;
+  z-index: 15;
 }
 
-.close {
-  width: 40rpx;
-  height: 40rpx;
-  position: absolute;
-  top: 20rpx;
-  right: 30rpx;
-  font-size: 28rpx;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  background-color: #fe7a24;
-  border-radius: 50%;
+.user-info-edit_head {
+  margin-bottom: 20rpx;
+  .title {
+    font-size: var(--fontSize-big);
+    text-align: center;
+  }
 
-  .close-icon {
-    width: 30rpx;
-    height: 30rpx;
+  .close {
+    width: 50rpx;
+    height: 50rpx;
+    position: absolute;
+    top: 25rpx;
+    right: 30rpx;
+    background-color: var(--primary-color);
   }
 }
 
-.form {
-  margin-top: 20rpx;
+.user-info-edit_form {
   width: 100%;
-
+  border-radius: 20rpx;
+  padding: 20rpx;
   .form-item {
     background-color: #fff;
-    border: 3rpx solid #c6c0b3;
-  }
-
-  .birth-choose {
-    padding: 10rpx;
-    font-size: 28rpx;
-    color: #999;
-    background-color: #fff;
-    border-radius: 5rpx;
-    border: 3rpx solid #c6c0b3;
   }
 
   .form-btn-group {
-    display: flex;
-    justify-content: space-around;
     margin-top: 20rpx;
   }
 
   .form-button {
-    background-color: #fe7a24;
+    background-color: var(--primary-color);
     color: #fff;
-    border-radius: 25rpx;
-    box-shadow: 0 4rpx 16rpx #ea9554;
-    font-size: 32rpx;
-    line-height: 2;
-    padding: 0 1.5em;
-    height: auto;
+    border-radius: 20rpx;
+    box-shadow: var(--shadow);
+    font-size: var(--fontSize-normal);
+    line-height: 2.2;
+    padding: 0 2em;
+  }
+  .cancel {
+    background-color: var(--contrast-color);
   }
 }
 

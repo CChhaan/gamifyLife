@@ -1,7 +1,7 @@
 <template>
-  <view class="ai-tasks">
+  <view class="ai-tasks tab-page">
     <view class="title">AI任务队列</view>
-    <view class="back" @click="$emit('close')">
+    <view class="back flex" @click="$emit('close')">
       <u-icon name="arrow-left-double"></u-icon>
       <text class="back-text">返回</text>
     </view>
@@ -12,8 +12,8 @@
         class="aiList-item"
       >
         <template #title>
-          <view class="title-ctn">
-            <view class="aitask-title">{{ aiList.input_goal }}</view>
+          <view class="task-title flex flex-justify__between w-full">
+            <view class="ai-task-title">{{ aiList.input_goal }}</view>
             <view>{{ TicketStatus[aiList.status] }}</view>
           </view>
         </template>
@@ -26,10 +26,10 @@
             <view class="task-title">
               <text>{{ task.title }}</text>
             </view>
-            <view class="task-content">
+            <view>
               <text>{{ task.description }}</text>
             </view>
-            <view class="options">
+            <view class="options flex flex-justify__end w-full">
               <button
                 size="mini"
                 @click="createTask(task)"
@@ -49,7 +49,10 @@
               <button size="mini" @click="" class="btn delete">删除</button>
             </view>
           </view>
-          <view class="options" v-if="aiList.status == 'SUCCESS'">
+          <view
+            class="options flex flex-justify__end w-full"
+            v-if="aiList.status == 'SUCCESS'"
+          >
             <button size="mini" @click="batchApply(aiList.id!)" class="btn use">
               全部应用
             </button>
@@ -71,7 +74,7 @@
 
 <script setup lang="ts">
 import type { Task, TaskCategory, TaskTag, Ticket } from "@/type/task";
-import TaskEditCmp from "@/pages/task/taskCreate.vue";
+import TaskEditCmp from "@/pages/task/components/taskCreate.vue";
 import { TicketStatus } from "@/type/task";
 import http from "@/utils/http";
 import { onLoad, onShow } from "@dcloudio/uni-app";
@@ -87,9 +90,7 @@ const selectTask = ref<Task>();
 const taskEditShow = ref(false);
 
 const getAiTaskListWithDraft = async () => {
-  aiTaskList.value = await http.get<Ticket[]>(
-    "/api/aiTask/aiTaskListWithDraft",
-  );
+  aiTaskList.value = await http.get<Ticket[]>("aiTask/aiTaskListWithDraft");
 };
 
 const editTask = (task: Task) => {
@@ -101,7 +102,7 @@ const editTask = (task: Task) => {
 };
 
 const createTask = async (task: Task) => {
-  await http.post("/api/task/createTask", task);
+  await http.post("task/createTask", task);
   uni.showToast({
     title: "应用成功",
   });
@@ -119,7 +120,7 @@ const batchApply = async (id: number | string) => {
       title: "应用中...",
       mask: true,
     });
-    await http.post("/api/aiTask/applyAITask", { id });
+    await http.post("aiTask/applyAITask", { id });
     createFresh();
     uni.showToast({
       title: "应用成功",
@@ -137,84 +138,73 @@ onShow(() => {
 
 <style scoped lang="scss">
 .ai-tasks {
-  width: 100%;
-  height: 100%;
-  background-color: var(--background-second-color);
-  padding: 20rpx;
-  box-sizing: border-box;
+  padding: 20rpx 20rpx 145rpx;
   overflow: auto;
   position: fixed;
   z-index: 10;
-  padding-bottom: 145rpx;
-}
 
-.title {
-  font-size: 40rpx;
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 30rpx;
-}
-
-.back {
-  position: absolute;
-  top: 25rpx;
-  left: 25rpx;
-  display: flex;
-  .back-text {
-    margin-left: 10rpx;
-    font-size: 32rpx;
-  }
-}
-.aiList-item {
-  background-color: #fff;
-  padding: 20rpx;
-  margin-bottom: 20rpx;
-  border-radius: 10rpx;
-  box-shadow: 0 0 10rpx rgba(0, 0, 0, 0.1);
-}
-.title-ctn {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  padding-right: 20rpx;
-
-  .aitask-title {
-    width: 70%;
-  }
-}
-
-.task {
-  padding: 20rpx;
-  border-bottom: 2rpx solid #ccc;
-  .task-title {
-    font-size: 32rpx;
+  .title {
+    font-size: var(--fontSize-large);
     font-weight: bold;
-    margin-bottom: 10rpx;
+    text-align: center;
+    margin-bottom: 30rpx;
   }
-}
-.options {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 10rpx;
-  width: 100%;
-  .btn {
-    margin-left: 10rpx;
-    margin: 5rpx 10rpx;
-    border: none;
-    border-radius: 5rpx;
-    font-size: 24rpx;
-    &.use {
-      background-color: #4caf50;
-      color: #fff;
+
+  .back {
+    position: absolute;
+    top: 25rpx;
+    left: 25rpx;
+    .back-text {
+      margin-left: 10rpx;
+      font-size: var(--fontSize-normal);
     }
-    &.edit {
-      background-color: #2196f3;
-      color: #fff;
+  }
+
+  .aiList-item {
+    background-color: var(--bg-color);
+    padding: 20rpx;
+    margin-bottom: 20rpx;
+    border-radius: 10rpx;
+    box-shadow: var(--shadow);
+
+    .task-title {
+      padding-right: 20rpx;
+
+      .ai-task-title {
+        width: 70%;
+        font-size: var(--fontSize-normal);
+      }
     }
-    &.delete {
-      background-color: #f44336;
-      color: #fff;
+
+    .task {
+      padding: 20rpx;
+      border-bottom: 2rpx solid #ccc;
+      .task-title {
+        font-size: var(--fontSize-normal);
+        font-weight: bold;
+        margin-bottom: 10rpx;
+      }
+    }
+  }
+  .options {
+    margin-top: 10rpx;
+    .btn {
+      margin-left: 10rpx;
+      margin: 5rpx 10rpx;
+      border-radius: 5rpx;
+      font-size: var(--fontSize-mini);
+      &.use {
+        background-color: #4caf50;
+        color: #fff;
+      }
+      &.edit {
+        background-color: #2196f3;
+        color: #fff;
+      }
+      &.delete {
+        background-color: #f44336;
+        color: #fff;
+      }
     }
   }
 }

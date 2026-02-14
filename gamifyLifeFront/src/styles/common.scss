@@ -6,16 +6,21 @@ page {
 
   --text-light-color: #666;
 
-  --bg-color: #fff;
+  --bg-color: #fefefe;
   --bg-color-page: #f8f7e6;
-  --background-second-color: #f8f2de;
+  --bg-second-color: #f8f2de;
+  --bg-third-color: #f1ede2;
+
   --placeholder-color: #aaa;
 
-  --fontSize-normal: 32rpx;
+  --fontSize-mini: 24rpx;
   --fontSize-small: 28rpx;
+  --fontSize-normal: 32rpx;
   --fontSize-big: 36rpx;
+  --fontSize-large: 40rpx;
 
   --shadow: 2rpx 4rpx 10rpx #ccc;
+  --shadow-modal: 10rpx 10rpx 20rpx rgba(33, 33, 33, 0.5);
 }
 
 @mixin full-screen {
@@ -84,6 +89,10 @@ page {
   align-items: flex-start;
 }
 
+.flex-align__stretch {
+  align-items: stretch;
+}
+
 .flex-shrink-0 {
   flex-shrink: 0;
 }
@@ -95,7 +104,7 @@ page {
 .tab-page {
   @include full-screen;
   background-color: var(--bg-color-page);
-  padding-bottom: 140rpx;
+  padding-bottom: 145rpx;
 }
 
 .img {
@@ -107,4 +116,22 @@ page {
 .circle {
   border-radius: 50%;
   @include overflow-hidden;
+}
+
+.cover {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: var(--bg-color);
+  box-shadow: var(--shadow-modal);
 }

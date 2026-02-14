@@ -23,7 +23,7 @@
               userInfo?.avatar_url ||
               'https://p9-passport.byteacctimg.com/img/mosaic-legacy/3796/2975850990~120x256.image'
             "
-            mode="aspectFill"
+            mode="aspectFit"
           />
         </view>
         <view class="info flex flex-col flex-1 min-w-0 flex-align__start">
@@ -155,7 +155,7 @@
         <text class="position">第XXX名</text>
       </div>
     </view>
-    <EditUserInfo
+    <edit-user-info-cmp
       @close="editInfoShow = false"
       @success="getUserInfo"
       v-if="editInfoShow"
@@ -166,21 +166,14 @@
 
 <script setup lang="ts">
 import { onShow } from "@dcloudio/uni-app";
-import { computed, ref } from "vue";
-import EditUserInfo from "./editUserInfo.vue";
+import { ref } from "vue";
+import EditUserInfoCmp from "./editUserInfo.vue";
 import { useUser } from "@/composables/useUser";
 import ExpLineCmp from "@/components/ExpLine/ExpLine.vue";
 
 const editInfoShow = ref(false);
 
 const { userInfo, userGrowth, loadUserData, getUserInfo } = useUser();
-
-const expWidth = computed(() => {
-  if (!userGrowth.value) return 0;
-  const exp = userGrowth.value.total_experience;
-  const nextExp = userGrowth.value.nextLevelExp;
-  return Math.min((exp / nextExp) * 100, 100);
-});
 
 onShow(async () => {
   await loadUserData();

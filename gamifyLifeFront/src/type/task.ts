@@ -22,6 +22,7 @@ export const TaskStatusTextMap = {
   COMPLETED: "已完成",
   OVERDUE: "已逾期",
   ABANDONED: "已放弃",
+  UNUSED: "未使用",
 } as const;
 
 export interface TaskTag {

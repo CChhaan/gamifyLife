@@ -135,7 +135,7 @@ const handleLogin = async () => {
       password: loginFormData.value.password,
     };
     const token = await http({
-      url: "/api/auth/login",
+      url: "/auth/login",
       method: "POST",
       data,
     });
@@ -150,7 +150,7 @@ const handleLogin = async () => {
 const handleRegister = async () => {
   try {
     await http({
-      url: "/api/auth/register",
+      url: "/auth/register",
       method: "POST",
       data: registerFormData.value,
     });

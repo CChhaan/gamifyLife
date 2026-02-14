@@ -1,9 +1,9 @@
 <template>
-  <view class="tag-item">
+  <view class="tag-item flex flex-justify__between flex-col">
     <view class="tag-name">
       <text class="tag-name-text">{{ item.name }}</text>
     </view>
-    <view class="tag-item-attr">
+    <view class="flex">
       <u-icon
         :name="`/static/imgs/${item.primary_attr}.png`"
         size="40"
@@ -12,7 +12,7 @@
         InfluenceAttrTextMap[item.primary_attr as InfluenceAttr]
       }}</text>
     </view>
-    <view class="tag-item-attr" v-if="item.secondary_attr">
+    <view class="flex" v-if="item.secondary_attr">
       <u-icon
         :name="`/static/imgs/${item.secondary_attr}.png`"
         size="40"
@@ -21,14 +21,12 @@
         InfluenceAttrTextMap[item.secondary_attr]
       }}</text>
     </view>
-    <view class="operation">
-      <button
-        class="operation-btn"
-        @click="$emit('handleDel', item.id, item.name)"
-      >
-        删除
-      </button>
-    </view>
+    <button
+      class="operation-btn"
+      @click="$emit('handleDel', item.id, item.name)"
+    >
+      删除
+    </button>
   </view>
 </template>
 
@@ -46,13 +44,8 @@ defineProps<{ item: TaskTag }>();
 .tag-item {
   border-radius: 15rpx;
   padding: 20rpx;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 32rpx;
-  color: var(--text-color);
-  box-shadow: 5px 5px 7px rgba(33, 33, 33, 0.7);
+  font-size: var(--fontSize-normal);
+  box-shadow: var(--shadow-modal);
   &:nth-child(5n + 1) {
     background-color: #fdf;
     transform: rotate(-6deg);
@@ -74,26 +67,24 @@ defineProps<{ item: TaskTag }>();
     transform: rotate(1deg);
   }
 }
+
 .tag-name {
-  font-size: 40rpx;
+  font-size: var(--fontSize-large);
 
   .tag-name-text {
     margin-right: 10rpx;
   }
 }
-.tag-item-attr {
-  display: flex;
-  align-items: center;
-  .attr-name {
-    margin-left: 10rpx;
-  }
+
+.attr-name {
+  margin-left: 10rpx;
 }
 
 .operation-btn {
   border: none;
   color: #fff;
   background-color: var(--primary-color);
-  font-size: 32rpx;
+  font-size: var(--fontSize-normal);
   line-height: 1.5;
   padding: 0.25em 1em;
   margin-top: 10rpx;

@@ -1,6 +1,7 @@
 <template>
-  <view class="cover">
-    <view class="add-tag-card">
+  <view>
+    <view class="cover"></view>
+    <view class="add-tag-card modal">
       <u-form
         :model="addTagData"
         ref="taskTagForm"
@@ -10,7 +11,6 @@
       >
         <u-form-item label="名称" prop="name" :border-bottom="false">
           <u-input
-            class="form-item"
             v-model="addTagData.name"
             placeholder="请输入标签名称"
             border
@@ -18,7 +18,6 @@
         </u-form-item>
         <u-form-item label="主属性" prop="primary_attr" :border-bottom="false">
           <u-input
-            class="form-item"
             v-model="
               InfluenceAttrTextMap[addTagData.primary_attr as InfluenceAttr]
             "
@@ -35,7 +34,6 @@
           :border-bottom="false"
         >
           <u-input
-            class="form-item"
             v-model="
               InfluenceAttrTextMap[addTagData.secondary_attr as InfluenceAttr]
             "
@@ -47,9 +45,11 @@
           </u-input>
         </u-form-item>
       </u-form>
-      <view class="add-operation">
+      <view class="flex flex-justify__between">
         <button class="operation-btn" @click="confirm">确认</button>
-        <button class="operation-btn" @click="$emit('cancel')">取消</button>
+        <button class="operation-btn cancel" @click="$emit('cancel')">
+          取消
+        </button>
       </view>
     </view>
     <u-select
@@ -119,41 +119,22 @@ const confirm = () => {
 </script>
 
 <style scoped lang="scss">
-.cover {
-  position: absolute;
-  z-index: 15;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.3);
-}
-
 .add-tag-card {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
   width: 66%;
-  box-sizing: border-box;
   padding: 20rpx 40rpx;
-  background-color: #fefefe;
   border-radius: 15rpx;
-  box-shadow: 10rpx 10rpx 20rpx rgba(33, 33, 33, 0.5);
-  z-index: 20;
-}
-.add-operation {
-  display: flex;
-  justify-content: space-between;
 }
 
 .operation-btn {
-  border: none;
   color: #fff;
   background-color: var(--primary-color);
-  font-size: 32rpx;
+  font-size: var(--fontSize-normal);
   line-height: 1.5;
   padding: 0.25em 1em;
   margin-top: 10rpx;
+}
+
+.cancel {
+  background-color: var(--contrast-color);
 }
 </style>
