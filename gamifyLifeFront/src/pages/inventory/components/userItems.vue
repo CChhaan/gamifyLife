@@ -48,7 +48,10 @@
             v-if="selectedItem.item?.type !== 'FOOD'"
             >使用</view
           >
-          <view class="option flex flex-justify__center flex-1" v-else
+          <view
+            class="option flex flex-justify__center flex-1"
+            v-else
+            @click="gotoPet"
             >去使用</view
           >
         </view>
@@ -78,6 +81,12 @@ onLoad(() => {
 const cancel = () => {
   selectedItem.value = undefined;
   count.value = 0;
+};
+
+const gotoPet = () => {
+  uni.navigateTo({
+    url: `/pages/pet/pet`,
+  });
 };
 </script>
 

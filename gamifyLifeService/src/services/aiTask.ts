@@ -135,11 +135,11 @@ export default class AiTaskService {
   }
 
   // 修改AI创建的任务
-  async updateAITask(id: number, taskData: Task) {
+  async updateAITask(taskData: Task) {
     try {
       const res = await db.AiDraftTasks.update(taskData, {
         where: {
-          id,
+          id: taskData.id,
         },
       });
       return res;

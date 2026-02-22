@@ -57,6 +57,14 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
         defaultValue: 0,
         comment: "分类排序值",
       },
+
+      // 今日该分类下任务完成数量
+      today_completed_count: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+        comment: "今日该分类下任务完成数量",
+      }
     },
     {
       sequelize,

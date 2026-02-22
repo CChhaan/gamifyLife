@@ -19,7 +19,7 @@
     <view class="go-back" @click="goBack">
       <button class="flex flex-justify__center">
         <u-icon name="arrow-leftward"></u-icon>
-        <span style="margin-left: 5rpx">返回首页</span>
+        <span style="margin-left: 5rpx">返回</span>
       </button>
     </view>
   </view>
@@ -32,7 +32,15 @@ import { ref } from "vue";
 
 const selected = ref("userItem");
 const goBack = () => {
-  uni.switchTab({ url: "/pages/personal/personal" });
+  const pages = getCurrentPages();
+  if (pages.length > 1) {
+    uni.navigateBack();
+  } else {
+    // 如果没有上一页，可以跳转到首页或其他指定页面
+    uni.reLaunch({
+      url: "/pages/index/index",
+    });
+  }
 };
 </script>
 

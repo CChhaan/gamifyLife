@@ -145,7 +145,7 @@ export default class TaskService {
   }
 
   // 获取用户任务详情
-  async getTask(taskId: number) {
+  async getTask(taskId: any) {
     try {
       const task = await db.Tasks.findAll({
         where: { id: taskId },

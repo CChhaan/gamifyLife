@@ -1,9 +1,9 @@
 <template>
-  <div class="login">
+  <div class="login flex flex-col flex-justify__center">
     <view class="title">
-      <text>GamifyLife</text>
+      <image class="img" src="../../static//imgs/logo.png" mode="scaleToFill" />
     </view>
-    <div class="form">
+    <div class="form flex flex-col flex-justify__center">
       <auth-form
         v-if="page == 'login'"
         v-model="loginFormData"
@@ -71,18 +71,6 @@ import http from "@/utils/http";
 import { ref } from "vue";
 
 const page = ref<string>("login");
-
-const loginFormData = ref({
-  account: "",
-  password: "",
-});
-
-const registerFormData = ref({
-  ...loginFormData.value,
-  email: "",
-  confirmPassword: "",
-});
-
 const commonRules = {
   account: [
     {
@@ -97,6 +85,43 @@ const commonRules = {
     },
   ],
 };
+
+const handlePageChange = () => {
+  page.value = page.value == "login" ? "register" : "login";
+};
+
+// 登录
+const loginFormData = ref({
+  account: "",
+  password: "",
+});
+
+const handleLogin = async () => {
+  try {
+    const data = {
+      [loginFormData.value.account.includes("@") ? "email" : "account"]:
+        loginFormData.value.account,
+      password: loginFormData.value.password,
+    };
+    const token = await http({
+      url: "/auth/login",
+      method: "POST",
+      data,
+    });
+    uni.showToast({ title: "登录成功", icon: "success" });
+    setToken(token);
+    uni.switchTab({ url: "/pages/index/index" });
+  } catch (error) {
+    console.error("更新失败", error);
+  }
+};
+
+// 注册
+const registerFormData = ref({
+  ...loginFormData.value,
+  email: "",
+  confirmPassword: "",
+});
 
 const registerRules = {
   ...commonRules,
@@ -127,26 +152,6 @@ const registerRules = {
   ],
 };
 
-const handleLogin = async () => {
-  try {
-    const data = {
-      [loginFormData.value.account.includes("@") ? "email" : "account"]:
-        loginFormData.value.account,
-      password: loginFormData.value.password,
-    };
-    const token = await http({
-      url: "/auth/login",
-      method: "POST",
-      data,
-    });
-    uni.showToast({ title: "登录成功", icon: "success" });
-    setToken(token);
-    uni.switchTab({ url: "/pages/index/index" });
-  } catch (error) {
-    console.error("更新失败", error);
-  }
-};
-
 const handleRegister = async () => {
   try {
     await http({
@@ -163,46 +168,36 @@ const handleRegister = async () => {
     console.error("注册失败", error);
   }
 };
-
-const handlePageChange = () => {
-  page.value = page.value == "login" ? "register" : "login";
-};
 </script>
 
 <style lang="scss" scoped>
 .login {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   height: 100vh;
-  background-color: var(--background-color);
+  background-color: var(--bg-third-color);
 }
 
 .title {
-  font-size: 48rpx;
+  width: 600rpx;
+  height: 206rpx;
+  font-size: var(--fontSize-large);
   font-weight: bold;
   margin-bottom: 40rpx;
 }
 
 .form {
   width: 75%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   padding: 80rpx 40rpx;
-  background-color: #f8f2de;
+  background-color: var(--bg-second-color);
   border-radius: 16rpx;
   border-top: 6rpx solid #f9f9f0;
   border-bottom: 6rpx solid #eddebb;
-  box-shadow: 0 4rpx 16rpx #e4d4b7;
+  box-shadow: var(--shadow);
 
   .tip {
     margin-top: 30rpx;
 
     .tip-button {
-      border: none;
+      border: 0;
       color: var(--contrast-color);
     }
   }

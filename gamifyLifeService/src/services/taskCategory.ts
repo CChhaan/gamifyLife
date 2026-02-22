@@ -30,7 +30,7 @@ export default class TaskCategoryService {
   }
 
   // 更新用户任务分类方法
-  async updateTaskCategory(categoryId: number, categoryData: TaskCategory) {
+  async updateTaskCategory(categoryId: any, categoryData: TaskCategory) {
     try {
       const existingCategory = (await db.TaskCategories.findOne({
         where: { id: categoryId },
@@ -61,7 +61,7 @@ export default class TaskCategoryService {
   }
 
   // 删除用户任务分类方法
-  async deleteTaskCategory(categoryId: number) {
+  async deleteTaskCategory(categoryId: any) {
     try {
       const existingCategory = await db.TaskCategories.findOne({
         where: { id: categoryId },

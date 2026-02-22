@@ -1,6 +1,7 @@
 import Router from "koa-router";
-import { success, badRequest } from "../shared/response.ts";
+import { success } from "../shared/response.ts";
 import AITaskService from "../services/aiTask.ts";
+import { routerFnc } from "@/shared/commonFnc.ts";
 
 const router = new Router({ prefix: "/aiTask" });
 
@@ -8,71 +9,49 @@ const aiTaskService = new AITaskService();
 
 // AI生成任务接口
 router.post("/aiCreateTask", async (ctx) => {
-  try {
-    const newTask = await aiTaskService.aiCreateTask(
-      //   ctx.state.user.userId,
-      (ctx.request.body as any).content as string,
-      ctx.state.user.userId,
-    );
-    ctx.body = success(newTask, "生成任务成功");
-  } catch (error: any) {
-    ctx.status = 400;
-    ctx.body = badRequest(error.message);
-  }
+  await routerFnc(ctx, async () => {
+    const userId = ctx.state.user.userId;
+    const content = (ctx.request.body as any).content;
+    const newTask = await aiTaskService.aiCreateTask(content, userId);
+    ctx.body = success(newTask, "任务生成成功");
+  })
 });
 
 // 获取AI工单状态
 router.get("/aiTaskStatus", async (ctx) => {
-  try {
-    const taskStatus = await aiTaskService.getAIJobStatus(
-      ctx.request.query.taskId as string,
-    );
-    ctx.body = success(taskStatus, "获取AI工单状态成功");
-  } catch (error: any) {
-    ctx.status = 400;
-    ctx.body = badRequest(error.message);
-  }
+  await routerFnc(ctx, async () => {
+    const taskId = ctx.request.query.taskId as string;
+    const taskStatus = await aiTaskService.getAIJobStatus(taskId);
+    ctx.body = success(taskStatus, "AI工单状态获取成功");
+  })
 });
 
 // 获取AI工单列表及其下属任务
 router.get("/aiTaskListWithDraft", async (ctx) => {
-  try {
-    const taskList = await aiTaskService.getAITaskListWithDraft(
-      ctx.state.user.userId,
-    );
-    ctx.body = success(taskList, "获取AI工单列表成功");
-  } catch (error: any) {
-    ctx.status = 400;
-    ctx.body = badRequest(error.message);
-  }
+  await routerFnc(ctx, async () => {
+    const userId = ctx.state.user.userId;
+    const taskList = await aiTaskService.getAITaskListWithDraft(userId);
+    ctx.body = success(taskList, "AI工单列表获取成功");
+  })
 });
 
 // 修改AI创建的任务
 router.put("/updateAITask", async (ctx) => {
-  try {
-    const task = await aiTaskService.updateAITask(
-      (ctx.request.body as any).id,
-      ctx.request.body as any,
-    );
-    ctx.body = success(task, "修改任务成功");
-  } catch (error: any) {
-    ctx.status = 400;
-    ctx.body = badRequest(error.message);
-  }
+  await routerFnc(ctx, async () => {
+    const taskData = ctx.request.body as any
+    const task = await aiTaskService.updateAITask(taskData);
+    ctx.body = success(task, "任务修改成功");
+  })
 });
 
 // 应用AI工单下的所有临时草稿任务
 router.post("/applyAITask", async (ctx) => {
-  try {
-    const task = await aiTaskService.applyAITask(
-      ctx.state.user.userId,
-      (ctx.request.body as any).id,
-    );
-    ctx.body = success(task, "应用草稿任务成功");
-  } catch (error: any) {
-    ctx.status = 400;
-    ctx.body = badRequest(error.message);
-  }
+  await routerFnc(ctx, async () => {
+    const userId = ctx.state.user.userId;
+    const jobId = (ctx.request.body as any).id;
+    const task = await aiTaskService.applyAITask(userId, jobId);
+    ctx.body = success(task, "草稿任务应用成功");
+  })
 });
 
 export default router;

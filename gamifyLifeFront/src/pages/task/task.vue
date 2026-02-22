@@ -118,7 +118,7 @@
                   :key="key"
                 >
                   <image
-                    :src="`/static/imgs/${key}.png`"
+                    :src="`/static/imgs/icons/${key}.png`"
                     class="attr-item-icon"
                   />
                 </view>
@@ -349,7 +349,7 @@ const getAIStatus = (jobId: number | string) => {
       clearInterval(timer);
       uTipsRef.value?.show({
         title: "AI规划完成，可在AI任务队列页面查看",
-        type: "success",
+        t0ype: "success",
         duration: "2300",
       });
     } else if (aiJob.status == "FAILED") {

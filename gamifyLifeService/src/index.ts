@@ -76,7 +76,7 @@ async function loadItems() {
     await syncDatabase();
 
     app.listen(3000, () => {
-      console.log("Server is running on http://localhost:3001");
+      console.log("Server is running on http://localhost:3000");
       console.log("加载环境变量", process.env.AI_TOKEN);
     });
   } catch (error) {

@@ -40,7 +40,6 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
       nickname: {
         type: DataTypes.STRING(50),
         allowNull: false,
-        defaultValue: "伙伴",
         comment: "宠物昵称",
       },
       // 成长阶段
@@ -82,7 +81,7 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
       affection: {
         type: DataTypes.SMALLINT.UNSIGNED,
         allowNull: false,
-        defaultValue: 10,
+        defaultValue: 80,
         comment: "好感度0-100",
       },
       // 当前状态

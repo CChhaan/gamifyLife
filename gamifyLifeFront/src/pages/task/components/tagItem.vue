@@ -5,7 +5,7 @@
     </view>
     <view class="flex">
       <u-icon
-        :name="`/static/imgs/${item.primary_attr}.png`"
+        :name="`/static/imgs/icons/${item.primary_attr}.png`"
         size="40"
       ></u-icon>
       <text class="attr-name">{{
@@ -14,7 +14,7 @@
     </view>
     <view class="flex" v-if="item.secondary_attr">
       <u-icon
-        :name="`/static/imgs/${item.secondary_attr}.png`"
+        :name="`/static/imgs/icons/${item.secondary_attr}.png`"
         size="40"
       ></u-icon>
       <text class="attr-name">{{

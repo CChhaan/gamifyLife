@@ -7,7 +7,7 @@
     >
       <image
         class="setting-icon"
-        src="/static/imgs/setting.png"
+        src="/static/imgs/icons/setting.png"
         mode="aspectFit"
       />
       <text>设置</text>
@@ -34,7 +34,7 @@
             <image
               v-if="userInfo?.gender == 1"
               class="sex"
-              :src="`/static/imgs/${userInfo?.gender == 1 ? 'male' : 'female'}.png`"
+              :src="`/static/imgs/icons/${userInfo?.gender == 1 ? 'male' : 'female'}.png`"
               mode="scaleToFill"
             />
             <view v-else class="sex"></view>
@@ -48,7 +48,7 @@
           <view class="flex">
             <image
               class="gold-icon"
-              src="/static/imgs/financing.png"
+              src="/static/imgs/icons/financing.png"
               mode="scaleToFill"
             />
             <text>金币：${{ userGrowth?.gold }}</text>
@@ -104,7 +104,7 @@
         <text>个人成就</text>
         <image
           class="entry-icon"
-          src="/static/imgs/trophy.png"
+          src="/static/imgs/icons/trophy.png"
           mode="scaleToFill"
         />
       </view>
@@ -115,7 +115,7 @@
         <text>道具背包</text>
         <image
           class="entry-icon"
-          src="/static/imgs/backpack.png"
+          src="/static/imgs/icons/backpack.png"
           mode="scaleToFill"
         />
       </view>
@@ -141,17 +141,29 @@
     <view class="ranks flex flex-justify__around flex-1 w-full">
       <div class="rank-item flex flex-col flex-justify__center">
         <text class="title">XXX排行榜</text>
-        <image class="rank-icon" src="/static/imgs/medal.png" mode="widthFix" />
+        <image
+          class="rank-icon"
+          src="/static/imgs/icons/medal.png"
+          mode="widthFix"
+        />
         <text class="position">第XXX名</text>
       </div>
       <div class="rank-item flex flex-col flex-justify__center">
         <text class="title">XXX排行榜</text>
-        <image class="rank-icon" src="/static/imgs/medal.png" mode="widthFix" />
+        <image
+          class="rank-icon"
+          src="/static/imgs/icons/medal.png"
+          mode="widthFix"
+        />
         <text class="position">第XXX名</text>
       </div>
       <div class="rank-item flex flex-col flex-justify__center">
         <text class="title">XXX排行榜</text>
-        <image class="rank-icon" src="/static/imgs/medal.png" mode="widthFix" />
+        <image
+          class="rank-icon"
+          src="/static/imgs/icons/medal.png"
+          mode="widthFix"
+        />
         <text class="position">第XXX名</text>
       </div>
     </view>

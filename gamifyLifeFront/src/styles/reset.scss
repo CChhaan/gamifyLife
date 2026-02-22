@@ -7,15 +7,31 @@ page {
 }
 
 /* 覆盖所有常用的 HTML 标签 */
-view, text, button, input, textarea, image, scroll-view, swiper, 
-picker, checkbox, radio, label, form, navigator, block, span,movable-area {
+view,
+text,
+button,
+input,
+textarea,
+image,
+scroll-view,
+swiper,
+picker,
+checkbox,
+radio,
+label,
+form,
+navigator,
+block,
+span,
+movable-area {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
 }
 
 /* 清除列表默认样式 */
-ul, li {
+ul,
+li {
   list-style: none;
 }
 

@@ -12,4 +12,15 @@ export default class ItemService {
     });
     return petInfo;
   }
+
+  // 创建宠物
+  async createPet(user_id: any, pet_name: any) {
+    const petInfo = await db.Pets.create({
+      user_id,
+      nickname: pet_name,
+    });
+    return petInfo;
+  }
+
+  
 }

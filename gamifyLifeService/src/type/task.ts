@@ -6,6 +6,7 @@ export interface TaskCategory {
   display_order: number;
   updatedAt?: Date;
   createdAt?: Date;
+  today_completed_count: number;
 }
 
 export type InfluenceAttr = "mind" | "body" | "social" | "discipline";

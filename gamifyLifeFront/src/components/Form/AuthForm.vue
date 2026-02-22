@@ -1,5 +1,5 @@
 <template>
-  <view class="authForm">
+  <view class="w-full">
     <u-form
       :model="authFormData"
       ref="authForm"
@@ -31,7 +31,9 @@ import { type FormItem } from "@/type/form";
 import UForm from "uview-pro/components/u-form/u-form.vue";
 import type { FormRules } from "uview-pro/types/global";
 import { ref } from "vue";
-const authFormData = defineModel<Record<string, any>>({ default: () => ({}) });
+const authFormData = defineModel<Record<string, any>>({
+  default: () => ({}),
+});
 defineProps<{
   authRules: FormRules;
   items: FormItem[];
@@ -57,28 +59,26 @@ const onSubmit = () => {
 </script>
 
 <style scoped lang="scss">
-.authForm {
-  width: 100%;
-  .form-item {
-    box-shadow: inset 0 0 4rpx 5rpx #f5f5f5;
-    margin-bottom: 40rpx;
-    border: 3rpx solid #c6c0b3;
-    border-radius: 20rpx;
-    padding: 10rpx 20rpx;
-    background-color: #fff;
-    font-size: 32rpx;
-  }
-  .form-button {
-    background-color: var(--primary-color);
-    color: #fff;
-    border-radius: 30rpx;
-    box-shadow: 0 4rpx 16rpx #ea9554;
-  }
+.form-item {
+  box-shadow: inset 0 0 4rpx 5rpx #f5f5f5;
+  margin-bottom: 40rpx;
+  border: 3rpx solid #c6c0b3;
+  border-radius: 20rpx;
+  padding: 10rpx 20rpx;
+  background-color: var(--bg-color);
+  font-size: var(--fontSize-normal);
+}
+
+.form-button {
+  background-color: var(--primary-color);
+  color: #fff;
+  border-radius: 20rpx;
+  box-shadow: var(--shadow);
 }
 
 :deep(.u-form-item) {
   .u-iconfont {
-    font-size: 40rpx !important;
+    font-size: var(--fontSize-large) !important;
     color: var(--placeholder-color);
   }
 }

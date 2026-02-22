@@ -1,7 +1,8 @@
 import Router from "koa-router";
-import { success, badRequest, conflict } from "../shared/response.ts";
+import { success } from "../shared/response.ts";
 import UserInfoService from "../services/userInfo.ts";
 import { UserInfo } from "@/type/user.ts";
+import { routerFnc } from "@/shared/commonFnc.ts";
 
 const router = new Router({ prefix: "/userInfo" });
 
@@ -9,27 +10,21 @@ const userInfoService = new UserInfoService();
 
 // 获取用户信息接口
 router.get("/", async (ctx) => {
-  try {
-    const userInfo = await userInfoService.getUserInfo(ctx.state.user.userId);
-    ctx.body = success(userInfo, "获取用户信息成功");
-  } catch (error: any) {
-    ctx.status = 400;
-    ctx.body = badRequest(error.message);
-  }
+  await routerFnc(ctx, async () => {
+    const userId = ctx.state.user.userId;
+    const userInfo = await userInfoService.getUserInfo(userId);
+    ctx.body = success(userInfo, "用户信息获取成功");
+  })
 });
 
 // 更新用户信息接口
 router.post("/updateUserInfo", async (ctx) => {
-  try {
-    const updatedInfo = await userInfoService.updateUserInfo(
-      ctx.state.user.userId,
-      ctx.request.body as UserInfo,
-    );
-    ctx.body = success(updatedInfo, "更新用户信息成功");
-  } catch (error: any) {
-    ctx.status = 400;
-    ctx.body = badRequest(error.message);
-  }
+  await routerFnc(ctx, async () => {
+    const userId = ctx.state.user.userId;
+    const userInfo = ctx.request.body as UserInfo;
+    const updatedInfo = await userInfoService.updateUserInfo(userId, userInfo);
+    ctx.body = success(updatedInfo, "用户信息更新成功");
+  })
 });
 
 export default router;

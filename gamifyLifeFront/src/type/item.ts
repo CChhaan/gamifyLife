@@ -12,14 +12,21 @@ export enum ItemStatus {
   OFF_SHELF = "OFF_SHELF",
 }
 
+export const ItemEffectType = {
+  // 宠物饥饿值
+  hunger: "饥饿值",
+  // 宠物经验
+  petExp: "宠物经验",
+  // 宠物亲密度
+  petIntimacy: "宠物亲密度",
+}
+
 /** 道具使用效果类型（对应JSON字段） */
 export interface ItemEffect {
-  [key: string]: number | string | boolean; // 通用类型，也可精准定义
   // 精准定义示例（根据业务需求调整）：
-  // petExp?: number; // 宠物经验
-  // hunger?: number; // 饥饿值
-  // gold?: number; // 金币
-  // duration?: number; // 效果时长（秒）
+  petExp?: number; // 宠物经验
+  hunger?: number; // 饥饿值
+  petIntimacy: number; // 宠物亲密度
 }
 
 /** 道具基础类型（对应数据库表字段） */
@@ -60,4 +67,5 @@ export interface Inventory {
   /** 更新时间 */
   updated_at?: Date;
   item?: Item;
+
 }

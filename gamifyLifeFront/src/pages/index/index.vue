@@ -58,7 +58,7 @@
           :key="key"
         >
           <view class="flex">
-            <image :src="`/static/imgs/${key}.png`" class="attr-item-icon" />
+            <image :src="`/static/imgs/icons/${key}.png`" class="attr-item-icon" />
             <text>{{ name }}</text>
           </view>
           <text>{{ userGrowth?.[key] }}</text>

@@ -14,7 +14,7 @@ export enum ItemStatus {
 
 /** 道具使用效果类型（对应JSON字段） */
 export interface ItemEffect {
-  [key: string]: number | string | boolean; // 通用类型，也可精准定义
+  [key: string]: number; // 通用类型，也可精准定义
   // 精准定义示例（根据业务需求调整）：
   // petExp?: number; // 宠物经验
   // hunger?: number; // 饥饿值
@@ -59,4 +59,5 @@ export interface Inventory {
   created_at?: Date;
   /** 更新时间 */
   updated_at?: Date;
+  item?: Item;
 }

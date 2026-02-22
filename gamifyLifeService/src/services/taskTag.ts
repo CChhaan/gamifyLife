@@ -33,7 +33,7 @@ export default class TaskTagService {
     }
   }
   // 修改标签名称
-  async updateTaskTagName(userId: number, tagId: number, newName: string) {
+  async updateTaskTagName(userId: number, tagId: any, newName: string) {
     try {
       const updatedTaskTag = await db.TaskTags.update(
         { name: newName },
@@ -47,7 +47,7 @@ export default class TaskTagService {
   }
 
   // 修改标签影响属性
-  async updateTaskTagAttributes(userId: number, tagId: number, attributes: { primary_attr: InfluenceAttr | ""; secondary_attr: InfluenceAttr | "" }) {
+  async updateTaskTagAttributes(userId: number, tagId: any, attributes: { primary_attr: InfluenceAttr | ""; secondary_attr: InfluenceAttr | "" }) {
     try {
       const updatedTaskTag = await db.TaskTags.update(
         {
@@ -64,7 +64,7 @@ export default class TaskTagService {
   }
 
   // 删除标签
-  async deleteTaskTag(userId: number, tagId: number) {
+  async deleteTaskTag(userId: any, tagId: any) {
     try {
       const existingTag = await db.TaskTags.findOne({
         where: { user_id: userId, id: tagId },
