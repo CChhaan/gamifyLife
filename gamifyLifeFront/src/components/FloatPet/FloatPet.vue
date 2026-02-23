@@ -6,6 +6,7 @@
     :y="posY"
     @touchstart="movePetStart"
     @touchend="movePetEnd"
+    @click="gotoPet"
   >
     <image
       v-show="!move"
@@ -45,6 +46,12 @@ const movePetStart = (e: any) => {
 };
 const movePetEnd = (e: any) => {
   move.value = false;
+};
+
+const gotoPet = () => {
+  uni.navigateTo({
+    url: "/pages/pet/pet",
+  });
 };
 </script>
 

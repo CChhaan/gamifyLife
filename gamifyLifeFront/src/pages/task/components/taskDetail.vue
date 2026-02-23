@@ -91,9 +91,17 @@
         </view>
       </view>
     </view>
-    <view class="task-detail_options flex flex-justify__around w-full">
+    <view
+      class="w-full flex flex-justify__center"
+      v-if="task.status === 'ABANDONED'"
+    >
+      <view class="abandoned">已放弃</view>
+    </view>
+    <view class="task-detail_options flex flex-justify__around w-full" v-else>
       <button class="operation-btn">完成任务</button>
-      <button class="operation-btn cancel">放弃任务</button>
+      <button class="operation-btn cancel" @click="abondonTask">
+        放弃任务
+      </button>
     </view>
     <task-edit-cmp
       type="edit"
@@ -108,7 +116,7 @@
       :text="text"
       v-if="confirmModalShow"
       @close="confirmModalShow = false"
-      @confirm="deleteConfirm"
+      @confirm="confirmModalFn"
     ></confirm-modal>
   </view>
 </template>
@@ -152,10 +160,12 @@ const emit = defineEmits<{
 }>();
 const confirmModalShow = ref(false);
 const text = ref<string>("");
+const confirmModalFn = ref(() => {});
 
 const handleDelete = () => {
   text.value = `确定要删除任务「${props.task.title}」吗？`;
   confirmModalShow.value = true;
+  confirmModalFn.value = deleteConfirm;
 };
 
 const deleteConfirm = async () => {
@@ -166,6 +176,25 @@ const deleteConfirm = async () => {
     emit("close");
   } catch (error) {
     console.log("删除失败", error);
+  } finally {
+    confirmModalShow.value = false;
+  }
+};
+
+const abondonTask = () => {
+  text.value = `确定要放弃任务「${props.task.title}」吗？`;
+  confirmModalShow.value = true;
+  confirmModalFn.value = abondonConfirm;
+};
+
+const abondonConfirm = async () => {
+  try {
+    await http.put(`/task/abandonTask/${props.task.id}`);
+    emit("refresh");
+    uni.showToast({ title: "任务已放弃", icon: "success", duration: 2000 });
+    emit("close");
+  } catch (error) {
+    console.log("放弃任务失败", error);
   } finally {
     confirmModalShow.value = false;
   }
@@ -261,6 +290,19 @@ const taskEditShow = ref(false);
         height: 45rpx;
       }
     }
+  }
+
+  .abandoned {
+    width: 80%;
+    font-size: var(--fontSize-large);
+    font-weight: bold;
+    text-align: center;
+    margin: 20rpx auto;
+    color: #666;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    padding: 10rpx;
+    border-radius: 20rpx;
   }
 
   &_options {
