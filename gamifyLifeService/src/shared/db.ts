@@ -29,10 +29,7 @@ type ModelTypes = {
 
 type ModelName = keyof ModelTypes;
 
-type Database = {
-  sequelize: typeof sequelize;
-  Sequelize: typeof Sequelize;
-};
+type Database = { sequelize: typeof sequelize; Sequelize: typeof Sequelize };
 
 const db = {
   sequelize,

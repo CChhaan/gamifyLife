@@ -97,7 +97,7 @@
       <view class="reward-count">
         <view class="title">预计可获得收益</view>
         <view class="tip"
-          >收益由所选难度、标签、完成时间、用户等级等多方面因素计算所得,请以最后实际结果为准</view
+          >收益由所选难度、标签、完成时间、当前用户等级等多方面因素计算所得,请以最后实际结果为准</view
         >
         <view class="flex flex-justify__around">
           <view class="flex">

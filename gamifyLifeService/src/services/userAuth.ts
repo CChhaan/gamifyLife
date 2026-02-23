@@ -12,13 +12,14 @@ export default class UserAuthService {
 
   // 用户注册方法
   async registerUser(account: string, password: string, email: string) {
-    const transaction = await db.sequelize.transaction();
     try {
+      // 创建用户账户 - 同时创建关联的 UserInfo、UserGrowth、TaskCategories 和 TaskTags
       const newUser = await db.UserAccounts.create(
         {
           account,
           password_hash: password,
           email,
+          UserInfo: { nickname: `用户${Date.now().toString(36).slice(-6)}` },
           UserGrowth: {}, // UserGrowth 仅需 user_id，其他字段用默认值即可
           TaskCategories: {
             name: "默认分类",
@@ -33,32 +34,11 @@ export default class UserAuthService {
         },
         {
           include: [db.UserInfo, db.UserGrowth, db.TaskCategories, db.TaskTags],
-          transaction,
-        },
+        }
       );
-      newUser.dataValues.UserInfo = await db.UserInfo.create(
-        {
-          user_id: newUser.dataValues.id,
-          nickname: `用户${newUser.dataValues.id}`,
-        },
-        { transaction },
-      );
-      newUser.dataValues.Pet = await db.Pets.create(
-        {
-          user_id: newUser.dataValues.id,
-        },
-        { transaction },
-      );
-
       const result = newUser.toJSON();
-      await transaction.commit();
-
-      return {
-        ...result,
-        password_hash: undefined,
-      };
+      return { ...result, password_hash: undefined };
     } catch (error: any) {
-      await transaction.rollback();
       console.error("注册用户失败：", error);
       throw new Error(error.message || "注册用户失败，请稍后重试");
     }
@@ -70,17 +50,11 @@ export default class UserAuthService {
       let user;
       if (account) {
         user = await db.UserAccounts.findOne({
-          where: {
-            account,
-            password_hash: sha256(password),
-          },
+          where: { account, password_hash: sha256(password) },
         });
       } else if (email) {
         user = await db.UserAccounts.findOne({
-          where: {
-            email,
-            password_hash: sha256(password),
-          },
+          where: { email, password_hash: sha256(password) },
         });
       }
 
@@ -89,11 +63,11 @@ export default class UserAuthService {
       } else {
         const token = jwt.sign(
           { userId: user.dataValues.id },
-          process.env.JWT_SECRET || "my_app_secret",
+          process.env.JWT_SECRET || "my_app_secret"
         );
         await db.UserAccounts.update(
           { last_login: new Date() },
-          { where: { id: user.dataValues.id } },
+          { where: { id: user.dataValues.id } }
         );
         return token;
       }
@@ -107,8 +81,7 @@ export default class UserAuthService {
   async logoutUser(token: any) {
     try {
       UserAuthService.tokenBlacklist.add(token);
-      return true;
-      // 清除令牌
+      return { message: "退出登录成功" };
     } catch (error: any) {
       console.error("退出登录失败", error);
       throw new Error(error.message || "退出登录失败");

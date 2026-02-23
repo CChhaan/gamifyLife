@@ -37,7 +37,7 @@ export default class TaskTagService {
     try {
       const updatedTaskTag = await db.TaskTags.update(
         { name: newName },
-        { where: { user_id: userId, id: tagId } },
+        { where: { user_id: userId, id: tagId } }
       );
       return updatedTaskTag;
     } catch (error: any) {
@@ -47,14 +47,21 @@ export default class TaskTagService {
   }
 
   // 修改标签影响属性
-  async updateTaskTagAttributes(userId: number, tagId: any, attributes: { primary_attr: InfluenceAttr | ""; secondary_attr: InfluenceAttr | "" }) {
+  async updateTaskTagAttributes(
+    userId: number,
+    tagId: any,
+    attributes: {
+      primary_attr: InfluenceAttr | "";
+      secondary_attr: InfluenceAttr | "";
+    }
+  ) {
     try {
       const updatedTaskTag = await db.TaskTags.update(
         {
           primary_attr: attributes.primary_attr,
           secondary_attr: attributes.secondary_attr,
         },
-        { where: { user_id: userId, id: tagId } },
+        { where: { user_id: userId, id: tagId } }
       );
       return updatedTaskTag;
     } catch (error: any) {
@@ -66,14 +73,13 @@ export default class TaskTagService {
   // 删除标签
   async deleteTaskTag(userId: any, tagId: any) {
     try {
-      const existingTag = await db.TaskTags.findOne({
-        where: { user_id: userId, id: tagId },
-      });
+      const where = { user_id: userId, id: tagId };
+      const existingTag = await db.TaskTags.findOne({ where });
       if (!existingTag) {
         throw new Error("标签不存在");
       }
-      await db.TaskTags.destroy({ where: { user_id: userId, id: tagId } });
-      return "标签删除成功";
+      await db.TaskTags.destroy({ where });
+      return { message: "标签删除成功" };
     } catch (error: any) {
       console.error("删除标签失败", error);
       throw new Error(error.message || "删除标签失败");

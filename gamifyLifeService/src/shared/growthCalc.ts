@@ -7,7 +7,7 @@ export const nextLevelExp = (currentLevel: number) => {
 export const taskExp = (
   taskDifficulty = 0,
   userLevel: number,
-  finishTime: number,
+  finishTime: number
 ) => {
   const hours = Math.max(1, Math.ceil(Number(finishTime) || 1));
   const nextLevelTotalExp = nextLevelExp(userLevel);

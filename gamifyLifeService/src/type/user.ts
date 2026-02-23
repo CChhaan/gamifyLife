@@ -29,6 +29,7 @@ export interface UserGrowth {
   nextLevelExp?: number;
   updatedAt?: Date;
   createdAt?: Date;
+  today_task_completion_count?: number; // 今日任务完成总数，可选
 }
 
 export interface UserAccount {

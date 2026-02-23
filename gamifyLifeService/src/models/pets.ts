@@ -29,10 +29,7 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
         unique: true,
         comment: "所属用户（单宠物制）",
 
-        references: {
-          model: "user_accounts",
-          key: "id",
-        },
+        references: { model: "user_accounts", key: "id" },
         onUpdate: "CASCADE",
         onDelete: "CASCADE",
       },
@@ -124,8 +121,21 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
       charset: "utf8mb4",
       collate: "utf8mb4_unicode_ci",
       paranoid: true,
-    },
+    }
   );
 
+  Pets.beforeSave((pet: Pets) => {
+    if (pet.changed("hunger" as keyof Pets)) {
+      if (pet.dataValues.hunger! < 50) {
+        pet.dataValues.status = "HUNGRY";
+      } else {
+        pet.dataValues.status = "NORMAL";
+      }
+    }
+    // 如果宠物状态为SLEEPING，不允许操作数据
+    if (pet.dataValues.status === "SLEEPING") {
+      throw new Error("宠物正在睡觉，无法操作");
+    }
+  });
   return Pets;
 };

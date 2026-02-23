@@ -24,45 +24,35 @@ export default class AiTaskService {
       const categories = (
         await db.TaskCategories.findAll({ where: { user_id: userId } })
       ).map((category) => category.dataValues);
+      // 生成AI提示词
       const prompt = readPrompt("aiCreateTask")
         .replaceAll("${tags}", JSON.stringify(tags))
         .replaceAll("${categories}", JSON.stringify(categories))
         .replaceAll("${userId}", userId.toString());
+
       let messages: ChatCompletionMessageParam[] = [
-        {
-          role: "system",
-          content: prompt,
-        },
-        {
-          role: "user",
-          content,
-        },
+        { role: "system", content: prompt },
+        { role: "user", content },
       ];
-      const response = await openai.chat.completions.create({
-        model: "deepseek-chat",
-        messages,
-        response_format: {
-          type: "json_object",
-        },
-      });
-      //   ai工单表新增数据
-      //   ai草稿任务表新增数据
-      const taskData = JSON.parse(response.choices[0].message.content!).map(
-        (task: Task) => ({
-          ...task,
-          ai_job_id: jobId,
-        }),
-      );
-      await db.AiDraftTasks.bulkCreate(taskData, {
-        transaction: t,
-      });
+      const response = (
+        await openai.chat.completions.create({
+          model: "deepseek-chat",
+          messages,
+          response_format: { type: "json_object" },
+        })
+      ).choices[0].message.content;
+      const taskData = JSON.parse(response!).map((task: Task) => ({
+        ...task,
+        ai_job_id: jobId,
+      }));
+
+      // 更新数据库相关表段
+      await db.AiDraftTasks.bulkCreate(taskData, { transaction: t });
       await db.AiWorkOrders.update(
         { status: "SUCCESS" },
-        {
-          where: { id: jobId },
-          transaction: t,
-        },
+        { where: { id: jobId }, transaction: t }
       );
+
       await t.commit();
       return response;
     } catch (error) {
@@ -72,7 +62,7 @@ export default class AiTaskService {
     }
   }
 
-  // ai创建任务
+  // AI 生成任务
   async aiCreateTask(content: string, userId: number) {
     try {
       const newAiWork = await db.AiWorkOrders.create({
@@ -85,11 +75,8 @@ export default class AiTaskService {
         (error) => {
           console.error("AI任务处理失败:", error);
           // 更新工单状态为失败
-          db.AiWorkOrders.update(
-            { status: "FAILED" },
-            { where: { id: newAiWork.dataValues.id } },
-          );
-        },
+          newAiWork.update({ status: "FAILED" });
+        }
       );
 
       return newAiWork;
@@ -113,87 +100,81 @@ export default class AiTaskService {
 
       return job;
     } catch (error: any) {
-      console.error("查询工单状态失败", error);
-      throw new Error(error.message || "查询工单状态失败");
+      console.error("工单状态查询失败", error);
+      throw new Error(error.message || "工单状态查询失败");
     }
   }
 
-  // 获取AI工单列表及其下面所有的临时草稿任务
+  // 获取 AI 工单列表
   async getAITaskListWithDraft(userId: number) {
     try {
       const result = await db.AiWorkOrders.findAll({
-        where: {
-          user_id: userId,
-        },
+        where: { user_id: userId },
         include: [db.AiDraftTasks],
+        order: [["createdAt", "DESC"]],
       });
       return result;
     } catch (error: any) {
-      console.log("获取AI创建任务列表失败");
-      throw new Error(error.message || "获取AI创建任务列表失败");
+      console.log("AI创建任务列表获取失败");
+      throw new Error(error.message || "AI创建任务列表获取失败");
     }
   }
 
-  // 修改AI创建的任务
+  // 修改 AI 草稿任务
   async updateAITask(taskData: Task) {
     try {
-      const res = await db.AiDraftTasks.update(taskData, {
-        where: {
-          id: taskData.id,
-        },
-      });
+      const task = (await db.AiDraftTasks.findByPk(taskData.id))!;
+      if (task.dataValues.status !== "UNUSED") {
+        throw new Error("已应用的任务无法修改");
+      }
+      const res = await task.update(taskData);
       return res;
     } catch (error: any) {
-      console.log("修改AI创建的任务失败");
-      throw new Error(error.message || "修改AI创建的任务失败");
+      console.log("AI创建的任务修改失败");
+      throw new Error(error.message || "AI创建的任务修改失败");
     }
   }
 
-  // 删除AI创建的任务
-  async deleteAITask(id: number) {
+  // 删除 AI 草稿任务
+  async deleteAITask(id: any) {
     try {
-      const res = await db.AiDraftTasks.destroy({
-        where: {
-          id,
-        },
-      });
+      const task = (await db.AiDraftTasks.findByPk(id))!;
+      if (task.dataValues.status !== "UNUSED") {
+        throw new Error("已应用的任务无法删除");
+      }
+      const res = await task.destroy();
       return res;
     } catch (error: any) {
-      console.log("删除AI创建的任务失败");
-      throw new Error(error.message || "删除AI创建的任务失败");
+      console.log("AI创建的任务删除失败");
+      throw new Error(error.message || "AI创建的任务删除失败");
     }
   }
 
-  // 应用AI工单下的所有临时草稿任务
+  // 应用 AI 工单中的所有任务
   async applyAITask(userId: any, jobId: string) {
     const t = await db.sequelize.transaction();
     try {
       const tasks = await db.AiDraftTasks.findAll({
-        where: {
-          ai_job_id: jobId,
-        },
+        where: { ai_job_id: jobId },
         transaction: t,
       });
       for (const task of tasks) {
-        if (task.dataValues.status === "PENDING") {
+        if (task.dataValues.status !== "UNUSED") {
           continue;
         }
         await taskService.createTask(userId, task.dataValues);
-        await db.AiDraftTasks.update(
-          { status: "PENDING" },
-          { where: { id: task.dataValues.id }, transaction: t },
-        );
+        await task.update({ status: "PENDING" }, { transaction: t });
       }
       await db.AiWorkOrders.update(
         { status: "CONSUMED" },
-        { where: { id: jobId }, transaction: t },
+        { where: { id: jobId }, transaction: t }
       );
       await t.commit();
-      return "success";
+      return { success: true };
     } catch (error: any) {
       await t.rollback();
-      console.log("应用AI创建的任务失败");
-      throw new Error(error.message || "应用AI创建的任务失败");
+      console.log("AI创建的任务应用失败");
+      throw new Error(error.message || "AI创建的任务应用失败");
     }
   }
 }

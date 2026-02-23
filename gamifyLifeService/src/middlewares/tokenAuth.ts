@@ -4,7 +4,7 @@ import UserAuthService from "../services/userAuth.ts";
 import type { Context, Next } from "koa";
 const publicPaths = [
   "/auth/login",
-  "/auth/register",
+  "/auth/register", // 登录和注册页面
   "/public", // 静态资源根目录
   "/icons", // 图标资源
   "/images", // 图片资源
@@ -25,9 +25,7 @@ export default async function tokenAuth(ctx: Context, next: Next) {
       return;
     }
 
-    await jwt({
-      secret: "my_app_secret",
-    })(ctx, next);
+    await jwt({ secret: "my_app_secret" })(ctx, next);
   } catch (err) {
     ctx.status = 401;
     ctx.body = unauthorized("Token验证失败");

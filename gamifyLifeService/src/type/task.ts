@@ -60,6 +60,8 @@ export interface Task {
   completed_at?: string; // 完成时间，可选，可为null
   ai_job_id?: string; // AI任务ID，可选，可为null
   ai_goal_input?: string; // AI目标输入，可选，可为null
+  is_today_hard_task?: boolean; // 是否是今日高难度任务，可选
+  createdAt?: string; // 创建时间，可选
 }
 
 // 工单状态枚举

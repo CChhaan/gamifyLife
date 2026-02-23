@@ -30,7 +30,7 @@
                     <view>LV. {{ petInfo?.level }}</view>
                   </view>
                   <view class="exp-sum flex-1">
-                    <div class="prog">{{ petInfo?.exp }}/{{ 100 }}</div>
+                    <div class="prog">{{ petInfo?.exp }} / {{ 100 }}</div>
                     <view
                       class="exp-now"
                       :style="{ width: petInfo?.exp + '%' }"
@@ -121,7 +121,7 @@
 import { ItemEffectType, type Inventory } from "@/type/item";
 import { PetStage, PetStatus, type Pet } from "@/type/pets";
 import http from "@/utils/http";
-import { onLoad } from "@dcloudio/uni-app";
+import { onShow } from "@dcloudio/uni-app";
 import { ref } from "vue";
 
 const goBack = () => {
@@ -197,7 +197,7 @@ const createPet = async () => {
   } catch (error) {}
 };
 
-onLoad(async () => {
+onShow(async () => {
   await getPet();
   await getUserItems();
 });
@@ -302,25 +302,28 @@ onLoad(async () => {
   .level {
     border-radius: 20rpx;
     margin-right: 20rpx;
-    font-size: var(--fontSize-normal);
+    font-size: var(--fontSize-big);
     font-weight: bold;
   }
 
   .exp-sum {
-    height: 30rpx;
-    border-radius: 15rpx;
+    height: 45rpx;
+    border-radius: 20rpx;
     border: 2rpx solid #ccc;
     position: relative;
     overflow: hidden;
     background-color: var(--bg-second-color);
-
     .prog {
+      height: 30rpx;
+      line-height: 30rpx;
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
       font-size: var(--fontSize-small);
-      color: var(--text-light-color);
+      background-color: var(--bg-color);
+      padding: 2rpx 10rpx;
+      border-radius: 10rpx;
     }
 
     .exp-now {

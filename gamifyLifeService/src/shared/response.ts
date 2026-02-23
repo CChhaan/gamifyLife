@@ -6,26 +6,18 @@ interface ApiResponse<T = any> {
 // 成功响应
 export function success<T = any>(
   data: T | null = null,
-  msg = "操作成功",
+  msg = "操作成功"
 ): ApiResponse<T> {
-  return {
-    code: 200,
-    msg,
-    data,
-  };
+  return { code: 200, msg, data };
 }
 
 // 错误响应
 export function error<T = any>(
   code = 500,
   msg = "系统错误",
-  data: T | null = null,
+  data: T | null = null
 ): ApiResponse<T> {
-  return {
-    code,
-    msg,
-    data,
-  };
+  return { code, msg, data };
 }
 
 // 400 请求参数错误
