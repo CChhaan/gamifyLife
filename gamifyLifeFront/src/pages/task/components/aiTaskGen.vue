@@ -3,6 +3,7 @@
     <view class="cover"></view>
     <view class="ai-task-content modal">
       <view class="title">AI智能任务规划</view>
+      <view class="count">今日已使用AI任务规划次数：{{ count }} / 10</view>
       <view>
         <u-input
           v-model="prompt"
@@ -21,8 +22,12 @@
 </template>
 
 <script setup lang="ts">
+import type { UserDailyLog } from "@/type/user";
 import http from "@/utils/http";
-import { ref } from "vue";
+import { computed, ref, toRef, watch } from "vue";
+const props = defineProps<{
+  count?: number;
+}>();
 
 const prompt = ref("");
 const emit = defineEmits<{
@@ -55,8 +60,11 @@ const aiGen = async () => {
   .title {
     font-size: var(--fontSize-big);
     font-weight: bold;
-    margin-bottom: 40rpx;
+    margin-bottom: 20rpx;
     text-align: center;
+  }
+  .count {
+    margin-bottom: 20rpx;
   }
 
   .ai-btn {

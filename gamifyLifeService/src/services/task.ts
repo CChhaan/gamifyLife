@@ -297,10 +297,13 @@ export default class TaskService {
       }))!;
 
       // 5. 检查每日完成限制
+      const userDailyLog = (await db.UserDailyLogs.findByPk(userId, {
+        transaction: t,
+      }))!;
       const todayCompletions =
-        userGrowth?.dataValues.today_task_completion_count || 0;
+        userDailyLog?.dataValues.today_task_completion_count || 0;
       const todayHighValueCompletions =
-        userGrowth?.dataValues.today_high_value_task_count || 0;
+        userDailyLog?.dataValues.today_high_value_task_count || 0;
 
       if (todayCompletions >= 20) {
         await t.rollback();
@@ -341,6 +344,12 @@ export default class TaskService {
           total_experience: expEarned,
           gold: goldEarned,
           ...attrGains,
+        },
+        { transaction: t },
+      );
+
+      await userDailyLog.increment(
+        {
           today_task_completion_count: 1,
           today_high_value_task_count: highValueValidation ? 1 : 0,
         },

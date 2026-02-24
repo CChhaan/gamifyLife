@@ -70,11 +70,11 @@
       <view>
         <view
           >今日高质量任务完成：{{
-            userGrowth?.today_high_value_task_count
+            userDailyLog?.today_high_value_task_count
           }}</view
         >
         <view
-          >今日任务完成：{{ userGrowth?.today_task_completion_count }} /
+          >今日任务完成：{{ userDailyLog?.today_task_completion_count }} /
           20</view
         >
       </view>
@@ -135,7 +135,7 @@ import { useTask } from "@/composables/useTask";
 import { onShow } from "@dcloudio/uni-app";
 import { computed, ref } from "vue";
 
-const { userInfo, userGrowth, loadUserData } = useUser();
+const { userInfo, userGrowth, loadUserData, userDailyLog } = useUser();
 const { taskCategories, taskList, loadTaskData } = useTask();
 
 onShow(async () => {

@@ -15,6 +15,10 @@ import db, { syncDatabase } from "./shared/db.ts";
 import tokenAuth from "./middlewares/tokenAuth.ts";
 import items from "./shared/items.ts";
 import ws from "koa-websocket";
+import {
+  initializeScheduler,
+  cancelDailyRefreshJob,
+} from "./shared/scheduler.ts";
 
 const app = new Koa({});
 // const server = ws(app);
@@ -74,7 +78,19 @@ async function loadItems() {
     await loadRoutes();
     await loadItems();
     await syncDatabase();
+    // 在应用启动时初始化调度器
+    initializeScheduler();
 
+    // 在应用关闭时取消定时任务
+    process.on("SIGTERM", () => {
+      cancelDailyRefreshJob();
+      process.exit(0);
+    });
+
+    process.on("SIGINT", () => {
+      cancelDailyRefreshJob();
+      process.exit(0);
+    });
     app.listen(3000, () => {
       console.log("Server is running on http://localhost:3000");
       console.log("加载环境变量", process.env.AI_TOKEN);

@@ -68,18 +68,6 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
         defaultValue: 0,
         comment: "自律属性",
       },
-      today_high_value_task_count: {
-        type: DataTypes.INTEGER.UNSIGNED,
-        allowNull: false,
-        defaultValue: 0,
-        comment: "今日高价值任务完成数（防刷C规则）",
-      },
-      today_task_completion_count: {
-        type: DataTypes.INTEGER.UNSIGNED,
-        allowNull: false,
-        defaultValue: 0,
-        comment: "今日任务完成总数",
-      },
       last_reset_date: {
         type: DataTypes.DATEONLY, // 仅存储日期（无时间）
         allowNull: false,
@@ -92,7 +80,7 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
       tableName: "user_growth", // 对应数据库表名
       charset: "utf8mb4",
       collate: "utf8mb4_general_ci",
-    }
+    },
   );
 
   return UserGrowth;

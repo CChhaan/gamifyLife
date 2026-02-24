@@ -4,9 +4,10 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import type { Task, TaskCategory, TaskTag, Ticket } from "@/type/task.ts";
-import type { UserGrowth, UserInfo } from "@/type/user.ts";
+import type { UserDailyLog, UserGrowth, UserInfo } from "@/type/user.ts";
 import { Inventory, Item } from "@/type/item.ts";
 import { Pet } from "@/type/pets.ts";
+import chalk from "chalk";
 
 type BaseModel<T extends {}> = ModelStatic<Model<T>> & {
   associate?: (db: Database) => void;
@@ -24,6 +25,7 @@ type ModelTypes = {
   Items: BaseModel<Item>;
   UserInventories: BaseModel<Inventory>;
   Pets: BaseModel<Pet>;
+  UserDailyLogs: BaseModel<UserDailyLog>;
   // ... 添加其他可能的模型
 };
 
@@ -67,7 +69,7 @@ Object.values(db).forEach((model) => {
 export const syncDatabase = async () => {
   try {
     await sequelize.sync({ alter: true });
-    console.log("数据库同步成功");
+    console.log(chalk.green.bold("数据库同步成功"));
   } catch (error) {
     console.error("数据库同步失败:", error);
     throw error;

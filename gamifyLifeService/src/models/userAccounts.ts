@@ -18,6 +18,11 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
         foreignKey: "user_id",
         sourceKey: "id",
       });
+
+      this.hasOne(models.UserDailyLogs, {
+        foreignKey: "user_id",
+        sourceKey: "id",
+      });
       this.hasMany(models.TaskCategories, {
         foreignKey: "user_id",
         sourceKey: "id",

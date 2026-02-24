@@ -5,6 +5,8 @@
       <u-icon name="arrow-left-double"></u-icon>
       <text class="back-text">返回</text>
     </view>
+    <view class="count">今日已使用AI任务规划次数：{{ count }} / 10</view>
+
     <u-collapse>
       <u-collapse-item
         v-for="(aiList, index) in aiTaskList"
@@ -82,6 +84,7 @@ import { ref } from "vue";
 import dayjs from "dayjs";
 const props = defineProps<{
   categories: TaskCategory[];
+  count: number;
   tags: TaskTag[];
 }>();
 const emit = defineEmits(["close", "refresh"]);
@@ -134,6 +137,10 @@ const batchApply = async (id: number | string) => {
 onShow(() => {
   getAiTaskListWithDraft();
 });
+
+defineExpose({
+  getAiTaskListWithDraft,
+});
 </script>
 
 <style scoped lang="scss">
@@ -158,6 +165,10 @@ onShow(() => {
       margin-left: 10rpx;
       font-size: var(--fontSize-normal);
     }
+  }
+
+  .count {
+    margin-bottom: 20rpx;
   }
 
   .aiList-item {

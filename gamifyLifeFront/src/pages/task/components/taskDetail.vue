@@ -21,10 +21,13 @@
     </view>
     <view class="task-detail_card w-full flex flex-justify__between">
       <view
-        >今日高质量任务完成：{{ userGrowth?.today_high_value_task_count }}</view
+        >今日高质量任务完成：{{
+          userDailyLog?.today_high_value_task_count
+        }}</view
       >
       <view
-        >今日任务完成：{{ userGrowth?.today_task_completion_count }} / 20</view
+        >今日任务完成：{{ userDailyLog?.today_task_completion_count }} /
+        20</view
       >
     </view>
     <!-- 任务详情 -->
@@ -176,15 +179,14 @@ import {
 import dayjs from "dayjs";
 import { computed, ref } from "vue";
 import http from "@/utils/http";
-import type { UserGrowth } from "@/type/user";
+import type { UserDailyLog } from "@/type/user";
 import { onShow } from "@dcloudio/uni-app";
-import { useTask } from "@/composables/useTask";
 
 const props = defineProps<{
   task: Task;
   tags: TaskTag[];
   categories: TaskCategory[];
-  userGrowth: UserGrowth;
+  userDailyLog: UserDailyLog;
 }>();
 const parentTask = ref<Task[] | null>(null);
 const getParentTask = async (id: number) => {
@@ -257,7 +259,7 @@ const abandonConfirm = async () => {
 const taskCompleteShow = ref(false);
 const completeInfo = ref<TaskCompletionResult>({});
 const finishTask = async () => {
-  if (props.userGrowth.today_task_completion_count >= 20) {
+  if (props.userDailyLog.today_task_completion_count >= 20) {
     uni.showToast({
       title: "今日任务完成已达上限",
       icon: "error",

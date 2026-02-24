@@ -47,8 +47,8 @@ export function useTask() {
     getTaskCategories,
     getTags,
     getTaskList,
-    loadTaskData,
     getTask,
     task,
+    loadTaskData,
   };
 }

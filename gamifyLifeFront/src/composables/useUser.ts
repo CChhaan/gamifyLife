@@ -1,6 +1,6 @@
 import { ref } from "vue";
 import http from "@/utils/http";
-import type { UserGrowth, UserInfo } from "@/type/user";
+import type { UserDailyLog, UserGrowth, UserInfo } from "@/type/user";
 import { saveUserData } from "@/utils/growthCal";
 
 export function useUser() {
@@ -9,6 +9,9 @@ export function useUser() {
 
   // 用户成长信息
   const userGrowth = ref<UserGrowth | null>(null);
+
+  // 用户每日日志
+  const userDailyLog = ref<UserDailyLog | null>(null);
 
   const getUserInfo = async () => {
     userInfo.value = await http.get<UserInfo>("/userInfo/");
@@ -19,8 +22,12 @@ export function useUser() {
     saveUserData(userGrowth.value.level, userGrowth.value.total_experience);
   };
 
+  const getUserDailyLog = async () => {
+    userDailyLog.value = await http.get<UserDailyLog>("/userDailyLog/");
+  };
+
   const loadUserData = async () => {
-    await Promise.all([getUserInfo(), getUserGrowth()]);
+    await Promise.all([getUserInfo(), getUserGrowth(), getUserDailyLog()]);
   };
 
   return {
@@ -29,5 +36,7 @@ export function useUser() {
     getUserInfo,
     getUserGrowth,
     loadUserData,
+    userDailyLog,
+    getUserDailyLog,
   };
 }

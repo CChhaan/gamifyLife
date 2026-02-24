@@ -53,6 +53,12 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
         defaultValue: null,
         comment: "用户上传头像链接",
       },
+      today_use_ai_count: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        allowNull: false,
+        defaultValue: 0,
+        comment: "AI功能使用次数",
+      },
     },
     {
       sequelize,

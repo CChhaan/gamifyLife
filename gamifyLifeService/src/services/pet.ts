@@ -2,6 +2,7 @@ import { Inventory } from "@/type/item.ts";
 import db from "../shared/db.ts";
 import sequelize from "@/shared/sequelize.ts";
 import { Transaction } from "sequelize";
+import chalk from "chalk";
 
 export default class ItemService {
   // 获取当前宠物信息
@@ -25,7 +26,7 @@ export default class ItemService {
     // 更新宠物的亲密度
     await pet.update(
       { affection: Math.min(100, pet.dataValues.affection! + love) },
-      { transaction: t }
+      { transaction: t },
     );
   }
 
@@ -37,7 +38,7 @@ export default class ItemService {
     }
     await pet.update(
       { hunger: Math.min(100, pet.dataValues.hunger! - satiety) },
-      { transaction: t }
+      { transaction: t },
     );
   }
 
@@ -56,5 +57,35 @@ export default class ItemService {
 
     // 更新宠物的经验值和等级
     await pet.update({ exp: finalExp, level: newLevel }, { transaction: t });
+  }
+
+  // 定时任务，每30分钟，让宠物饱食度和亲密度下降5点
+  async decreasePetSatiety() {
+    try {
+      const pets = await db.Pets.findAll();
+      if (pets.length === 0) {
+        console.log("没有找到任何宠物，跳过状态更新");
+        return;
+      }
+      // 对每个宠物减少饱食度和亲密度
+      for (const pet of pets) {
+        // 确保饱食度和亲密度不低于0
+        const newHunger = Math.max(0, pet.dataValues.hunger! - 5);
+        const newAffection = Math.max(0, pet.dataValues.affection! - 5);
+
+        await pet.update({
+          hunger: newHunger,
+          affection: newAffection,
+        });
+      }
+      console.log(
+        chalk.yellow(
+          `[${new Date()}] 定时任务执行：所有宠物的饱食度和亲密度已下降5点`,
+        ),
+      );
+    } catch (error: any) {
+      console.error(chalk.red("定时任务执行失败:", error));
+      throw new Error(error.message || "批量更新宠物状态失败");
+    }
   }
 }

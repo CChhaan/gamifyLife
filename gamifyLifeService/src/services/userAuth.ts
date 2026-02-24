@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken";
 import db from "../shared/db.ts";
 import { sha256 } from "../shared/security.ts";
-import { Pet } from "@/type/pets.ts";
 
 export default class UserAuthService {
   static tokenBlacklist = new Set();
@@ -12,6 +11,7 @@ export default class UserAuthService {
 
   // 用户注册方法
   async registerUser(account: string, password: string, email: string) {
+    const t = await db.sequelize.transaction();
     try {
       // 创建用户账户 - 同时创建关联的 UserInfo、UserGrowth、TaskCategories 和 TaskTags
       const newUser = await db.UserAccounts.create(
@@ -34,11 +34,22 @@ export default class UserAuthService {
         },
         {
           include: [db.UserInfo, db.UserGrowth, db.TaskCategories, db.TaskTags],
-        }
+          transaction: t,
+        },
       );
+      await db.UserDailyLogs.create(
+        {
+          user_id: newUser.dataValues.id,
+          date: new Date(),
+        },
+        { transaction: t },
+      );
+      console.log("注册用户成功：", newUser.get("UserDailyLogs"));
       const result = newUser.toJSON();
+      await t.commit();
       return { ...result, password_hash: undefined };
     } catch (error: any) {
+      await t.rollback();
       console.error("注册用户失败：", error);
       throw new Error(error.message || "注册用户失败，请稍后重试");
     }
@@ -63,11 +74,11 @@ export default class UserAuthService {
       } else {
         const token = jwt.sign(
           { userId: user.dataValues.id },
-          process.env.JWT_SECRET || "my_app_secret"
+          process.env.JWT_SECRET || "my_app_secret",
         );
         await db.UserAccounts.update(
           { last_login: new Date() },
-          { where: { id: user.dataValues.id } }
+          { where: { id: user.dataValues.id } },
         );
         return token;
       }

@@ -20,22 +20,27 @@
           <view>+{{ value }}</view>
         </view>
       </view>
-      <view class="rewards">宠物经验：+10 ，亲密度：+5</view>
+      <view class="rewards" v-if="petInfo">宠物经验：+10 ，亲密度：+5</view>
       <button class="confirm-button" @click="$emit('confirm')">确定</button>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
+import { usePet } from "@/composables/usePet";
 import {
   type InfluenceAttr,
   InfluenceAttrTextMap,
   type TaskCompletionResult,
 } from "@/type/task";
-
+import { onShow } from "@dcloudio/uni-app";
+const { petInfo, getPet } = usePet();
 defineProps<{
   completeInfo: TaskCompletionResult;
 }>();
+onShow(async () => {
+  await getPet();
+});
 </script>
 
 <style lang="scss" scoped>

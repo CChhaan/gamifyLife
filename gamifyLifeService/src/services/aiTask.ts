@@ -50,7 +50,12 @@ export default class AiTaskService {
       await db.AiDraftTasks.bulkCreate(taskData, { transaction: t });
       await db.AiWorkOrders.update(
         { status: "SUCCESS" },
-        { where: { id: jobId }, transaction: t }
+        { where: { id: jobId }, transaction: t },
+      );
+      // ai任务生成成功后，增加用户今日AI功能使用次数
+      await db.UserDailyLogs.increment(
+        { ai_use_count: 1 },
+        { where: { user_id: userId }, transaction: t },
       );
 
       await t.commit();
@@ -65,6 +70,10 @@ export default class AiTaskService {
   // AI 生成任务
   async aiCreateTask(content: string, userId: number) {
     try {
+      const aiCount = await db.UserDailyLogs.findByPk(userId);
+      if (aiCount && aiCount.dataValues.ai_use_count >= 10) {
+        throw new Error("今日AI功能使用次数已达上限");
+      }
       const newAiWork = await db.AiWorkOrders.create({
         user_id: userId,
         input_goal: content,
@@ -76,7 +85,7 @@ export default class AiTaskService {
           console.error("AI任务处理失败:", error);
           // 更新工单状态为失败
           newAiWork.update({ status: "FAILED" });
-        }
+        },
       );
 
       return newAiWork;
@@ -167,7 +176,7 @@ export default class AiTaskService {
       }
       await db.AiWorkOrders.update(
         { status: "CONSUMED" },
-        { where: { id: jobId }, transaction: t }
+        { where: { id: jobId }, transaction: t },
       );
       await t.commit();
       return { success: true };

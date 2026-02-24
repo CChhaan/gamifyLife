@@ -23,11 +23,19 @@ export interface UserGrowth {
   body: number;
   social: number;
   discipline: number;
-  today_high_value_task_count: number;
-  today_task_completion_count: number;
   last_reset_date: Date;
   user_id: number;
   nextLevelExp: number;
   updatedAt: Date;
   createdAt: Date;
+}
+
+export interface UserDailyLog {
+  user_id: number;
+  date: Date;
+  ai_use_count: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+  today_task_completion_count: number; // 今日任务完成总数，可选
+  today_high_value_task_count: number;
 }

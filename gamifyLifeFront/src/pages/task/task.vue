@@ -177,13 +177,14 @@
       :category="taskList!.find((task) => task.category_id)"
       :categories="taskCategories!"
       :tags="tags!"
-      :userGrowth="userGrowth!"
+      :userDailyLog="userDailyLog!"
       @refresh="refresh"
       @close="taskDetailShow = false"
       v-if="taskDetailShow"
     />
     <ai-task-gen-cmp
       v-if="aiGenShow"
+      :count="userDailyLog?.ai_use_count"
       @close="aiGenShow = false"
       @getAiStatus="getAIStatus"
     ></ai-task-gen-cmp>
@@ -191,8 +192,10 @@
       v-if="aiListShow"
       :categories="taskCategories!"
       :tags="tags!"
+      :count="userDailyLog?.ai_use_count!"
       @close="aiListShow = false"
       @refresh="getTaskList"
+      ref="aiList"
     ></ai-task-list-cmp>
   </view>
 </template>
@@ -339,7 +342,7 @@ const showTaskDetail = (id: number) => {
 
 // AI生成任务
 const aiGenShow = ref(false);
-
+const aiList = ref();
 // 轮询AI状态
 const getAIStatus = (jobId: number | string) => {
   uTipsRef.value?.show({
@@ -358,6 +361,8 @@ const getAIStatus = (jobId: number | string) => {
         t0ype: "success",
         duration: "2300",
       });
+      aiList.value.getAiTaskListWithDraft();
+      refresh();
     } else if (aiJob.status == "FAILED") {
       clearInterval(timer);
       uTipsRef.value?.show({
@@ -371,12 +376,13 @@ const getAIStatus = (jobId: number | string) => {
 
 const aiListShow = ref(false);
 const refresh = () => {
-  getTaskList();
-  getUserGrowth();
-};
-onShow(() => {
   loadTaskData();
   getUserGrowth();
+  getUserDailyLog();
+};
+const { userDailyLog, getUserDailyLog } = useUser();
+onShow(() => {
+  refresh();
 });
 onHide(() => {
   if (!isAppForeground) return;
