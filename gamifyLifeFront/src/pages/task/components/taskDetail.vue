@@ -19,6 +19,14 @@
         ></u-icon>
       </view>
     </view>
+    <view class="task-detail_card w-full flex flex-justify__between">
+      <view
+        >今日高质量任务完成：{{ userGrowth?.today_high_value_task_count }}</view
+      >
+      <view
+        >今日任务完成：{{ userGrowth?.today_task_completion_count }} / 20</view
+      >
+    </view>
     <!-- 任务详情 -->
     <view class="task-detail_card w-full flex flex-col flex-align__stretch">
       <view class="task-title">{{ task.title }} </view>
@@ -57,6 +65,25 @@
         <text class="task-detail-item-value flex">{{
           dayjs(task.due_time).format("YYYY-MM-DD HH:00:00")
         }}</text>
+      </view>
+      <view class="task-detail-item flex" v-if="task.completed_at">
+        <text>完成时间：</text>
+        <text class="task-detail-item-value flex">{{
+          dayjs(task.completed_at).format("YYYY-MM-DD HH:mm:00")
+        }}</text>
+      </view>
+    </view>
+    <view class="task-detail_card w-full" v-if="parentTask">
+      <view>父任务：</view>
+      <view
+        class="flex flex-justify__between"
+        v-for="value in parentTask"
+        :key="value.id"
+      >
+        <view class="task-detail-item">{{ value.title }} </view>
+        <view class="parent-status flex">{{
+          TaskStatusTextMap[value.status]
+        }}</view>
       </view>
     </view>
     <!-- 任务收益 -->
@@ -97,9 +124,15 @@
     >
       <view class="abandoned">已放弃</view>
     </view>
+    <view
+      class="w-full flex flex-justify__center"
+      v-if="task.status === 'COMPLETED'"
+    >
+      <view class="finish">已完成</view>
+    </view>
     <view class="task-detail_options flex flex-justify__around w-full" v-else>
-      <button class="operation-btn">完成任务</button>
-      <button class="operation-btn cancel" @click="abondonTask">
+      <button class="operation-btn" @click="finishTask">完成任务</button>
+      <button class="operation-btn cancel" @click="abandonTask">
         放弃任务
       </button>
     </view>
@@ -117,29 +150,51 @@
       v-if="confirmModalShow"
       @close="confirmModalShow = false"
       @confirm="confirmModalFn"
-    ></confirm-modal>
+    />
+    <task-complete-modal
+      v-if="taskCompleteShow"
+      :complete-info="completeInfo"
+      @close="taskCompleteShow = false"
+      @confirm="confirmComplete"
+    />
   </view>
 </template>
 
 <script setup lang="ts">
 import TaskEditCmp from "@/pages/task/components/taskCreate.vue";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal.vue";
+import TaskCompleteModal from "@/pages/task/components/taskComplete.vue";
 
 import {
   InfluenceAttrTextMap,
+  type TaskCompletionResult,
   type Task,
   type TaskCategory,
   type TaskTag,
+  TaskStatusTextMap,
 } from "@/type/task";
 import dayjs from "dayjs";
 import { computed, ref } from "vue";
 import http from "@/utils/http";
+import type { UserGrowth } from "@/type/user";
+import { onShow } from "@dcloudio/uni-app";
+import { useTask } from "@/composables/useTask";
 
 const props = defineProps<{
   task: Task;
   tags: TaskTag[];
   categories: TaskCategory[];
+  userGrowth: UserGrowth;
 }>();
+const parentTask = ref<Task[] | null>(null);
+const getParentTask = async (id: number) => {
+  parentTask.value = await http.get<Task[]>(`/task/getTaskDetail/${id}`);
+};
+onShow(async () => {
+  if (props.task.parent_task_id) {
+    await getParentTask(props.task.parent_task_id);
+  }
+});
 
 const extendedTask = computed(() => {
   const task = props.task;
@@ -181,13 +236,13 @@ const deleteConfirm = async () => {
   }
 };
 
-const abondonTask = () => {
+const abandonTask = () => {
   text.value = `确定要放弃任务「${props.task.title}」吗？`;
   confirmModalShow.value = true;
-  confirmModalFn.value = abondonConfirm;
+  confirmModalFn.value = abandonConfirm;
 };
 
-const abondonConfirm = async () => {
+const abandonConfirm = async () => {
   try {
     await http.put(`/task/abandonTask/${props.task.id}`);
     emit("refresh");
@@ -196,6 +251,39 @@ const abondonConfirm = async () => {
   } catch (error) {
     console.log("放弃任务失败", error);
   } finally {
+    confirmModalShow.value = false;
+  }
+};
+const taskCompleteShow = ref(false);
+const completeInfo = ref<TaskCompletionResult>({});
+const finishTask = async () => {
+  if (props.userGrowth.today_task_completion_count >= 20) {
+    uni.showToast({
+      title: "今日任务完成已达上限",
+      icon: "error",
+      duration: 2000,
+    });
+    return;
+  }
+  text.value = `确定完成任务「${props.task.title}」吗？`;
+  confirmModalShow.value = true;
+  confirmModalFn.value = finishConfirm;
+};
+
+const confirmComplete = () => {
+  taskCompleteShow.value = false;
+  emit("close");
+};
+
+const finishConfirm = async () => {
+  try {
+    const res = await http.put(`/task/completeTask/${props.task.id}`);
+    emit("refresh");
+    confirmModalShow.value = false;
+    taskCompleteShow.value = true;
+    completeInfo.value = res;
+  } catch (error) {
+    console.log("完成任务失败", error);
     confirmModalShow.value = false;
   }
 };
@@ -269,6 +357,12 @@ const taskEditShow = ref(false);
         color: #fff;
       }
     }
+
+    .parent-status {
+      border: 2rpx solid #666;
+      padding: 2rpx 10rpx;
+      border-radius: 10rpx;
+    }
     .reward-count {
       margin: 10rpx;
       .title {
@@ -292,21 +386,32 @@ const taskEditShow = ref(false);
     }
   }
 
+  .finish,
   .abandoned {
     width: 80%;
     font-size: var(--fontSize-large);
     font-weight: bold;
     text-align: center;
     margin: 20rpx auto;
-    color: #666;
-    background-color: #f0f0f0;
-    border: 1px solid #ddd;
+
     padding: 10rpx;
     border-radius: 20rpx;
   }
 
+  .abandoned {
+    color: #666;
+    background-color: #f0f0f0;
+    border: 3rpx solid #ddd;
+  }
+
+  .finish {
+    background-color: #03db6c11;
+    color: #03db6c;
+    border: 3rpx solid #03db6c;
+  }
+
   &_options {
-    margin: 20rpx;
+    margin: 20rpx 0;
 
     .operation-btn {
       border: 0;

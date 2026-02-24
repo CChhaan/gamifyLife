@@ -58,24 +58,38 @@
           :key="key"
         >
           <view class="flex">
-            <image :src="`/static/imgs/icons/${key}.png`" class="attr-item-icon" />
+            <image
+              :src="`/static/imgs/icons/${key}.png`"
+              class="attr-item-icon"
+            />
             <text>{{ name }}</text>
           </view>
           <text>{{ userGrowth?.[key] }}</text>
         </view>
       </view>
+      <view>
+        <view
+          >今日高质量任务完成：{{
+            userGrowth?.today_high_value_task_count
+          }}</view
+        >
+        <view
+          >今日任务完成：{{ userGrowth?.today_task_completion_count }} /
+          20</view
+        >
+      </view>
     </view>
     <!-- 任务分类 -->
     <view class="task-category-list flex">
       <view
-        class="task-category"
+        class="task-category flex-shrink-0"
         :class="{ selected: selectedCategory == 'all' }"
         @click="selectedCategory = 'all'"
       >
         <text>全部</text>
       </view>
       <view
-        class="task-category"
+        class="task-category flex-shrink-0"
         :class="selectedCategory == value.id && 'selected'"
         v-for="value in taskCategories?.slice(0, 3)"
         :key="value.id"
@@ -84,7 +98,7 @@
         <text>{{ value.name }}</text>
       </view>
       <view
-        class="task-category more"
+        class="task-category more flex-shrink-0"
         v-if="taskCategories && taskCategories.length > 3"
         @click="gotoTask"
       >
@@ -151,7 +165,7 @@ const gotoTask = () => {
 
 // 用户卡片
 .user-card {
-  height: 35vh;
+  height: 37vh;
 
   // 基本信息
   &_info {
@@ -209,9 +223,9 @@ const gotoTask = () => {
 // 任务分类
 .task-category-list {
   width: 88vw;
-  overflow: auto;
+  overflow-x: auto;
   padding: 0 0 20rpx;
-  margin: 40rpx 0 0;
+  margin: 20rpx 0 0;
 
   .task-category {
     border-radius: 20rpx;

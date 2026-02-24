@@ -24,6 +24,7 @@ export interface UserGrowth {
   social: number;
   discipline: number;
   today_high_value_task_count: number;
+  today_task_completion_count: number;
   last_reset_date: Date;
   user_id: number;
   nextLevelExp: number;

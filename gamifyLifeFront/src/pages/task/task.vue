@@ -9,16 +9,16 @@
       <u-icon class="task-banner_icon" name="question-circle-fill"></u-icon>
     </view>
     <!-- 任务分类 -->
-    <view class="task-category-list flex flex-justify__start">
+    <view class="task-category-list flex">
       <view
-        class="task-category"
+        class="task-category flex-shrink-0"
         :class="{ selected: selectedCategory == 'all' }"
         @click="selectedCategory = 'all'"
       >
         <text>全部</text>
       </view>
       <view
-        class="task-category"
+        class="task-category flex-shrink-0"
         :class="{ selected: selectedCategory == value.id }"
         v-for="value in taskCategories"
         :key="value.id"
@@ -82,9 +82,7 @@
           @click="showTaskDetail(task.id!)"
         >
           <view class="task-info w-full">
-            <text class="text-ellipsis w-full"
-              >{{ task.title }}{{ task.title }}</text
-            >
+            <text class="text-ellipsis w-full">{{ task.title }}</text>
             <!-- <view class="task-tag"
                 >#
                 {{ tags?.find((tag) => tag.id == task.tag_id_1)?.name }}</view
@@ -123,6 +121,12 @@
                   />
                 </view>
               </view>
+            </view>
+            <view
+              v-if="isOverdue(task)"
+              class="task-status flex flex-justify__center overdue"
+            >
+              已逾期
             </view>
             <view
               v-if="task.status != 'PENDING'"
@@ -173,7 +177,8 @@
       :category="taskList!.find((task) => task.category_id)"
       :categories="taskCategories!"
       :tags="tags!"
-      @refresh="getTaskList"
+      :userGrowth="userGrowth!"
+      @refresh="refresh"
       @close="taskDetailShow = false"
       v-if="taskDetailShow"
     />
@@ -206,6 +211,8 @@ import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
 import AiTaskGenCmp from "./components/aiTaskGen.vue";
 import http from "@/utils/http";
+import { isOverdue } from "./taskFn";
+import { useUser } from "@/composables/useUser";
 dayjs.extend(isBetween);
 
 // 标记应用是否在前台
@@ -238,6 +245,8 @@ const {
   loadTaskData,
 } = useTask();
 
+const { userGrowth, getUserGrowth } = useUser();
+
 const filterTaskList = computed(() => {
   if (!taskList.value) return [];
   // 先按照分类筛选
@@ -250,12 +259,7 @@ const filterTaskList = computed(() => {
   // 再按照时间筛选
   switch (selectedTime.value) {
     case "overdue":
-      list = list.filter(
-        (task) =>
-          task.due_time &&
-          new Date(task.due_time) < new Date() &&
-          task.status == "PENDING",
-      );
+      list = list.filter((task) => isOverdue(task));
       break;
     case "finished":
       list = list.filter((task) => task.status !== "PENDING");
@@ -308,6 +312,8 @@ const taskStatusClass = (status: string) => {
       return "canceled";
     case "OVERDUE":
       return "overdue";
+    case "ABANDONED":
+      return "abandoned";
   }
 };
 
@@ -364,9 +370,13 @@ const getAIStatus = (jobId: number | string) => {
 };
 
 const aiListShow = ref(false);
-
+const refresh = () => {
+  getTaskList();
+  getUserGrowth();
+};
 onShow(() => {
   loadTaskData();
+  getUserGrowth();
 });
 onHide(() => {
   if (!isAppForeground) return;
@@ -399,7 +409,7 @@ onHide(() => {
 // 任务分类
 .task-category-list {
   width: 90vw;
-  overflow: auto;
+  overflow-x: auto;
   padding: 25rpx 0;
 
   .task-category {
@@ -496,6 +506,16 @@ onHide(() => {
       .finished {
         color: #03db6c;
         border: 3rpx solid #03db6c;
+      }
+
+      .abandoned {
+        color: #666;
+        border: 3rpx solid #ddd;
+      }
+
+      .overdue {
+        color: #ff6b6b;
+        border: 3rpx solid #ff6b6b;
       }
     }
   }

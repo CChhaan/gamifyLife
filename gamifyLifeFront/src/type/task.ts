@@ -92,3 +92,28 @@ export interface Ticket {
   deletedAt?: string | null;
   AIDraftTasks?: Task[];
 }
+
+// 奖励信息接口
+export interface TaskReward {
+  score: number;
+  experience: number;
+  attributes: Record<string, number>;
+}
+
+// 任务详情接口
+export interface TaskCompletionDetails {
+  isHighValue: boolean;
+  baseScore: number;
+  multiplier: number;
+  actualTimeSpentMinutes: number;
+  completionIndex: number;
+  todayHighValueCompletions: number;
+  remaining: number;
+}
+
+// 任务完成返回结果接口
+export interface TaskCompletionResult {
+  success?: boolean;
+  reward?: TaskReward;
+  details?: TaskCompletionDetails;
+}

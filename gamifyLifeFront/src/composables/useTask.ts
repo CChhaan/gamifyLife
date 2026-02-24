@@ -13,6 +13,9 @@ export function useTask() {
   // 任务列表
   const taskList = ref<Task[] | null>(null);
 
+  // 某一个任务
+  const task = ref<Task | null>(null);
+
   const getTaskCategories = async () => {
     taskCategories.value = await http.get<TaskCategory[]>("/taskCategory/");
   };
@@ -32,6 +35,11 @@ export function useTask() {
     await Promise.all([getTaskCategories(), getTags(), getTaskList()]);
   };
 
+  // 获取单个任务详情
+  const getTask = async (id: number) => {
+    task.value = await http.get<Task>(`/task/getTaskDetail/${id}`);
+  };
+
   return {
     taskCategories,
     tags,
@@ -40,5 +48,7 @@ export function useTask() {
     getTags,
     getTaskList,
     loadTaskData,
+    getTask,
+    task,
   };
 }

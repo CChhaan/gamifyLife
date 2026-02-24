@@ -28,9 +28,9 @@ router.post("/createTask", async (ctx) => {
 });
 
 // 获取用户任务详情接口
-router.get("/getTaskDetail", async (ctx) => {
+router.get("/getTaskDetail/:taskId", async (ctx) => {
   await routerFnc(ctx, async () => {
-    const taskId = ctx.query.taskId;
+    const taskId = ctx.params.taskId;
     const taskDetail = await taskService.getTask(taskId);
     ctx.body = success(taskDetail, "任务详情获取成功");
   });

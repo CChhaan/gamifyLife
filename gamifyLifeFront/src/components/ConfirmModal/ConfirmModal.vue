@@ -6,15 +6,22 @@
     </view>
     <view class="confirm-btn-group flex flex-justify__around">
       <button class="confirm-button" @click="$emit('confirm')">确定</button>
-      <button class="confirm-button" @click="$emit('close')">取消</button>
+      <button class="confirm-button" @click="$emit('close')" v-if="cancel">
+        取消
+      </button>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
-defineProps<{
+interface Props {
   text: string;
-}>();
+  cancel?: boolean;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  cancel: true,
+});
 defineEmits<{
   (e: "confirm"): void;
   (e: "close"): void;

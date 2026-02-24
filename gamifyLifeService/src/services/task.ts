@@ -10,7 +10,7 @@ export default class TaskService {
   // 验证高价值任务（核心防刷逻辑）
   private validateHighValueTask(
     task: Task,
-    actualTimeSpentMinutes: number
+    actualTimeSpentMinutes: number,
   ): boolean {
     const { difficulty, due_time, createdAt } = task;
 
@@ -41,7 +41,7 @@ export default class TaskService {
   private calculateRewardMultiplier(
     completionIndex: number,
     todayHighValueCompletions: number,
-    isHighValue: boolean
+    isHighValue: boolean,
   ): number {
     let ratio = 1;
     // 高价值任务：更激进的激励
@@ -78,7 +78,7 @@ export default class TaskService {
   // 属性增益乘法
   private multiplyAttrGains(
     gains: Record<string, number>,
-    multiplier: number
+    multiplier: number,
   ): Record<string, number> {
     const result: Record<string, number> = {};
     for (const [key, value] of Object.entries(gains)) {
@@ -96,7 +96,7 @@ export default class TaskService {
       const finishTime = dayjs().diff(
         dayjs(due_time, "YYYY-M-D H:mm"),
         "hour",
-        true
+        true,
       );
       const { level } = (await db.UserGrowth.findByPk(userId))!.dataValues;
       const tag1 = (await db.TaskTags.findByPk(tag_id_1))!.dataValues;
@@ -133,7 +133,7 @@ export default class TaskService {
       if (taskData.status === "UNUSED") {
         await db.AiDraftTasks.update(
           { status: "PENDING" },
-          { where: { id: taskData.id }, transaction: t }
+          { where: { id: taskData.id }, transaction: t },
         );
       }
       const newTask = await db.Tasks.create(
@@ -146,7 +146,7 @@ export default class TaskService {
           estimated_attr_gains: attrMap,
           user_id: userId,
         },
-        { transaction: t }
+        { transaction: t },
       );
       await t.commit();
       return newTask.dataValues;
@@ -175,7 +175,7 @@ export default class TaskService {
       const finishTime = dayjs().diff(
         dayjs(due_time, "YYYY-M-D H:mm"),
         "hour",
-        true
+        true,
       );
       const { level } = (await db.UserGrowth.findByPk(userId))!.dataValues;
       const tag1 = (await db.TaskTags.findByPk(tag_id_1))!.dataValues;
@@ -211,7 +211,7 @@ export default class TaskService {
 
       const newTask = await db.Tasks.update(
         { ...taskData, final_exp, final_gold, estimated_attr_gains: attrMap },
-        { where: { id: taskData.id } }
+        { where: { id: taskData.id } },
       );
       return newTask;
     } catch (error: any) {
@@ -269,6 +269,17 @@ export default class TaskService {
         throw new Error("任务已完成");
       }
 
+      // 如果该任务有父任务且父任务未完成
+      if (task.dataValues.parent_task_id) {
+        const parentTask = await db.Tasks.findByPk(
+          task.dataValues.parent_task_id,
+          { transaction: t },
+        );
+        if (!parentTask || parentTask.dataValues.status !== "COMPLETED") {
+          throw new Error("父任务未完成");
+        }
+      }
+
       // 2. 计算实际耗时
       const completedTime = dayjs(); // 完成时间（现在）
       const createdTime = dayjs(task.dataValues.createdAt); // 创建时间
@@ -277,7 +288,7 @@ export default class TaskService {
       // 3. 判断是否为高价值任务
       const highValueValidation = this.validateHighValueTask(
         task.dataValues,
-        actualTimeSpentMinutes
+        actualTimeSpentMinutes,
       );
 
       // 4. 获取用户growth数据
@@ -304,30 +315,36 @@ export default class TaskService {
       const rewardMultiplier = this.calculateRewardMultiplier(
         todayCompletions + 1,
         todayHighValueCompletions + 1,
-        highValueValidation
+        highValueValidation,
       );
 
       // 7. 计算最终收益
       const goldEarned = Math.ceil(
-        task.dataValues.final_gold! * rewardMultiplier
+        task.dataValues.final_gold! * rewardMultiplier,
       );
       const expEarned = Math.ceil(
-        task.dataValues.final_exp! * rewardMultiplier
+        task.dataValues.final_exp! * rewardMultiplier,
       );
       const attrGains = this.multiplyAttrGains(
         task.dataValues.estimated_attr_gains!,
-        rewardMultiplier
+        rewardMultiplier,
       );
 
       // 9. 更新任务状态
       await task.update(
         { status: "COMPLETED", completed_at: new Date().toString() },
-        { transaction: t }
+        { transaction: t },
       );
 
       await userGrowth.increment(
-        { total_experience: expEarned, gold: goldEarned, ...attrGains },
-        { transaction: t }
+        {
+          total_experience: expEarned,
+          gold: goldEarned,
+          ...attrGains,
+          today_task_completion_count: 1,
+          today_high_value_task_count: highValueValidation ? 1 : 0,
+        },
+        { transaction: t },
       );
 
       // 宠物经验加10，亲密度加5
@@ -344,6 +361,7 @@ export default class TaskService {
           attributes: attrGains,
         },
         details: {
+          isHighValue: highValueValidation,
           baseScore: task.dataValues.final_gold,
           multiplier: rewardMultiplier,
           actualTimeSpentMinutes,

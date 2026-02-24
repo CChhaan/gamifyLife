@@ -129,10 +129,10 @@
         <view class="title">我的宠物</view>
         <view>
           <view>
-            <text class="name">宠物名称</text>
-            <view class="state healthy">健康</view>
+            <text class="name">{{ petInfo?.nickname || "未命名" }}</text>
+            <view class="state healthy">{{ PetStatus[petInfo?.status!] }}</view>
           </view>
-          <view>饱食度：80/100</view>
+          <view>饱食度：{{ petInfo?.hunger }}/100</view>
         </view>
       </view>
       <image class="pet-img" src="/static/pet_baby.png" mode="scaleToFill" />
@@ -182,13 +182,17 @@ import { ref } from "vue";
 import EditUserInfoCmp from "./editUserInfo.vue";
 import { useUser } from "@/composables/useUser";
 import ExpLineCmp from "@/components/ExpLine/ExpLine.vue";
+import { usePet } from "@/composables/usePet";
+import { PetStatus } from "@/type/pets";
 
 const editInfoShow = ref(false);
 
 const { userInfo, userGrowth, loadUserData, getUserInfo } = useUser();
-
+// 获取宠物信息
+const { petInfo, getPet } = usePet();
 onShow(async () => {
   await loadUserData();
+  await getPet();
 });
 
 const goToSetting = () => {
