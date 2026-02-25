@@ -121,20 +121,25 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
       charset: "utf8mb4",
       collate: "utf8mb4_unicode_ci",
       paranoid: true,
-    }
+    },
   );
 
-  Pets.beforeSave((pet: Pets) => {
-    if (pet.changed("hunger" as keyof Pets)) {
-      if (pet.dataValues.hunger! < 50) {
-        pet.dataValues.status = "HUNGRY";
-      } else {
-        pet.dataValues.status = "NORMAL";
-      }
-    }
-    // 如果宠物状态为SLEEPING，不允许操作数据
+  Pets.beforeUpdate(async (pet: Pets) => {
+    // 1. 先检查是否处于睡眠状态，优先拦截更新
     if (pet.dataValues.status === "SLEEPING") {
+      // 直接访问实例属性，而非 dataValues
       throw new Error("宠物正在睡觉，无法操作");
+    }
+
+    // 2. 检查 hunger 是否变更
+    if (
+      pet.changed("hunger" as keyof Pets) &&
+      pet.dataValues.hunger !== undefined
+    ) {
+      const newHunger = pet.dataValues.hunger; // 直接获取更新后的 hunger 值
+      console.log(`检测到 hunger 变更，新的 hunger 值: ${newHunger}`);
+      // 更新 status 属性（而非直接修改 dataValues）
+      pet.setDataValue("status", newHunger < 50 ? "HUNGRY" : "NORMAL");
     }
   });
   return Pets;

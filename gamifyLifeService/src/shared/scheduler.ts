@@ -2,14 +2,17 @@ import schedule from "node-schedule";
 import UserDailyLogService from "../services/userDailyLog.ts";
 import PetService from "../services/pet.ts";
 import chalk from "chalk";
+import TaskService from "@/services/task.ts";
 
 const userDailyLogService = new UserDailyLogService();
+const taskService = new TaskService();
 const petService = new PetService();
 // 设置每天凌晨2点执行的定时任务
 const dailyRefreshJob = schedule.scheduleJob("0 2 * * *", async () => {
   console.log(chalk.blue(`[${new Date()}] 执行每日日志刷新任务`));
   try {
     await userDailyLogService.dailyRefresh();
+    await taskService.updateRepeatTask();
   } catch (error) {
     console.error("定时任务执行失败:", error);
   }
@@ -30,6 +33,7 @@ export async function initializeScheduler() {
   console.log(chalk.blue(`[${new Date()}] 初始化调度器，检查过期日志`));
   try {
     await userDailyLogService.checkAndRefreshExpiredLogs();
+    await taskService.updateRepeatTask();
   } catch (error) {
     console.error("初始化调度器失败:", error);
   }

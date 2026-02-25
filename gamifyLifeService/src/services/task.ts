@@ -3,6 +3,7 @@ import { taskAttr, taskExp, taskGold } from "../shared/growthCalc.ts";
 import dayjs from "dayjs";
 import PetService from "../services/pet.ts";
 import { Task } from "@/type/task.ts";
+import chalk from "chalk";
 
 const petService = new PetService();
 
@@ -85,6 +86,51 @@ export default class TaskService {
       result[key] = Math.ceil(value * multiplier);
     }
     return result;
+  }
+
+  // 所有不是pending状态并且完成时间是昨天的重复任务，更新为pending并根据重复规则更新预计完成时间
+  async updateRepeatTask() {
+    try {
+      const tasks = await db.Tasks.findAll({
+        where: {
+          status: "COMPLETED",
+          is_recurring: true,
+          completed_at: {
+            [db.Sequelize.Op.lt]: dayjs().startOf("day").toDate(),
+          },
+        },
+      });
+
+      for (const task of tasks) {
+        const { recurring_rule, completed_at } = task.dataValues;
+        let newDueTime;
+        switch (recurring_rule) {
+          case "DAILY":
+            newDueTime = dayjs().add(1, "day");
+            break;
+          case "WEEKLY":
+            newDueTime = dayjs().add(1, "week");
+            break;
+          case "MONTHLY":
+            newDueTime = dayjs().add(1, "month");
+            break;
+          default:
+            throw new Error("无效的重复规则");
+        }
+        console.log(
+          chalk.yellow(
+            `更新重复任务 ${task.dataValues.id}，新截止时间 ${newDueTime.format("YYYY-MM-DD 23:00:00")}`,
+          ),
+        );
+        await task.update({
+          status: "PENDING",
+          due_time: newDueTime.format("YYYY-MM-DD 23:00:00"),
+        });
+      }
+    } catch (error: any) {
+      console.error("更新重复任务失败", error);
+      throw new Error(error.message || "更新重复任务失败");
+    }
   }
 
   // 创建任务
@@ -338,6 +384,14 @@ export default class TaskService {
         { status: "COMPLETED", completed_at: new Date().toString() },
         { transaction: t },
       );
+
+      // 如果是重复任务，更新已完成次数
+      if (task.dataValues.is_recurring) {
+        await task.increment(
+          { recurring_completed_count: 1 },
+          { transaction: t },
+        );
+      }
 
       await userGrowth.increment(
         {

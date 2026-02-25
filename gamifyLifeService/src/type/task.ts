@@ -62,6 +62,7 @@ export interface Task {
   ai_goal_input?: string; // AI目标输入，可选，可为null
   is_today_hard_task?: boolean; // 是否是今日高难度任务，可选
   createdAt?: string; // 创建时间，可选
+  recurring_completed_count?: number; // 重复任务已完成次数，可选
 }
 
 // 工单状态枚举

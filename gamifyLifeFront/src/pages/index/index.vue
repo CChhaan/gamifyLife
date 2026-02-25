@@ -67,7 +67,7 @@
           <text>{{ userGrowth?.[key] }}</text>
         </view>
       </view>
-      <view>
+      <view class="flex flex-justify__between w-full">
         <view
           >今日高质量任务完成：{{
             userDailyLog?.today_high_value_task_count
@@ -110,7 +110,7 @@
       <view class="task-data_task-list w-full">
         <view
           class="task flex flex-justify__between w-full"
-          v-for="task in taskList"
+          v-for="task in filterTaskList"
           :key="task.id"
           @click="gotoTask"
         >
@@ -137,7 +137,17 @@ import { computed, ref } from "vue";
 
 const { userInfo, userGrowth, loadUserData, userDailyLog } = useUser();
 const { taskCategories, taskList, loadTaskData } = useTask();
+const filterTaskList = computed(() => {
+  if (!taskList.value) return [];
+  // 按照分类筛选
+  let list = taskList.value!.filter(
+    (task) =>
+      selectedCategory.value == "all" ||
+      task.category_id == selectedCategory.value,
+  );
 
+  return list;
+});
 onShow(async () => {
   await loadUserData();
   await loadTaskData();
@@ -160,7 +170,7 @@ const gotoTask = () => {
   width: 88vw;
   border-radius: 20rpx;
   box-shadow: var(--shadow);
-  padding: 30rpx 40rpx;
+  padding: 30rpx;
 }
 
 // 用户卡片

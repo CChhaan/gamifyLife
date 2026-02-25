@@ -102,6 +102,14 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
         comment: "重复规则",
       },
 
+      // 重复任务已完成次数
+      recurring_completed_count: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        allowNull: false,
+        defaultValue: 0,
+        comment: "重复任务已完成次数",
+      },
+
       // 10. 任务状态（status）
       status: {
         type: DataTypes.ENUM("PENDING", "COMPLETED", "OVERDUE", "ABANDONED"),
@@ -131,7 +139,6 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
         comment: "基础经验值",
       },
 
-
       // 13. 基础金币值（final_gold）
       final_gold: {
         type: DataTypes.INTEGER.UNSIGNED,
@@ -140,7 +147,6 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
         comment: "基础金币值",
       },
 
-
       // 14. 预估属性增益（estimated_attr_gains）
       estimated_attr_gains: {
         type: DataTypes.JSON,
@@ -148,7 +154,6 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
         defaultValue: null,
         comment: '预估属性增益（如{"mind":5,"body":2}）',
       },
-
 
       // 15. 标签1（tag_id_1）
       tag_id_1: {
@@ -192,7 +197,6 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
           },
         },
       },
-
 
       // 18. 实际完成时间（completed_at）
       completed_at: {

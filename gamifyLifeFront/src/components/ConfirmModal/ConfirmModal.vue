@@ -29,6 +29,9 @@ defineEmits<{
 </script>
 
 <style scoped lang="scss">
+.cover {
+  z-index: 5;
+}
 .confirm-modal {
   width: 60vw;
   border-radius: 16rpx;

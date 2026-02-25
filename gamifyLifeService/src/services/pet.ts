@@ -48,6 +48,12 @@ export default class ItemService {
     if (!pet) {
       return null;
     }
+    // 当前宠物亲密度是否合格：<50
+    const isAffectionLow = pet.dataValues.affection! < 50;
+
+    if (isAffectionLow) {
+      return null; // 亲密度不足，不增加经验值
+    }
     // 计算新的经验值
     const newExp = pet.dataValues.exp! + exp;
     // 计算新的等级
@@ -77,6 +83,7 @@ export default class ItemService {
           hunger: newHunger,
           affection: newAffection,
         });
+        await pet.reload();
       }
       console.log(
         chalk.yellow(
@@ -87,5 +94,9 @@ export default class ItemService {
       console.error(chalk.red("定时任务执行失败:", error));
       throw new Error(error.message || "批量更新宠物状态失败");
     }
+  }
+
+  async play(userId: number) {
+    // 增加10点亲密值，减少5点饥饿值
   }
 }

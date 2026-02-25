@@ -1,4 +1,4 @@
-import { Inventory } from "@/type/item.ts";
+import { Inventory, Item } from "@/type/item.ts";
 import db from "../shared/db.ts";
 import sequelize from "@/shared/sequelize.ts";
 import PetService from "../services/pet.ts";
@@ -18,26 +18,44 @@ export default class ItemService {
   }
 
   // 用户购买系统道具
-  async buySysItem(userId: number, items: Inventory[]) {
+  async buySysItem(userId: number, items: { id: any; quantity: number }[]) {
     const t = await sequelize.transaction();
     try {
       for (const item of items) {
+        // 找到用户所拥有的道具
         const existingItem = await db.UserInventories.findOne({
-          where: { user_id: userId, item_id: item.id! },
+          where: { user_id: userId, item_id: item.id },
           transaction: t,
         });
 
+        // 获取道具信息
+        const itemInfo = (await db.Items.findByPk(item.id, {
+          transaction: t,
+        }))!;
+
+        // 扣除用户的金币
+        const user = await db.UserGrowth.findByPk(userId, { transaction: t });
+        if (
+          !user ||
+          user.dataValues.gold < itemInfo.dataValues.price * item.quantity
+        ) {
+          throw new Error("用户金币不足");
+        }
+        await user.decrement(
+          { gold: itemInfo.dataValues.price * item.quantity },
+          { transaction: t },
+        );
         if (existingItem) {
           // 道具已存在，累加数量
           await existingItem.increment(
             { quantity: item.quantity },
-            { transaction: t }
+            { transaction: t },
           );
         } else {
           // 道具不存在，创建新记录
           await db.UserInventories.create(
-            { user_id: userId, item_id: item.id!, quantity: item.quantity },
-            { transaction: t }
+            { user_id: userId, item_id: item.id!, quantity: item.quantity! },
+            { transaction: t },
           );
         }
       }

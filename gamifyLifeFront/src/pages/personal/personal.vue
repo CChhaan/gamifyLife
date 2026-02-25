@@ -100,7 +100,10 @@
     </view>
     <!-- 其他功能入口 -->
     <view class="other-entry flex flex-justify__between">
-      <view class="entry-item flex flex-justify__between">
+      <view
+        class="entry-item flex flex-justify__between"
+        @click="goToAchievement"
+      >
         <text>个人成就</text>
         <image
           class="entry-icon"
@@ -139,7 +142,8 @@
     </view>
     <!-- 排行榜 -->
     <view class="ranks flex flex-justify__around flex-1 w-full">
-      <div class="rank-item flex flex-col flex-justify__center">
+      <div>排行榜功能待开发</div>
+      <!-- <div class="rank-item flex flex-col flex-justify__center">
         <text class="title">XXX排行榜</text>
         <image
           class="rank-icon"
@@ -165,7 +169,7 @@
           mode="widthFix"
         />
         <text class="position">第XXX名</text>
-      </div>
+      </div> -->
     </view>
     <edit-user-info-cmp
       @close="editInfoShow = false"
@@ -210,6 +214,13 @@ const goToInventory = () => {
 const gotoPet = () => {
   uni.navigateTo({
     url: "/pages/pet/pet",
+  });
+};
+
+const goToAchievement = () => {
+  uni.showToast({
+    title: "敬请期待",
+    icon: "none",
   });
 };
 </script>

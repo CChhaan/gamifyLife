@@ -1,5 +1,5 @@
 <template>
-  <view class="task-detail tab-page flex flex-col">
+  <view class="task-detail tab-page">
     <view class="task-detail_tabbar w-full flex flex-justify__between">
       <view class="flex" @click="$emit('close')">
         <u-icon name="arrow-left-double"></u-icon>
@@ -10,6 +10,7 @@
         <u-icon
           class="option"
           name="edit-pen"
+          v-if="task.status === 'PENDING'"
           @click="taskEditShow = true"
         ></u-icon>
         <u-icon
@@ -69,10 +70,20 @@
           dayjs(task.due_time).format("YYYY-MM-DD HH:00:00")
         }}</text>
       </view>
+      <view class="task-detail-item flex" v-if="task.is_recurring">
+        <text>重复规则：</text>
+        <text class="task-detail-item-value flex">{{ selectedRecRule }}</text>
+      </view>
       <view class="task-detail-item flex" v-if="task.completed_at">
-        <text>完成时间：</text>
+        <text> <text v-if="task.is_recurring">上次</text>完成时间： </text>
         <text class="task-detail-item-value flex">{{
           dayjs(task.completed_at).format("YYYY-MM-DD HH:mm:00")
+        }}</text>
+      </view>
+      <view class="task-detail-item flex" v-if="task.is_recurring">
+        <text>已完成次数：</text>
+        <text class="task-detail-item-value flex">{{
+          task.recurring_completed_count
         }}</text>
       </view>
     </view>
@@ -276,7 +287,13 @@ const confirmComplete = () => {
   taskCompleteShow.value = false;
   emit("close");
 };
-
+const selectedRecRule = computed(() => {
+  const rule = props.task.recurring_rule;
+  if (rule === "DAILY") return "每天";
+  if (rule === "WEEKLY") return "每周";
+  if (rule === "MONTHLY") return "每月";
+  return "";
+});
 const finishConfirm = async () => {
   try {
     const res = await http.put(`/task/completeTask/${props.task.id}`);
@@ -296,6 +313,7 @@ const taskEditShow = ref(false);
 <style scoped lang="scss">
 .task-detail {
   padding: 25rpx;
+  padding-bottom: 150rpx;
   overflow: auto;
   position: fixed;
   z-index: 10;

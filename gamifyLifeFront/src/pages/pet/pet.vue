@@ -13,7 +13,7 @@
           </view>
           <div class="carpet"></div>
         </div>
-        <view class="box w-full flex flex-col">
+        <view class="box w-full flex flex-col" v-if="!gameShow">
           <template v-if="!feedShow">
             <view class="flex flex-col w-full">
               <view class="name flex flex-col">
@@ -51,7 +51,9 @@
                 喂食
               </view>
               <view class="action-item flex flex-justify__center"> 洗澡 </view>
-              <view class="action-item flex flex-justify__center"> 玩耍 </view>
+              <view class="action-item flex flex-justify__center" @click="play">
+                玩耍
+              </view>
             </view>
           </template>
           <template v-else>
@@ -102,7 +104,7 @@
         </view>
       </view>
     </view>
-    <view class="go-back" @click="goBack">
+    <view class="go-back" @click="goBack" v-if="!gameShow">
       <button class="flex flex-justify__center">
         <u-icon name="arrow-leftward"></u-icon>
         <span style="margin-left: 10rpx">返回</span>
@@ -111,15 +113,31 @@
     <view class="cover" v-if="create"></view>
     <view class="create-pet modal" v-if="create">
       <view class="create-title"> 给宠物起一个名字吧！ </view>
+      <view>（暂时不允许修改宠物名称）</view>
       <u-input v-model="petName" placeholder="请输入宠物名称" border />
       <button class="create-btn" @click="createPet">确定</button>
     </view>
+
+    <ball-game-cmp
+      v-if="gameShow"
+      @close="gameShow = false"
+      @win="winGame"
+    ></ball-game-cmp>
+
+    <confirm-modal-cmp
+      :text="text"
+      v-if="finishGameShow"
+      @confirm="finishGameShow = false"
+      :cancel="false"
+    />
   </view>
 </template>
 
 <script setup lang="ts">
 import { ItemEffectType, type Inventory } from "@/type/item";
 import { PetStage, PetStatus, type Pet } from "@/type/pets";
+import ConfirmModalCmp from "@/components/ConfirmModal/ConfirmModal.vue";
+import ballGameCmp from "./components/ballGame.vue";
 import http from "@/utils/http";
 import { onShow } from "@dcloudio/uni-app";
 import { ref } from "vue";
@@ -144,6 +162,8 @@ const getUserItems = async () => {
   userItems.value = res.filter((n) => n.item?.type === "FOOD");
 };
 
+const gameShow = ref(false);
+
 const buy = () => {
   uni.navigateTo({
     url: "/pages/inventory/inventory",
@@ -166,6 +186,32 @@ const feedPet = async () => {
       icon: "success",
     });
   } catch (error) {}
+};
+
+const text = ref();
+const finishGameShow = ref(false);
+const play = () => {
+  if (petInfo.value?.hunger && petInfo.value?.status == "HUNGRY") {
+    uni.showToast({
+      icon: "none",
+      title: "宠物太饿了，不能玩耍",
+    });
+    return;
+  }
+  if (petInfo.value?.status && petInfo.value?.status == "SLEEPING") {
+    uni.showToast({
+      icon: "none",
+      title: "宠物正在睡觉，不能玩耍",
+    });
+  }
+  gameShow.value = true;
+};
+
+const winGame = async (count: number) => {
+  gameShow.value = false;
+  finishGameShow.value = true;
+  text.value = `你赢了${count}次，获得金币${count * 10}个`;
+  await getPet();
 };
 
 const closeFeed = () => {

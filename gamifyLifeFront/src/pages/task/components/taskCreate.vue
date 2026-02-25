@@ -55,8 +55,18 @@
         <u-form-item
           label="重复规则"
           prop="recurring_rule"
-          v-show="type == 'edit' && task.is_recurring"
-        ></u-form-item>
+          v-show="task.is_recurring"
+        >
+          <u-input
+            class="form-item"
+            v-model="selectedRecRule"
+            type="select"
+            @click="recurShow = true"
+            border
+            placeholder="请选择重复规则"
+            :clearable="false"
+          ></u-input>
+        </u-form-item>
         <u-form-item label="任务难度" prop="difficulty">
           <u-rate :count="5" v-model="task.difficulty"></u-rate>
         </u-form-item>
@@ -153,6 +163,14 @@
       confirm-text="确定"
       cancel-text="取消"
     ></u-select>
+    <u-select
+      v-model="recurShow"
+      mode="single-column"
+      :list="recurList"
+      @confirm="task.recurring_rule = $event[0].value"
+      confirm-text="确定"
+      cancel-text="取消"
+    ></u-select>
     <u-picker
       mode="time"
       v-model="calendarShow"
@@ -219,6 +237,7 @@ const taskCreateRules = {};
 const categorySelectShow = ref(false);
 const tag1SelectShow = ref(false);
 const tag2SelectShow = ref(false);
+const recurShow = ref(false);
 const calendarShow = ref(false);
 const categoryList = computed(() =>
   props.categories.map((item) => ({
@@ -232,6 +251,19 @@ const tagList = computed(() =>
     label: item.name,
   })),
 );
+const recurList = [
+  { value: "DAILY", label: "每天" },
+  { value: "WEEKLY", label: "每周" },
+  { value: "MONTHLY", label: "每月" },
+];
+
+const selectedRecRule = computed(() => {
+  const rule = task.value.recurring_rule;
+  if (rule === "DAILY") return "每天";
+  if (rule === "WEEKLY") return "每周";
+  if (rule === "MONTHLY") return "每月";
+  return "";
+});
 
 const selectedCategoryName = computed(() => {
   const selectedCategory = props.categories.find(
