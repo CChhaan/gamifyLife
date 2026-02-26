@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
+    "sourceMap": false, // 生产环境设为 false，不生成 .map 文件
     "target": "esnext",
     "module": "nodenext",
     "moduleResolution": "nodenext",
-    "sourceMap": true,
     "rootDir": "./src",
     "strict": true,
     "paths": {
@@ -14,8 +14,8 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "lib": ["esnext", "dom"],
-    "noEmit": true,
-    "allowImportingTsExtensions": true,
+    "noEmit": false, // 改为 false，允许生成编译文件
+    "allowImportingTsExtensions": false,
     "resolveJsonModule": true,
     "skipLibCheck": true
   },
@@ -23,6 +23,7 @@
   "exclude": ["node_modules", "dist"],
   "ts-node": {
     "esm": true,
-    "experimentalSpecifierResolution": "node"
+    "experimentalSpecifierResolution": "node", // 保留但建议后续移除（新版本无用）
+    "require": ["tsconfig-paths/register"] // 新增：让 ts-node 识别 paths 别名
   }
 }

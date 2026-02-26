@@ -1,7 +1,7 @@
 import Router from "koa-router";
-import UserDailyLogService from "../services/userDailyLog.ts";
-import { success, badRequest, conflict } from "../shared/response.ts";
-import { routerFnc } from "@/shared/commonFnc.ts";
+import UserDailyLogService from "../services/userDailyLog.js";
+import { success, badRequest, conflict } from "../shared/response.js";
+import { routerFnc } from "@/shared/commonFnc.js";
 
 const router = new Router({ prefix: "/userDailyLog" });
 

@@ -1,5 +1,5 @@
-import { InfluenceAttr, TaskTag } from "@/type/task.ts";
-import db from "../shared/db.ts";
+import { InfluenceAttr, TaskTag } from "@/type/task.js";
+import db from "../shared/db.js";
 
 export default class TaskTagService {
   // 获取用户任务标签方法
@@ -37,7 +37,7 @@ export default class TaskTagService {
     try {
       const updatedTaskTag = await db.TaskTags.update(
         { name: newName },
-        { where: { user_id: userId, id: tagId } }
+        { where: { user_id: userId, id: tagId } },
       );
       return updatedTaskTag;
     } catch (error: any) {
@@ -53,7 +53,7 @@ export default class TaskTagService {
     attributes: {
       primary_attr: InfluenceAttr | "";
       secondary_attr: InfluenceAttr | "";
-    }
+    },
   ) {
     try {
       const updatedTaskTag = await db.TaskTags.update(
@@ -61,7 +61,7 @@ export default class TaskTagService {
           primary_attr: attributes.primary_attr,
           secondary_attr: attributes.secondary_attr,
         },
-        { where: { user_id: userId, id: tagId } }
+        { where: { user_id: userId, id: tagId } },
       );
       return updatedTaskTag;
     } catch (error: any) {

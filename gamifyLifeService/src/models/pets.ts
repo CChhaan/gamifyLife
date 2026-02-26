@@ -1,6 +1,6 @@
 import { DataTypes as SequelizeDataTypes, Sequelize, Model } from "sequelize";
-import db from "../shared/db.ts";
-import { Pet } from "@/type/pets.ts";
+import db from "../shared/db.js";
+import { Pet } from "@/type/pets.js";
 
 export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
   class Pets extends Model<Pet, Pet> {

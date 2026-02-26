@@ -1,8 +1,8 @@
 import Router from "koa-router";
-import { success } from "../shared/response.ts";
-import TaskCategoryService from "../services/taskCategory.ts";
-import { TaskCategory } from "@/type/task.ts";
-import { routerFnc } from "@/shared/commonFnc.ts";
+import { success } from "../shared/response.js";
+import TaskCategoryService from "../services/taskCategory.js";
+import { TaskCategory } from "@/type/task.js";
+import { routerFnc } from "@/shared/commonFnc.js";
 
 const router = new Router({ prefix: "/taskCategory" });
 
@@ -24,7 +24,7 @@ router.post("/createTaskCategory", async (ctx) => {
     const categoryData = ctx.request.body as TaskCategory;
     const newCategory = await taskCategoryService.createTaskCategory(
       userId,
-      categoryData
+      categoryData,
     );
     ctx.body = success(newCategory, "任务分类创建成功");
   });
@@ -46,7 +46,7 @@ router.put("/updateTaskCategory/:categoryId", async (ctx) => {
     const categoryData = ctx.request.body as TaskCategory;
     const updatedCategory = await taskCategoryService.updateTaskCategory(
       categoryId,
-      categoryData
+      categoryData,
     );
     ctx.body = success(updatedCategory, "任务分类更新成功");
   });

@@ -9,7 +9,7 @@
         <view class="icon">
           <image
             class="img"
-            :src="'http://localhost:3000' + item.icon_url"
+            :src="'http://8.222.155.211:3000' + item.icon_url"
             mode="scaleToFill"
           />
         </view>

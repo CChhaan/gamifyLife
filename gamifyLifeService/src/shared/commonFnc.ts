@@ -1,4 +1,4 @@
-import { badRequest } from "./response.ts";
+import { badRequest } from "./response.js";
 
 export async function routerFnc(ctx: any, fnc: () => Promise<void>) {
   try {

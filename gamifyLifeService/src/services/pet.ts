@@ -1,6 +1,6 @@
-import { Inventory } from "@/type/item.ts";
-import db from "../shared/db.ts";
-import sequelize from "@/shared/sequelize.ts";
+import { Inventory } from "@/type/item.js";
+import db from "../shared/db.js";
+import sequelize from "@/shared/sequelize.js";
 import { Transaction } from "sequelize";
 import chalk from "chalk";
 

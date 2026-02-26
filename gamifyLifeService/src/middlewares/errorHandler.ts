@@ -1,5 +1,5 @@
 import { Context, Next } from "koa";
-import { error } from "../shared/response.ts";
+import { error } from "../shared/response.js";
 
 export default async function errorHandler(ctx: Context, next: Next) {
   try {

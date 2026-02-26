@@ -1,5 +1,5 @@
-import { TaskCategory } from "@/type/task.ts";
-import db from "../shared/db.ts";
+import { TaskCategory } from "@/type/task.js";
+import db from "../shared/db.js";
 
 export default class TaskCategoryService {
   // 获取用户任务分类方法

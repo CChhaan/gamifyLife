@@ -1,6 +1,6 @@
 import jwt from "koa-jwt";
-import { unauthorized } from "../shared/response.ts";
-import UserAuthService from "../services/userAuth.ts";
+import { unauthorized } from "../shared/response.js";
+import UserAuthService from "../services/userAuth.js";
 import type { Context, Next } from "koa";
 const publicPaths = [
   "/auth/login",

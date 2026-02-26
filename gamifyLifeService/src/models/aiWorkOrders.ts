@@ -4,8 +4,8 @@ import {
   Model,
   UUIDV4,
 } from "sequelize";
-import db from "../shared/db.ts";
-import { Ticket } from "@/type/task.ts";
+import db from "../shared/db.js";
+import { Ticket } from "@/type/task.js";
 
 export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
   class AiWorkOrders extends Model<Ticket, Ticket> {

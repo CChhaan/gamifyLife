@@ -1,4 +1,4 @@
-import { Item } from "@/type/item.ts";
+import { Item } from "@/type/item.js";
 const items: Item[] = [
   {
     type: "FOOD",

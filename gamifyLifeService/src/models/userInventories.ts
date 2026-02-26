@@ -1,7 +1,7 @@
-import type { Task } from "@/type/task.ts";
+import type { Task } from "@/type/task.js";
 import { DataTypes as SequelizeDataTypes, Sequelize, Model } from "sequelize";
-import db from "../shared/db.ts";
-import { Inventory, Item } from "@/type/item.ts";
+import db from "../shared/db.js";
+import { Inventory, Item } from "@/type/item.js";
 
 export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
   class UserInventories extends Model<Inventory, Inventory> {

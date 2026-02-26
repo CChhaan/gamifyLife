@@ -1,6 +1,6 @@
 import { DataTypes as SequelizeDataTypes, Sequelize, Model } from "sequelize";
-import db from "../shared/db.ts";
-import { Item } from "@/type/item.ts";
+import db from "../shared/db.js";
+import { Item } from "@/type/item.js";
 
 export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
   class Items extends Model<Item, Item> {

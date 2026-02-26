@@ -1,7 +1,7 @@
 import Router from "koa-router";
-import { success } from "../shared/response.ts";
-import UserGrowthService from "../services/userGrowth.ts";
-import { routerFnc } from "@/shared/commonFnc.ts";
+import { success } from "../shared/response.js";
+import UserGrowthService from "../services/userGrowth.js";
+import { routerFnc } from "@/shared/commonFnc.js";
 
 const router = new Router({ prefix: "/userGrowth" });
 
@@ -13,7 +13,7 @@ router.get("/", async (ctx) => {
     const userId = ctx.state.user.userId;
     const userGrowth = await userGrowthService.getUserGrowth(userId);
     ctx.body = success(userGrowth, "用户成长信息获取成功");
-  })
+  });
 });
 
 export default router;

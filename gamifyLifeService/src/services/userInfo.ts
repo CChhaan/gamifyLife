@@ -1,5 +1,5 @@
-import { UserInfo } from "@/type/user.ts";
-import db from "../shared/db.ts";
+import { UserInfo } from "@/type/user.js";
+import db from "../shared/db.js";
 
 export default class UserInfoService {
   // 获取用户信息方法
@@ -28,7 +28,7 @@ export default class UserInfoService {
       const hasChanges = (Object.keys(userInfo) as (keyof UserInfo)[]).some(
         (key) => {
           return existingInfo.dataValues[key] !== userInfo[key];
-        }
+        },
       );
 
       if (hasChanges) {

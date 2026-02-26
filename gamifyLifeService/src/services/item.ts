@@ -1,7 +1,7 @@
-import { Inventory, Item } from "@/type/item.ts";
-import db from "../shared/db.ts";
-import sequelize from "@/shared/sequelize.ts";
-import PetService from "../services/pet.ts";
+import { Inventory, Item } from "@/type/item.js";
+import db from "../shared/db.js";
+import sequelize from "@/shared/sequelize.js";
+import PetService from "../services/pet.js";
 
 import { Sequelize } from "sequelize";
 const petService = new PetService();

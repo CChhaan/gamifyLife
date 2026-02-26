@@ -1,9 +1,10 @@
-import db from "../shared/db.ts";
-import { taskAttr, taskExp, taskGold } from "../shared/growthCalc.ts";
+import db from "../shared/db.js";
+import { taskAttr, taskExp, taskGold } from "../shared/growthCalc.js";
 import dayjs from "dayjs";
-import PetService from "../services/pet.ts";
-import { Task } from "@/type/task.ts";
+import PetService from "../services/pet.js";
+import { Task } from "@/type/task.js";
 import chalk from "chalk";
+import { Op } from "sequelize";
 
 const petService = new PetService();
 
@@ -96,7 +97,7 @@ export default class TaskService {
           status: "COMPLETED",
           is_recurring: true,
           completed_at: {
-            [db.Sequelize.Op.lt]: dayjs().startOf("day").toDate(),
+            [Op.lt]: dayjs().startOf("day").toDate(),
           },
         },
       });

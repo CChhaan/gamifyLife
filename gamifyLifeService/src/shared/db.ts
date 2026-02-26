@@ -1,12 +1,12 @@
-import sequelize from "./sequelize.ts";
+import sequelize from "./sequelize.js";
 import { DataTypes, Sequelize, Model, ModelStatic } from "sequelize";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import type { Task, TaskCategory, TaskTag, Ticket } from "@/type/task.ts";
-import type { UserDailyLog, UserGrowth, UserInfo } from "@/type/user.ts";
-import { Inventory, Item } from "@/type/item.ts";
-import { Pet } from "@/type/pets.ts";
+import type { Task, TaskCategory, TaskTag, Ticket } from "@/type/task.js";
+import type { UserDailyLog, UserGrowth, UserInfo } from "@/type/user.js";
+import { Inventory, Item } from "@/type/item.js";
+import { Pet } from "@/type/pets.js";
 import chalk from "chalk";
 
 type BaseModel<T extends {}> = ModelStatic<Model<T>> & {
@@ -48,7 +48,8 @@ const modelFiles = fs.readdirSync(modelsDir);
 
 // 动态导入并注册模型
 for (const file of modelFiles) {
-  const modelName = path.basename(file, ".ts");
+  const ext = path.extname(file); // 获取文件后缀（.ts 或 .js）
+  const modelName = path.basename(file, ext);
   const capitalizedModelName = (modelName.charAt(0).toUpperCase() +
     modelName.slice(1)) as ModelName;
 

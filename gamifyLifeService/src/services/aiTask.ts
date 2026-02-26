@@ -1,10 +1,10 @@
-import db from "../shared/db.ts";
+import db from "../shared/db.js";
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
-import sequelize from "@/shared/sequelize.ts";
-import readPrompt from "@/prompts/readPrompt.ts";
-import { Task } from "@/type/task.ts";
-import TaskService from "../services/task.ts";
+import sequelize from "@/shared/sequelize.js";
+import readPrompt from "@/prompts/readPrompt.js";
+import { Task } from "@/type/task.js";
+import TaskService from "../services/task.js";
 const openai = new OpenAI({
   baseURL: "https://api.deepseek.com",
   apiKey: process.env.AI_TOKEN,
@@ -70,8 +70,8 @@ export default class AiTaskService {
   // AI 生成任务
   async aiCreateTask(content: string, userId: number) {
     try {
-      const aiCount = await db.UserDailyLogs.findByPk(userId);
-      if (aiCount && aiCount.dataValues.ai_use_count >= 10) {
+      const aiCount = (await db.UserDailyLogs.findByPk(userId))!;
+      if (aiCount.dataValues.ai_use_count! >= 10) {
         throw new Error("今日AI功能使用次数已达上限");
       }
       const newAiWork = await db.AiWorkOrders.create({

@@ -1,6 +1,6 @@
 import { DataTypes as SequelizeDataTypes, Sequelize, Model } from "sequelize";
-import db from "../shared/db.ts";
-import { TaskTag } from "@/type/task.ts";
+import db from "../shared/db.js";
+import { TaskTag } from "@/type/task.js";
 
 export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
   class TaskTags extends Model<TaskTag, TaskTag> {

@@ -1,6 +1,6 @@
 import { DataTypes as SequelizeDataTypes, Model, Sequelize } from "sequelize";
-import db from "../shared/db.ts";
-import { TaskCategory } from "@/type/task.ts";
+import db from "../shared/db.js";
+import { TaskCategory } from "@/type/task.js";
 
 export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
   class TaskCategories extends Model<TaskCategory, TaskCategory> {
@@ -64,7 +64,7 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
         allowNull: false,
         defaultValue: 0,
         comment: "今日该分类下任务完成数量",
-      }
+      },
     },
     {
       sequelize,

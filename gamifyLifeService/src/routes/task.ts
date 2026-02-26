@@ -1,8 +1,8 @@
 import Router from "koa-router";
-import { success } from "../shared/response.ts";
-import TaskService from "../services/task.ts";
-import { Task } from "@/type/task.ts";
-import { routerFnc } from "@/shared/commonFnc.ts";
+import { success } from "../shared/response.js";
+import TaskService from "../services/task.js";
+import { Task } from "@/type/task.js";
+import { routerFnc } from "@/shared/commonFnc.js";
 
 const router = new Router({ prefix: "/task" });
 

@@ -1,7 +1,7 @@
 import Router from "koa-router";
-import { success } from "../shared/response.ts";
-import AITaskService from "../services/aiTask.ts";
-import { routerFnc } from "@/shared/commonFnc.ts";
+import { success } from "../shared/response.js";
+import AITaskService from "../services/aiTask.js";
+import { routerFnc } from "@/shared/commonFnc.js";
 
 const router = new Router({ prefix: "/aiTask" });
 
