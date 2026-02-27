@@ -331,7 +331,10 @@ export default class TaskService {
       const completedTime = dayjs(); // 完成时间（现在）
       const createdTime = dayjs(task.dataValues.createdAt); // 创建时间
       const actualTimeSpentMinutes = completedTime.diff(createdTime, "minute");
-
+      // 实际耗时不得 < 5分钟，否则视为刷任务
+      if (actualTimeSpentMinutes < 5) {
+        throw new Error("实际耗时不得 < 5分钟，否则视为刷任务");
+      }
       // 3. 判断是否为高价值任务
       const highValueValidation = this.validateHighValueTask(
         task.dataValues,

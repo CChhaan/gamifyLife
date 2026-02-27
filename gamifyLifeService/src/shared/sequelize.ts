@@ -1,12 +1,14 @@
 import { Sequelize } from "sequelize";
 
+const isProd = process.env.NODE_ENV === "production";
+
 export default new Sequelize({
   dialect: "mysql",
-  host: "localhost",
+  host: isProd ? "127.0.0.1" : "localhost",
   port: 3306,
   database: "gamifylife",
-  username: "root",
-  password: "123456",
+  username: isProd ? "gamifyLife" : "root",
+  password: isProd ? "aRReA64547LkZHxM" : "123456",
   logging: (msg) => {
     // 只记录错误日志，忽略其他日志
     if (

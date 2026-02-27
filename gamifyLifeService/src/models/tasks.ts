@@ -186,9 +186,8 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
       // 17. 预计完成时间（due_time）
       due_time: {
         type: DataTypes.DATE,
-        allowNull: true,
-        defaultValue: null,
-        comment: "预计完成时间（可选）",
+        allowNull: false,
+        comment: "预计完成时间",
         //必须在现在之后
         validate: {
           isAfterNow: function (value: Date) {

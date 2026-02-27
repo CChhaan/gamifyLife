@@ -36,8 +36,9 @@ export default class ItemService {
     if (!pet) {
       return null;
     }
+
     await pet.update(
-      { hunger: Math.min(100, pet.dataValues.hunger! - satiety) },
+      { hunger: Math.min(100, pet.dataValues.hunger! + Math.abs(satiety)) },
       { transaction: t },
     );
   }
@@ -65,8 +66,25 @@ export default class ItemService {
     await pet.update({ exp: finalExp, level: newLevel }, { transaction: t });
   }
 
+  // 减少宠物饱食度
+  async decreasePetSatiety(pet: any, satiety: any, t?: Transaction) {
+    await pet.update(
+      { hunger: Math.max(0, pet.dataValues.hunger! - Math.abs(satiety)) },
+      { transaction: t },
+    );
+  }
+
+  // 减少宠物亲密度
+  async decreasePetLove(pet: any, love: any, t?: Transaction) {
+    await pet.update(
+      { affection: Math.max(0, pet.dataValues.affection! - love) },
+      { transaction: t },
+    );
+  }
+
   // 定时任务，每30分钟，让宠物饱食度和亲密度下降5点
-  async decreasePetSatiety() {
+  async decreasePetStatus() {
+    const t = await sequelize.transaction();
     try {
       const pets = await db.Pets.findAll();
       if (pets.length === 0) {
@@ -76,27 +94,55 @@ export default class ItemService {
       // 对每个宠物减少饱食度和亲密度
       for (const pet of pets) {
         // 确保饱食度和亲密度不低于0
-        const newHunger = Math.max(0, pet.dataValues.hunger! - 5);
-        const newAffection = Math.max(0, pet.dataValues.affection! - 5);
-
-        await pet.update({
-          hunger: newHunger,
-          affection: newAffection,
-        });
-        await pet.reload();
+        await this.decreasePetSatiety(pet, 5, t);
+        await this.decreasePetLove(pet, 5, t);
       }
       console.log(
         chalk.yellow(
           `[${new Date()}] 定时任务执行：所有宠物的饱食度和亲密度已下降5点`,
         ),
       );
+      await t.commit();
     } catch (error: any) {
+      await t.rollback();
       console.error(chalk.red("定时任务执行失败:", error));
       throw new Error(error.message || "批量更新宠物状态失败");
     }
   }
 
-  async play(userId: number) {
-    // 增加10点亲密值，减少5点饥饿值
+  async play(user_id: any, count: number) {
+    const t = await sequelize.transaction();
+    try {
+      // 获取宠物信息
+      const pet = await db.Pets.findOne({ where: { user_id } });
+      if (!pet) {
+        return null;
+      }
+      // 宠物饥饿度减少
+      this.decreasePetSatiety(pet, 5, t);
+      //count 0-20
+      switch (Math.floor(count / 5)) {
+        // 小于1的话宠物不满意，亲密度减少
+        case 0:
+          await pet.decrement({ affection: 5 });
+          break;
+        // 1-2的话宠物满意，亲密度增加
+        case 1:
+        case 2:
+          await this.addPetLove(user_id, 5, t);
+          break;
+        // 3到4增加宠物经验和亲密度
+        case 3:
+        case 4:
+          await this.addPetExp(user_id, 10, t);
+          await this.addPetLove(user_id, 10, t);
+          break;
+      }
+      await t.commit();
+    } catch (error: any) {
+      await t.rollback();
+      console.error(chalk.red("获得玩耍奖励失败:", error));
+      throw new Error(error.message || "获得玩耍奖励失败");
+    }
   }
 }

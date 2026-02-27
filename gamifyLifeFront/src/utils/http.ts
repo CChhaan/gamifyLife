@@ -20,13 +20,27 @@ type MethodFn = <T = any>(
   data?: any,
   options?: Omit<UniApp.RequestOptions, "url" | "method" | "data">,
 ) => Promise<T>;
-
+const isProd = process.env.NODE_ENV === "production";
 const http = <T = any>(options: UniApp.RequestOptions): Promise<T> => {
   return new Promise((resolve, reject) => {
     const requestOptions: UniApp.RequestOptions = {
       ...options,
       //#ifdef H5
-      url: "/api" + options.url,
+      url: (() => {
+        // #ifdef H5
+        if (isProd) {
+          // 生产环境（部署到服务器）：不加 /api（Nginx 已配置反向代理）
+          return options.url;
+        } else {
+          // 开发环境（本地）：加 /api（走Vite代理）
+          return "/api" + options.url;
+        }
+        // #endif
+        // #ifndef H5
+        // 非H5端（小程序/APP）：直接用原URL
+        return options.url;
+        // #endif
+      })(),
       // #endif
       header: {
         "content-type": "application/json",

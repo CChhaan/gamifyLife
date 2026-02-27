@@ -99,7 +99,9 @@
                 >
               </view>
             </view>
-            <button class="use-btn flex" @click="feedPet">喂一次</button>
+            <button class="use-btn flex" @click="feedPet" v-if="selectedItem">
+              喂一次
+            </button>
           </template>
         </view>
       </view>
@@ -208,10 +210,26 @@ const play = () => {
 };
 
 const winGame = async (count: number) => {
-  gameShow.value = false;
-  finishGameShow.value = true;
-  text.value = `你赢了${count}次，获得金币${count * 10}个`;
-  await getPet();
+  try {
+    gameShow.value = false;
+    finishGameShow.value = true;
+    await http.post("/pet/play", { count });
+    // count最多20
+    switch (Math.floor(count / 5)) {
+      case 0:
+        text.value = `你接到了${count}个球，宠物不太开心，饱食度减少5，亲密度减少5`;
+        break;
+      case 1:
+      case 2:
+        text.value = `你接到了${count}个球，宠物很开心，饱食度减少5，亲密度增加5`;
+        break;
+      case 3:
+      case 4:
+        text.value = `你接到了${count}个球，宠物非常开心，饱食度减少5，亲密度增加10，宠物经验增加10`;
+        break;
+    }
+    await getPet();
+  } catch (error) {}
 };
 
 const closeFeed = () => {
@@ -222,13 +240,15 @@ const closeFeed = () => {
 // 获取宠物信息
 const petInfo = ref<Pet>();
 const getPet = async () => {
-  const res = await http.get<Pet>("/pet");
-  if (!res) {
-    create.value = true;
-  } else {
-    create.value = false;
-    petInfo.value = res;
-  }
+  try {
+    const res = await http.get<Pet>("/pet");
+    if (!res) {
+      create.value = true;
+    } else {
+      create.value = false;
+      petInfo.value = res;
+    }
+  } catch (error) {}
 };
 
 // 创建宠物

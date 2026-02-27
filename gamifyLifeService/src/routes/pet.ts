@@ -26,4 +26,14 @@ router.post("/createPet", async (ctx) => {
   });
 });
 
+// 玩耍结束
+router.post("/play", async (ctx) => {
+  await routerFnc(ctx, async () => {
+    const userId = ctx.state.user.userId;
+    const count = (ctx.request.body as any).count as number;
+    const play = await petService.play(userId, count);
+    ctx.body = success(play);
+  });
+});
+
 export default router;

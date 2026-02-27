@@ -45,7 +45,7 @@ const gameStart = () => {
   ready.value = false;
   end.value = false;
   count.value = 0;
-  time.value = 5;
+  time.value = 10;
   balls.value = [];
 
   // 开始倒计时
@@ -178,13 +178,30 @@ const cancelGame = () => {
 .ball {
   width: 100rpx;
   height: 100rpx;
-  background-color: #666;
+  background: radial-gradient(circle at 30% 30%, #ffffff, #ff9f43, #ee5a24);
   border-radius: 50%;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 31;
+  box-shadow:
+    0 4rpx 8rpx rgba(0, 0, 0, 0.2),
+    inset -4rpx -4rpx 8rpx rgba(0, 0, 0, 0.1),
+    inset 4rpx 4rpx 8rpx rgba(255, 255, 255, 0.3);
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 15%;
+    left: 15%;
+    width: 30%;
+    height: 30%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.8), transparent);
+    border-radius: 50%;
+  }
+
+  animation: ball-bounce 0.5s ease-in-out infinite alternate;
 }
 
 .game-over {
@@ -204,6 +221,15 @@ const cancelGame = () => {
   text-align: center;
   transform: translate(-50%, -50%) rotate(5deg);
   animation: game-over 1s;
+}
+
+@keyframes ball-bounce {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.05);
+  }
 }
 
 @keyframes game-over {

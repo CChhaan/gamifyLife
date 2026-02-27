@@ -22,7 +22,7 @@ const dailyRefreshJob = schedule.scheduleJob("0 2 * * *", async () => {
 const petStatusDecreaseJob = schedule.scheduleJob("*/30 * * * *", async () => {
   console.log(chalk.blue(`[${new Date()}] 执行宠物状态下降任务`));
   try {
-    await petService.decreasePetSatiety();
+    await petService.decreasePetStatus();
   } catch (error) {
     console.error("宠物状态下降任务执行失败:", error);
   }

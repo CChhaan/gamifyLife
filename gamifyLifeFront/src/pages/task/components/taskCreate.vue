@@ -232,7 +232,42 @@ const task = ref<Task>({
   due_time: undefined,
 });
 
-const taskCreateRules = {};
+const taskCreateRules = {
+  title: [
+    {
+      required: true,
+      message: "请输入任务标题",
+    },
+  ],
+
+  category_id: [
+    {
+      required: true,
+      message: "请选择任务分类",
+    },
+  ],
+
+  // 如果is_recurring为true，需要选择
+  recurring_rule: [
+    {
+      required: true,
+      message: "请选择重复规则",
+      validator: (rule: any, value: any, callback: any) => {
+        if (task.value.is_recurring && !value) {
+          callback(new Error("请选择重复规则"));
+        } else {
+          callback();
+        }
+      },
+    },
+  ],
+  tag_id_1: [
+    {
+      required: true,
+      message: "请选择标签",
+    },
+  ],
+};
 
 const categorySelectShow = ref(false);
 const tag1SelectShow = ref(false);
