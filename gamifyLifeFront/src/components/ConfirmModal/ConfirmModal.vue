@@ -1,8 +1,11 @@
 <template>
   <view class="cover"></view>
-  <view class="confirm-modal modal">
-    <view class="main">
+  <view class="confirm-modal modal" :style="{ width: width + 'vw' }">
+    <view class="main" v-if="text">
       {{ text }}
+    </view>
+    <view class="main" v-else>
+      <slot></slot>
     </view>
     <view class="confirm-btn-group flex flex-justify__around">
       <button class="confirm-button" @click="$emit('confirm')">确定</button>
@@ -15,8 +18,9 @@
 
 <script setup lang="ts">
 interface Props {
-  text: string;
+  text?: string;
   cancel?: boolean;
+  width?: number;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -40,6 +44,8 @@ defineEmits<{
 }
 
 .main {
+  max-height: 50vh;
+  overflow-y: auto;
   padding: 20rpx;
   text-align: center;
   font-size: var(--fontSize-large);

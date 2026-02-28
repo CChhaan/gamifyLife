@@ -3,13 +3,14 @@ import UserAuthService from "../services/userAuth.js";
 import { success, badRequest, conflict } from "../shared/response.js";
 import { UserAccount } from "@/type/user.js";
 import { routerFnc } from "@/shared/commonFnc.js";
+import { loginRateLimit, registerRateLimit } from "../middlewares/rateLimit.js";
 
 const router = new Router({ prefix: "/auth" });
 
 const userAuthService = new UserAuthService();
 
-// 用户注册接口
-router.post("/register", async (ctx) => {
+// 用户注册接口 - 应用限流中间件
+router.post("/register", registerRateLimit, async (ctx) => {
   try {
     const { account, password, email } = ctx.request.body as UserAccount & {
       password: string;
@@ -35,7 +36,7 @@ router.post("/register", async (ctx) => {
 });
 
 // 用户登录接口
-router.post("/login", async (ctx) => {
+router.post("/login", loginRateLimit, async (ctx) => {
   await routerFnc(ctx, async () => {
     const { account, email, password } = ctx.request.body as UserAccount & {
       password: string;

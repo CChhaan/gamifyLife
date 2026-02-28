@@ -6,7 +6,11 @@
       <button size="mini" @click="taskTagMngShow = true">标签管理</button>
       <button size="mini" @click="taskCategoryMngShow = true">分类管理</button>
       <button size="mini" @click="aiListShow = true">AI任务队列</button>
-      <u-icon class="task-banner_icon" name="question-circle-fill"></u-icon>
+      <u-icon
+        class="task-banner_icon"
+        name="question-circle-fill"
+        @click="taskRuleShow = true"
+      ></u-icon>
     </view>
     <!-- 任务分类 -->
     <view class="task-category-list flex">
@@ -197,6 +201,123 @@
       @refresh="getTaskList"
       ref="aiList"
     ></ai-task-list-cmp>
+    <confirm-modal-cmp
+      :cancel="false"
+      v-if="taskRuleShow"
+      @confirm="taskRuleShow = false"
+      :width="80"
+    >
+      <template #default>
+        <view class="rule">
+          <view class="rule-title">任务系统说明 </view>
+          <view>
+            <view class="rule-sub-title">一、任务是什么？</view>
+            <view class="rule-content">
+              <view>
+                任务代表你要完成的一件具体事情，每个任务包含：标题、描述、分类、标签、难度、预计完成时间等。
+              </view>
+              <view>
+                系统会根据这些信息和你的当前等级，自动计算「金币」「经验」以及四项属性（心智
+                / 体魄 / 社交 / 自律）的预计增益。
+              </view>
+            </view>
+          </view>
+          <view>
+            <view class="rule-sub-title">二、任务状态与时间</view>
+            <view class="rule-content">
+              <view> 状态分为：进行中、已完成、已逾期、已放弃。 </view>
+              <view>
+                任务逾期后会标记为“已逾期”，请尽量在截止前完成，以保持良好节奏。
+              </view>
+            </view>
+          </view>
+          <view>
+            <view class="rule-sub-title"> 三、如何获得奖励</view>
+            <view class="rule-content">
+              <view>
+                基础奖励由：任务难度、任务截止时间距离现在的时间、当前用户等级等综合计算得出。
+              </view>
+              <view>
+                「关联标签」决定任务主要提升哪些属性：给任务选的标签，其主属性 /
+                副属性会获得对应的属性加成。
+              </view>
+              <view>
+                在【任务详情】中可以看到本任务的「预计可获得收益」，完成时实际奖励会以系统结算为准。
+              </view>
+            </view>
+          </view>
+          <view>
+            <view class="rule-sub-title"> 四、防刷机制 </view>
+            <view class="rule-content">
+              <view>
+                从任务创建到点击完成，实际耗时必须 ≥
+                5分钟，否则会视为刷任务，不计入正常完成。
+              </view>
+              <view>
+                请合理安排任务，每天完成的任务越多，后面的任务奖励会逐步递减，建议优先完成重要且难度较高的任务，而不是一次性刷大量小任务。
+              </view>
+              <view>
+                每位用户每日最多只结算 20
+                个任务奖励，超过上限的任务完成将不再增加经验、金币和属性成长，但你依然可以用它们帮助自己安排生活。
+              </view>
+            </view>
+          </view>
+          <view>
+            <view class="rule-sub-title"> 五、高价值任务 </view>
+            <view class="rule-content">
+              <view>
+                系统会识别一部分高难度、周期长、实际投入时间足够的任务为“高价值任务”，用来鼓励你做真正重要的事情，这些任务在当天前几次完成时会获得更高奖励。
+              </view>
+              <view>
+                当天完成的高价值任务越多，对后续任务奖励的加成会逐步降低，避免单日刷大量任务。
+              </view>
+            </view>
+          </view>
+          <view>
+            <view class="rule-sub-title"> 六、重复任务 </view>
+            <view class="rule-content">
+              <view> 支持设置为 每日 / 每周 / 每月 重复任务。 </view>
+              <view>
+                当你完成一次重复任务后，系统会自动根据重复规则生成下一次任务，方便你养成长期习惯。
+              </view>
+              <view>
+                重复任务会记录「已完成次数」，可以帮助你追踪长期习惯的坚持情况。
+              </view>
+            </view>
+          </view>
+          <view>
+            <view class="rule-sub-title"> 七、AI 任务与草稿 </view>
+            <view class="rule-content">
+              <view>
+                你可以通过 AI 功能输入一个目标，由系统自动拆解为一组任务。
+              </view>
+              <view>
+                AI
+                生成的任务与手动创建的任务共用同一套奖励和防刷规则，仅在创建方式上有所不同。
+              </view>
+              <view>
+                AI 生成的任务会先进入 AI
+                任务队列，你可以在其中查看、修改、删除，确认后再一键应用为正式任务。
+              </view>
+            </view>
+          </view>
+          <view>
+            <view class="rule-sub-title"> 八、与角色成长和宠物的关系 </view>
+            <view class="rule-content">
+              <view>
+                每完成一个有效任务，都会为你的角色增加经验、金币和属性成长，推动整体等级提升。
+              </view>
+              <view>
+                同时还会为你的宠物增加一定的 经验和亲密度，让它与你一起成长。
+              </view>
+            </view>
+            <view class="rule-summary">
+              总结：认真规划任务、合理设置难度和截止时间、按计划完成，而不是频繁创建和秒完成小任务，可以获得更高、更健康的成长回报。
+            </view>
+          </view>
+        </view>
+      </template>
+    </confirm-modal-cmp>
   </view>
 </template>
 
@@ -206,6 +327,7 @@ import TaskTagCmp from "@/pages/task/components/taskTag.vue";
 import TaskCreateCmp from "@/pages/task/components/taskCreate.vue";
 import TaskDetailCmp from "@/pages/task/components/taskDetail.vue";
 import AiTaskListCmp from "@/pages/task/components/taskAi.vue";
+import ConfirmModalCmp from "@/components/ConfirmModal/ConfirmModal.vue";
 import { TaskStatusTextMap, type Ticket, type Task } from "@/type/task";
 import { onHide, onShow } from "@dcloudio/uni-app";
 import { computed, onMounted, ref } from "vue";
@@ -217,6 +339,8 @@ import http from "@/utils/http";
 import { isOverdue } from "./taskFn";
 import { useUser } from "@/composables/useUser";
 dayjs.extend(isBetween);
+
+const taskRuleShow = ref<boolean>(false);
 
 // 标记应用是否在前台
 let isAppForeground = true;
@@ -546,5 +670,30 @@ onHide(() => {
   bottom: 200rpx;
   background-color: var(--primary-color);
   color: #fff;
+}
+
+.rule {
+  font-size: var(--fontSize-normal);
+  font-weight: normal;
+  text-align: left;
+  .rule-title {
+    font-size: var(--fontSize-large);
+    font-weight: bold;
+    text-align: center;
+    padding-bottom: 10rpx;
+  }
+  .rule-sub-title {
+    font-size: var(--fontSize-big);
+    font-weight: bold;
+  }
+  .rule-content {
+    text-indent: 1em;
+  }
+
+  .rule-summary {
+    border-top: 5rpx solid #8c6e5266;
+    padding-top: 10rpx;
+    margin-top: 10rpx;
+  }
 }
 </style>
