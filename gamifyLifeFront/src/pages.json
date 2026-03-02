@@ -43,7 +43,8 @@
     {
       "path": "pages/community/community",
       "style": {
-        "navigationBarTitleText": "社区中心"
+        "navigationBarTitleText": "社区中心",
+        "navigationStyle": "custom"
       }
     },
     {
