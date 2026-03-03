@@ -1,9 +1,7 @@
-import { Inventory, Item } from "@/type/item.js";
 import db from "../shared/db.js";
 import sequelize from "@/shared/sequelize.js";
 import PetService from "../services/pet.js";
 
-import { Sequelize } from "sequelize";
 const petService = new PetService();
 export default class ItemService {
   // 获取系统所有道具

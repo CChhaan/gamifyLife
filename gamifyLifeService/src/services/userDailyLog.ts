@@ -1,6 +1,5 @@
 import dayjs from "dayjs";
 import db from "../shared/db.js";
-import { Sequelize } from "sequelize";
 import { Op } from "sequelize";
 
 export default class UserDailyLogService {
@@ -11,11 +10,7 @@ export default class UserDailyLogService {
 
       // 查找日期不是今天的所有记录
       const outdatedLogs = await db.UserDailyLogs.findAll({
-        where: {
-          date: {
-            [Op.lt]: today.toDate(),
-          },
-        },
+        where: { date: { [Op.lt]: today.toDate() } },
       });
 
       if (outdatedLogs.length > 0) {

@@ -2,11 +2,15 @@ import db from "../shared/db.js";
 import { taskAttr, taskExp, taskGold } from "../shared/growthCalc.js";
 import dayjs from "dayjs";
 import PetService from "../services/pet.js";
-import { Task } from "@/type/task.js";
+import { InfluenceAttr, Task } from "@/type/task.js";
 import chalk from "chalk";
 import { Op } from "sequelize";
+import PostService from "./post.js";
+import UserGrowthService from "./userGrowth.js";
 
 const petService = new PetService();
+const postService = new PostService();
+const userGrowthService = new UserGrowthService();
 
 export default class TaskService {
   // 验证高价值任务（核心防刷逻辑）
@@ -81,7 +85,7 @@ export default class TaskService {
   private multiplyAttrGains(
     gains: Record<string, number>,
     multiplier: number,
-  ): Record<string, number> {
+  ): Record<InfluenceAttr, number> {
     const result: Record<string, number> = {};
     for (const [key, value] of Object.entries(gains)) {
       result[key] = Math.ceil(value * multiplier);
@@ -96,9 +100,7 @@ export default class TaskService {
         where: {
           status: "COMPLETED",
           is_recurring: true,
-          completed_at: {
-            [Op.lt]: dayjs().startOf("day").toDate(),
-          },
+          completed_at: { [Op.lt]: dayjs().startOf("day").toDate() },
         },
       });
 
@@ -148,32 +150,32 @@ export default class TaskService {
       const { level } = (await db.UserGrowth.findByPk(userId))!.dataValues;
       const tag1 = (await db.TaskTags.findByPk(tag_id_1))!.dataValues;
       const tag2 = (await db.TaskTags.findByPk(tag_id_2))?.dataValues || null;
-      const final_exp = taskExp(difficulty, level, Math.ceil(-finishTime));
+      const final_exp = taskExp(difficulty, level!, Math.ceil(-finishTime));
       const final_gold = taskGold(difficulty, Math.ceil(-finishTime));
 
       const attrMap: Record<string, number> = {};
       if (tag1) {
         if (tag1.primary_attr) {
           attrMap[tag1.primary_attr]
-            ? (attrMap[tag1.primary_attr] += taskAttr(level, difficulty))
-            : (attrMap[tag1.primary_attr] = taskAttr(level, difficulty));
+            ? (attrMap[tag1.primary_attr] += taskAttr(level!, difficulty))
+            : (attrMap[tag1.primary_attr] = taskAttr(level!, difficulty));
         }
         if (tag1.secondary_attr) {
           attrMap[tag1.secondary_attr]
-            ? (attrMap[tag1.secondary_attr] += taskAttr(level, difficulty))
-            : (attrMap[tag1.secondary_attr] = taskAttr(level, difficulty));
+            ? (attrMap[tag1.secondary_attr] += taskAttr(level!, difficulty))
+            : (attrMap[tag1.secondary_attr] = taskAttr(level!, difficulty));
         }
       }
       if (tag2) {
         if (tag2.primary_attr) {
           attrMap[tag2.primary_attr]
-            ? (attrMap[tag2.primary_attr] += taskAttr(level, difficulty))
-            : (attrMap[tag2.primary_attr] = taskAttr(level, difficulty));
+            ? (attrMap[tag2.primary_attr] += taskAttr(level!, difficulty))
+            : (attrMap[tag2.primary_attr] = taskAttr(level!, difficulty));
         }
         if (tag2.secondary_attr) {
           attrMap[tag2.secondary_attr]
-            ? (attrMap[tag2.secondary_attr] += taskAttr(level, difficulty))
-            : (attrMap[tag2.secondary_attr] = taskAttr(level, difficulty));
+            ? (attrMap[tag2.secondary_attr] += taskAttr(level!, difficulty))
+            : (attrMap[tag2.secondary_attr] = taskAttr(level!, difficulty));
         }
       }
       const taskId = taskData.id || `${userId}-${Date.now()}`;
@@ -227,32 +229,32 @@ export default class TaskService {
       const { level } = (await db.UserGrowth.findByPk(userId))!.dataValues;
       const tag1 = (await db.TaskTags.findByPk(tag_id_1))!.dataValues;
       const tag2 = (await db.TaskTags.findByPk(tag_id_2))?.dataValues;
-      const final_exp = taskExp(difficulty, level, Math.ceil(-finishTime));
+      const final_exp = taskExp(difficulty, level!, Math.ceil(-finishTime));
       const final_gold = taskGold(difficulty, Math.ceil(-finishTime));
 
       const attrMap: Record<string, number> = {};
       if (tag1) {
         if (tag1.primary_attr) {
           attrMap[tag1.primary_attr]
-            ? (attrMap[tag1.primary_attr] += taskAttr(level, difficulty))
-            : (attrMap[tag1.primary_attr] = taskAttr(level, difficulty));
+            ? (attrMap[tag1.primary_attr] += taskAttr(level!, difficulty))
+            : (attrMap[tag1.primary_attr] = taskAttr(level!, difficulty));
         }
         if (tag1.secondary_attr) {
           attrMap[tag1.secondary_attr]
-            ? (attrMap[tag1.secondary_attr] += taskAttr(level, difficulty))
-            : (attrMap[tag1.secondary_attr] = taskAttr(level, difficulty));
+            ? (attrMap[tag1.secondary_attr] += taskAttr(level!, difficulty))
+            : (attrMap[tag1.secondary_attr] = taskAttr(level!, difficulty));
         }
       }
       if (tag2) {
         if (tag2.primary_attr) {
           attrMap[tag2.primary_attr]
-            ? (attrMap[tag2.primary_attr] += taskAttr(level, difficulty))
-            : (attrMap[tag2.primary_attr] = taskAttr(level, difficulty));
+            ? (attrMap[tag2.primary_attr] += taskAttr(level!, difficulty))
+            : (attrMap[tag2.primary_attr] = taskAttr(level!, difficulty));
         }
         if (tag2.secondary_attr) {
           attrMap[tag2.secondary_attr]
-            ? (attrMap[tag2.secondary_attr] += taskAttr(level, difficulty))
-            : (attrMap[tag2.secondary_attr] = taskAttr(level, difficulty));
+            ? (attrMap[tag2.secondary_attr] += taskAttr(level!, difficulty))
+            : (attrMap[tag2.secondary_attr] = taskAttr(level!, difficulty));
         }
       }
 
@@ -397,13 +399,10 @@ export default class TaskService {
         );
       }
 
-      await userGrowth.increment(
-        {
-          total_experience: expEarned,
-          gold: goldEarned,
-          ...attrGains,
-        },
-        { transaction: t },
+      await userGrowthService.upgradeUserGrowth(
+        userId,
+        { total_experience: expEarned, gold: goldEarned, ...attrGains },
+        t,
       );
 
       await userDailyLog.increment(
@@ -417,6 +416,15 @@ export default class TaskService {
       // 宠物经验加10，亲密度加5
       await petService.addPetExp(userId, 10, t);
       await petService.addPetLove(userId, 5, t);
+
+      // 10. 创建系统动态
+      await postService.createSystemPost(
+        userId,
+        "TASK",
+        task.dataValues.id,
+        `我完成了「${task.dataValues.title}」任务`,
+        t,
+      );
 
       await t.commit();
 

@@ -14,9 +14,9 @@
           </view>
           <view class="user-info min-w-0 flex-1">
             <view class="w-full">
-              <text class="user-name text-ellipsis w-full">{{
-                userInfo?.nickname
-              }}</text>
+              <text class="user-name text-ellipsis w-full">
+                {{ userInfo?.nickname }}
+              </text>
             </view>
             <view>
               <text class="level">Lv. {{ userGrowth?.level }}</text>
@@ -36,9 +36,8 @@
         <view class="exp-data w-full flex flex-justify__between">
           <view>
             <text>
-              exp: {{ userGrowth?.total_experience }}/{{
-                userGrowth?.nextLevelExp
-              }}
+              exp: {{ userGrowth?.total_experience }} /
+              {{ userGrowth?.nextLevelExp }}
             </text>
           </view>
           <view>
@@ -68,15 +67,12 @@
         </view>
       </view>
       <view class="flex flex-justify__between w-full">
-        <view
-          >今日高质量任务完成：{{
-            userDailyLog?.today_high_value_task_count
-          }}</view
-        >
-        <view
-          >今日任务完成：{{ userDailyLog?.today_task_completion_count }} /
-          20</view
-        >
+        <view>
+          今日高质量任务完成：{{ userDailyLog?.today_high_value_task_count }}
+        </view>
+        <view>
+          今日任务完成：{{ userDailyLog?.today_task_completion_count }} / 20
+        </view>
       </view>
     </view>
     <!-- 任务分类 -->

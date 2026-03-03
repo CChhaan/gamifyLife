@@ -3,6 +3,17 @@ import { onLaunch } from "@dcloudio/uni-app";
 import { initRouterGuard } from "./utils/routerGuard";
 import { isTokenValid, whiteList } from "./utils/auth";
 
+const ws = uni.connectSocket({
+  url: `ws://localhost:3000`,
+  complete: () => {
+    console.log("WebSocket连接");
+  },
+});
+
+ws.onOpen(() => {
+  console.log("WebSocket连接已打开！");
+});
+
 onLaunch((options) => {
   initRouterGuard();
 

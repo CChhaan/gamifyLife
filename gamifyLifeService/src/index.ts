@@ -14,15 +14,15 @@ import errorHandler from "./middlewares/errorHandler.js";
 import db, { syncDatabase } from "./shared/db.js";
 import tokenAuth from "./middlewares/tokenAuth.js";
 import items from "./shared/items.js";
-import ws from "koa-websocket";
+import websocketService from "./websocket/websocket.js";
+import http from "http";
 import {
   initializeScheduler,
   cancelDailyRefreshJob,
 } from "./shared/scheduler.js";
-import Application from "koa";
 
-const app = new Koa({});
-// const server = ws(app);
+const app = new Koa();
+const server = http.createServer(app.callback());
 
 configDotenv();
 
@@ -103,6 +103,7 @@ async function loadItems() {
     console.error("加载道具失败:", error);
   }
 }
+websocketService.initialize(server);
 
 // 异步启动
 (async () => {
@@ -114,17 +115,22 @@ async function loadItems() {
     initializeScheduler();
 
     // 在应用关闭时取消定时任务
+    // 监听 SIGTERM 信号（如 Docker 停止容器）
     process.on("SIGTERM", () => {
       cancelDailyRefreshJob();
+      websocketService.close();
       process.exit(0);
     });
 
+    // 监听 Ctrl+C 事件，优雅关闭应用
     process.on("SIGINT", () => {
       cancelDailyRefreshJob();
+      websocketService.close();
       process.exit(0);
     });
     app.listen(3000, () => {
       console.log("Server is running on http://localhost:3000");
+      console.log("WebSocket server is ready at ws://localhost:3000");
       console.log("加载环境变量", process.env.AI_TOKEN);
     });
   } catch (error) {

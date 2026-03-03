@@ -1,5 +1,5 @@
 import Router from "koa-router";
-import { success, badRequest } from "../shared/response.js";
+import { success } from "../shared/response.js";
 import PetService from "../services/pet.js";
 import { routerFnc } from "@/shared/commonFnc.js";
 

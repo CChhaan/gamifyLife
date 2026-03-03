@@ -1,8 +1,9 @@
-import { Inventory } from "@/type/item.js";
 import db from "../shared/db.js";
 import sequelize from "@/shared/sequelize.js";
 import { Transaction } from "sequelize";
 import chalk from "chalk";
+import PostService from "./post.js";
+const postService = new PostService();
 
 export default class ItemService {
   // 获取当前宠物信息
@@ -64,6 +65,16 @@ export default class ItemService {
 
     // 更新宠物的经验值和等级
     await pet.update({ exp: finalExp, level: newLevel }, { transaction: t });
+
+    if (newLevel > pet.dataValues.level!) {
+      await postService.createSystemPost(
+        user_id,
+        "PET",
+        pet.dataValues.id,
+        `我的宠物「${pet.dataValues.nickname}」升级了！现在等级是${newLevel}级！`,
+        t,
+      );
+    }
   }
 
   // 减少宠物饱食度
@@ -136,6 +147,13 @@ export default class ItemService {
         case 4:
           await this.addPetExp(user_id, 10, t);
           await this.addPetLove(user_id, 10, t);
+          await postService.createSystemPost(
+            user_id,
+            "PET",
+            pet.dataValues.id,
+            `我和我的宠物「${pet.dataValues.nickname}」一起玩耍，完美接住了${count}个球！`,
+            t,
+          );
           break;
       }
       await t.commit();

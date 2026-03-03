@@ -38,10 +38,7 @@ export default class UserAuthService {
         },
       );
       await db.UserDailyLogs.create(
-        {
-          user_id: newUser.dataValues.id,
-          date: new Date(),
-        },
+        { user_id: newUser.dataValues.id, date: new Date() },
         { transaction: t },
       );
       console.log("注册用户成功：", newUser.get("UserDailyLogs"));

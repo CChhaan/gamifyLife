@@ -21,6 +21,7 @@
         </view>
       </view>
       <view class="rewards" v-if="petInfo">宠物经验：+10 ，亲密度：+5</view>
+      <view>新增一个动态草稿，可以在社区板块进行发布</view>
       <button class="confirm-button" @click="$emit('confirm')">确定</button>
     </view>
   </view>

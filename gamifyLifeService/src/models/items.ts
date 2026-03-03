@@ -28,10 +28,7 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
         defaultValue: "OTHER",
       },
       // 道具名称
-      name: {
-        type: DataTypes.STRING(50),
-        allowNull: false,
-      },
+      name: { type: DataTypes.STRING(50), allowNull: false },
       // 道具描述
       description: {
         type: DataTypes.STRING(200),
@@ -57,11 +54,7 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
         defaultValue: "ON_SHELF",
       },
       // 使用效果JSON
-      effect: {
-        type: DataTypes.JSON,
-        allowNull: false,
-        defaultValue: {},
-      },
+      effect: { type: DataTypes.JSON, allowNull: false, defaultValue: {} },
     },
     {
       sequelize,

@@ -68,12 +68,6 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
         defaultValue: 0,
         comment: "自律属性",
       },
-      last_reset_date: {
-        type: DataTypes.DATEONLY, // 仅存储日期（无时间）
-        allowNull: false,
-        defaultValue: DataTypes.NOW, // 等价于 MySQL 的 CURDATE()
-        comment: "上次重置计数日期",
-      },
     },
     {
       sequelize,

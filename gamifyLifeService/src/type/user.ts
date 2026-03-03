@@ -17,15 +17,14 @@ export interface UserInfo {
 }
 
 export interface UserGrowth {
-  level: number;
+  level?: number;
   total_experience: number;
   gold: number;
   mind: number;
   body: number;
   social: number;
   discipline: number;
-  last_reset_date: Date;
-  user_id: number;
+  user_id?: number;
   nextLevelExp?: number;
   updatedAt?: Date;
   createdAt?: Date;

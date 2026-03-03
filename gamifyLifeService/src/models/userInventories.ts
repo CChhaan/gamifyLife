@@ -6,30 +6,17 @@ import { Inventory, Item } from "@/type/item.js";
 export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
   class UserInventories extends Model<Inventory, Inventory> {
     static associate(models: typeof db) {
-      this.belongsTo(models.Items, {
-        foreignKey: "item_id",
-        as: "item",
-      });
+      this.belongsTo(models.Items, { foreignKey: "item_id", as: "item" });
     }
   }
 
   UserInventories.init(
     {
-      // 库存ID
-      id: {
-        type: DataTypes.INTEGER.UNSIGNED,
-        allowNull: false,
-        primaryKey: true,
-        autoIncrement: true,
-      },
       // 所属用户ID（外键关联User表）
       user_id: {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
-        references: {
-          model: "user_accounts",
-          key: "id",
-        },
+        references: { model: "user_accounts", key: "id" },
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
       },
@@ -37,10 +24,7 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
       item_id: {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
-        references: {
-          model: "items",
-          key: "id",
-        },
+        references: { model: "items", key: "id" },
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
       },
@@ -56,6 +40,14 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
       tableName: "user_inventories",
       charset: "utf8mb4",
       collate: "utf8mb4_unicode_ci",
+      // 用户ID和道具ID唯一
+      indexes: [
+        {
+          name: "user_inventories_unique_user_item",
+          unique: true,
+          fields: ["user_id", "item_id"],
+        },
+      ],
       paranoid: true,
     },
   );

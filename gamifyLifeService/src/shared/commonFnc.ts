@@ -1,3 +1,4 @@
+import chalk from "chalk";
 import { badRequest } from "./response.js";
 
 export async function routerFnc(ctx: any, fnc: () => Promise<void>) {
@@ -9,7 +10,9 @@ export async function routerFnc(ctx: any, fnc: () => Promise<void>) {
     const errorMsg = error.message || "服务器处理请求时发生错误";
 
     // 2. 规范响应格式，记录错误日志
-    console.error(`[路由处理异常] path: ${ctx.path}, error:`, error);
+    console.error(
+      chalk.red(`[路由处理异常] path: ${ctx.path}, error: ${errorMsg}`),
+    );
     ctx.status = statusCode;
     ctx.body = badRequest(errorMsg);
   }
