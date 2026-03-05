@@ -25,11 +25,7 @@ export default class UserGrowthService {
   }
 
   // 用户成长记录提升
-  async upgradeUserGrowth(
-    userId: number,
-    growthData: UserGrowth,
-    t: Transaction,
-  ) {
+  async upgradeUserGrowth(userId: number, growthData: any, t: Transaction) {
     try {
       const where = { user_id: userId };
       const existingGrowth = await db.UserGrowth.findOne({ where });
@@ -59,13 +55,7 @@ export default class UserGrowthService {
       );
 
       existingGrowth.increment(
-        {
-          gold: growthData.gold,
-          mind: growthData.mind,
-          body: growthData.body,
-          social: growthData.social,
-          discipline: growthData.discipline,
-        },
+        { gold: growthData.gold, ...growthData.attrGains },
         { transaction: t },
       );
 

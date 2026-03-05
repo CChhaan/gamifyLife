@@ -2,6 +2,8 @@ import Router from "koa-router";
 import { success } from "../shared/response.js";
 import { routerFnc } from "@/shared/commonFnc.js";
 import PostService from "@/services/post.js";
+import UserInfoService from "@/services/userInfo.js";
+import db from "@/shared/db.js";
 
 const router = new Router({ prefix: "/post" });
 
@@ -28,7 +30,8 @@ router.get("/getUserPublishedPosts", async (ctx) => {
 // 获取所有发布状态的动态
 router.get("/getAllPublishedPosts", async (ctx) => {
   await routerFnc(ctx, async () => {
-    const posts = await postService.getAllPublishedPosts();
+    const sort = ctx.query.sort as string;
+    const posts = await postService.getAllPublishedPosts(sort);
     ctx.body = success(posts, "动态获取成功");
   });
 });
@@ -38,7 +41,7 @@ router.post("/publish", async (ctx) => {
   await routerFnc(ctx, async () => {
     const userId = ctx.state.user.userId;
     const postId = (ctx.request.body as any).postId;
-    const post = await postService.publishPost(userId, postId);
+    const post = await postService.publishPost(postId, userId);
     ctx.body = success(post, "动态发布成功");
   });
 });

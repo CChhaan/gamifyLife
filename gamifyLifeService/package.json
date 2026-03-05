@@ -4,7 +4,7 @@
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon --exec tsx src/index.js",
+    "dev": " nodemon --inspect=9229 --exec tsx src/index.js",
     "build": "tsc && tsc-alias",
     "start": "cross-env NODE_ENV=production node dist/index.js"
   },

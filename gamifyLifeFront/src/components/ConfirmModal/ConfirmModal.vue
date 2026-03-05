@@ -9,7 +9,11 @@
     </view>
     <view class="confirm-btn-group flex flex-justify__around">
       <button class="confirm-button" @click="$emit('confirm')">确定</button>
-      <button class="confirm-button" @click="$emit('close')" v-if="cancel">
+      <button
+        class="confirm-button cancel"
+        @click="$emit('close')"
+        v-if="cancel"
+      >
         取消
       </button>
     </view>
@@ -63,5 +67,9 @@ defineEmits<{
   color: #fff;
   font-size: var(--fontSize-normal);
   line-height: 2;
+}
+
+.cancel {
+  background-color: var(--contrast-color);
 }
 </style>

@@ -399,9 +399,10 @@ export default class TaskService {
         );
       }
 
+      // 8. 更新用户成长数据
       await userGrowthService.upgradeUserGrowth(
         userId,
-        { total_experience: expEarned, gold: goldEarned, ...attrGains },
+        { total_experience: expEarned, gold: goldEarned, attrGains },
         t,
       );
 

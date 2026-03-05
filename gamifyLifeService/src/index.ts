@@ -22,7 +22,6 @@ import {
 } from "./shared/scheduler.js";
 
 const app = new Koa();
-const server = http.createServer(app.callback());
 
 configDotenv();
 
@@ -103,6 +102,8 @@ async function loadItems() {
     console.error("加载道具失败:", error);
   }
 }
+const server = http.createServer(app.callback());
+
 websocketService.initialize(server);
 
 // 异步启动
@@ -128,7 +129,7 @@ websocketService.initialize(server);
       websocketService.close();
       process.exit(0);
     });
-    app.listen(3000, () => {
+    server.listen(3000, () => {
       console.log("Server is running on http://localhost:3000");
       console.log("WebSocket server is ready at ws://localhost:3000");
       console.log("加载环境变量", process.env.AI_TOKEN);

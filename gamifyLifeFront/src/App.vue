@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { onLaunch } from "@dcloudio/uni-app";
 import { initRouterGuard } from "./utils/routerGuard";
-import { isTokenValid, whiteList } from "./utils/auth";
+import { getToken, isTokenValid, whiteList } from "./utils/auth";
 
 const ws = uni.connectSocket({
-  url: `ws://localhost:3000`,
+  url: `ws://localhost:3000/token=${getToken()}`,
   complete: () => {
     console.log("WebSocket连接");
   },

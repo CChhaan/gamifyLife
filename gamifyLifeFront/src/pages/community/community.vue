@@ -1,48 +1,144 @@
 <template>
   <view class="community tab-page flex flex-col">
-    <view
-      class="community_banner flex w-full flex-shrink-0 flex-justify__between"
-    >
-      <button size="mini">发布动态</button>
-      <view class="header-title">社区中心</view>
+    <view class="community_banner flex w-full flex-shrink-0">
+      <button size="mini" @click="showPublishPost = true">
+        发布动态 ( {{ userUnPublishedPosts.length }} )
+      </button>
       <button size="mini">通知</button>
     </view>
     <view class="community_main w-full">
       <view class="community_main-tabbar flex flex-justify__between">
-        <view class="tab-item flex-1 selected">热门</view>
-        <view class="tab-item flex-1">最新</view>
-        <view class="tab-item flex-1">我的帖子</view>
+        <view
+          class="tab-item flex-1"
+          :class="{ selected: selectedTab === '热门' }"
+          @click="selectedTab = '热门'"
+          >热门</view
+        >
+        <view
+          class="tab-item flex-1"
+          :class="{ selected: selectedTab === '最新' }"
+          @click="selectedTab = '最新'"
+          >最新</view
+        >
+        <view
+          class="tab-item flex-1"
+          :class="{ selected: selectedTab === '我的帖子' }"
+          @click="selectedTab = '我的帖子'"
+          >我的帖子</view
+        >
       </view>
       <view class="community_main-posts">
-        <view v-for="item in 10" :key="item" class="post-item">
+        <view v-for="item in postsList" :key="item.id" class="post-item">
           <view class="poster-info flex">
             <view class="poster-avatar">
-              <image class="img" src="/static/images/avatar.png" />
+              <image class="img" :src="item.userInfo?.avatar_url" />
             </view>
-            <view class="poster-name">发布者昵称</view>
+            <view class="poster-name">{{ item.userInfo?.nickname }}</view>
           </view>
-          <view class="post-header"> 帖子标题 </view>
+          <view class="post-header">{{ item.title }}</view>
           <view class="post-data">
-            <view class="post-time">发布时间：2023-08-15 10:00:00</view>
+            <view class="post-time"
+              >发布时间：{{
+                dayjs(item.published_at).format("YYYY-MM-DD HH:mm:ss")
+              }}</view
+            >
             <view class="comment flex flex-justify__around">
               <view class="flex comment-item">
-                <u-icon name="eye" class="comment-icon" />200
+                <u-icon name="eye" class="comment-icon" />{{ item.view_count }}
               </view>
               <view class="flex comment-item">
-                <u-icon name="thumb-up" class="comment-icon" />123
+                <u-icon name="thumb-up" class="comment-icon" />{{
+                  item.like_count
+                }}
               </view>
               <view class="flex comment-item">
-                <u-icon name="thumb-down" class="comment-icon" />45
+                <u-icon name="thumb-down" class="comment-icon" />{{
+                  item.dislike_count
+                }}
               </view>
             </view>
           </view>
         </view>
       </view>
     </view>
+    <publish-post-cmp
+      @close="closePublishPost"
+      v-if="showPublishPost"
+      :postsList="userUnPublishedPosts"
+      @refresh="getUserPosts"
+    />
   </view>
 </template>
 
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+import type { Post } from "@/type/post";
+import http from "@/utils/http";
+import { onShow } from "@dcloudio/uni-app";
+import PublishPostCmp from "./publishPost.vue";
+import { computed, ref, watch } from "vue";
+import dayjs from "dayjs";
+
+const userPosts = ref<Post[]>();
+
+const selectedTab = ref("热门");
+
+// 获取用户的动态
+const getUserPosts = async () => {
+  const res = await http.get<Post[]>("/post/getUserPosts");
+  userPosts.value = res || [];
+};
+// 获取热门动态
+const getHotPosts = async () => {
+  const res = await http.get<Post[]>("/post/getAllPublishedPosts", {
+    sort: "view_count",
+  });
+  return res || [];
+};
+
+// 用户未发布的动态
+const userUnPublishedPosts = computed(() => {
+  return userPosts.value?.filter((item) => !item.published_at) || [];
+});
+
+// 获取用户发布的动态
+const userPublishedPosts = computed(() => {
+  return userPosts.value?.filter((item) => item.published_at) || [];
+});
+
+const postsList = ref<Post[]>([]);
+
+watch(
+  selectedTab,
+  async () => {
+    switch (selectedTab.value) {
+      case "热门": {
+        const hotPosts = await getHotPosts();
+        postsList.value = hotPosts;
+        break;
+      }
+      case "最新":
+        postsList.value = [];
+        break;
+      case "我的帖子":
+        postsList.value = userPublishedPosts.value || [];
+        break;
+    }
+  },
+  { immediate: true },
+);
+console.log(postsList.value);
+// 发布帖子
+const showPublishPost = ref(false);
+
+const closePublishPost = () => {
+  showPublishPost.value = false;
+  getUserPosts();
+};
+
+onShow(() => {
+  getUserPosts();
+});
+</script>
 
 <style lang="scss" scoped>
 .community {
@@ -101,9 +197,9 @@
       }
 
       .post-header {
-        font-size: var(--fontSize-large);
+        font-size: var(--fontSize-big);
         font-weight: bold;
-        margin-top: 20rpx;
+        margin: 20rpx 0 10rpx;
       }
 
       .post-data {
@@ -126,9 +222,9 @@
   }
 }
 
-.header-title {
-  font-size: var(--fontSize-large);
-  font-weight: bold;
-  color: #fff;
-}
+// .header-title {
+//   font-size: var(--fontSize-large);
+//   font-weight: bold;
+//   color: #fff;
+// }
 </style>

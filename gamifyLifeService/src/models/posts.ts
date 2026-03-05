@@ -9,6 +9,11 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
         foreignKey: "user_id",
         targetKey: "id",
       });
+      this.belongsTo(models.UserInfo, {
+        foreignKey: "user_id", // 重点：用同一个 user_id
+        targetKey: "user_id", // UserInfo 里的字段是 user_id
+        as: "userInfo",
+      });
     }
   }
 
@@ -47,7 +52,7 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
 
       // 关联目标ID
       target_id: {
-        type: DataTypes.INTEGER.UNSIGNED,
+        type: DataTypes.STRING(30),
         allowNull: true,
         defaultValue: null,
         comment: "关联目标ID",
