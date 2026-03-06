@@ -14,6 +14,10 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
         targetKey: "user_id", // UserInfo 里的字段是 user_id
         as: "userInfo",
       });
+      this.hasMany(models.PostInteractions, {
+        foreignKey: "post_id",
+        sourceKey: "id",
+      });
     }
   }
 

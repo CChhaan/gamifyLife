@@ -31,7 +31,8 @@ router.get("/getUserPublishedPosts", async (ctx) => {
 router.get("/getAllPublishedPosts", async (ctx) => {
   await routerFnc(ctx, async () => {
     const sort = ctx.query.sort as string;
-    const posts = await postService.getAllPublishedPosts(sort);
+    const userId = ctx.state.user.userId;
+    const posts = await postService.getAllPublishedPosts(sort, userId);
     ctx.body = success(posts, "动态获取成功");
   });
 });

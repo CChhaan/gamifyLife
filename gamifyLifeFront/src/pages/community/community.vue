@@ -29,11 +29,29 @@
       </view>
       <view class="community_main-posts">
         <view v-for="item in postsList" :key="item.id" class="post-item">
-          <view class="poster-info flex">
-            <view class="poster-avatar">
-              <image class="img" :src="item.userInfo?.avatar_url" />
-            </view>
-            <view class="poster-name">{{ item.userInfo?.nickname }}</view>
+          <view class="poster-info flex flex-justify__between">
+            <view class="flex"
+              ><view class="poster-avatar">
+                <image class="img" :src="item.userInfo?.avatar_url" />
+              </view>
+              <view class="poster-name">{{
+                item.userInfo?.nickname
+              }}</view></view
+            >
+            <button
+              class="hide"
+              v-if="isUserPost(item) && item.status == 'PUBLISHED'"
+              @click="hidePost(item)"
+            >
+              设为私密
+            </button>
+            <button
+              class="hide"
+              v-if="isUserPost(item) && item.status == 'HIDDEN'"
+              @click="unhidePost(item)"
+            >
+              设为公开
+            </button>
           </view>
           <view class="post-header">{{ item.title }}</view>
           <view class="post-data">
@@ -46,7 +64,7 @@
               <view class="flex comment-item">
                 <u-icon name="eye" class="comment-icon" />{{ item.view_count }}
               </view>
-              <view class="flex comment-item">
+              <view class="flex comment-item" @click="LikeOrDislike(item)">
                 <u-icon name="thumb-up" class="comment-icon" />{{
                   item.like_count
                 }}
@@ -81,6 +99,7 @@ import dayjs from "dayjs";
 const userPosts = ref<Post[]>();
 
 const selectedTab = ref("热门");
+const fresh = ref(false);
 
 // 获取用户的动态
 const getUserPosts = async () => {
@@ -90,7 +109,15 @@ const getUserPosts = async () => {
 // 获取热门动态
 const getHotPosts = async () => {
   const res = await http.get<Post[]>("/post/getAllPublishedPosts", {
-    sort: "view_count",
+    sort: "like_count",
+  });
+  return res || [];
+};
+
+// 获取最新动态
+const getNewPosts = async () => {
+  const res = await http.get<Post[]>("/post/getAllPublishedPosts", {
+    sort: "published_at",
   });
   return res || [];
 };
@@ -108,7 +135,7 @@ const userPublishedPosts = computed(() => {
 const postsList = ref<Post[]>([]);
 
 watch(
-  selectedTab,
+  [selectedTab, fresh],
   async () => {
     switch (selectedTab.value) {
       case "热门": {
@@ -117,9 +144,11 @@ watch(
         break;
       }
       case "最新":
-        postsList.value = [];
+        const newPosts = await getNewPosts();
+        postsList.value = newPosts;
         break;
       case "我的帖子":
+        await getUserPosts();
         postsList.value = userPublishedPosts.value || [];
         break;
     }
@@ -130,9 +159,61 @@ console.log(postsList.value);
 // 发布帖子
 const showPublishPost = ref(false);
 
+// 判断是否是用户发的帖子
+const isUserPost = (post: Post) => {
+  return userPosts.value?.some((item) => item.id === post.id);
+};
+
 const closePublishPost = () => {
   showPublishPost.value = false;
   getUserPosts();
+};
+
+// 隐藏帖子
+const hidePost = async (post: Post) => {
+  try {
+    await http.post("post/hide", {
+      postId: post.id,
+    });
+    uni.showToast({ title: "设为私密成功", icon: "success", duration: 2000 });
+    getUserPosts();
+    fresh.value = !fresh.value;
+  } catch (error) {
+    console.log("设为私密失败", error);
+  }
+};
+
+// 公开帖子
+const unhidePost = async (post: Post) => {
+  try {
+    await http.post("post/unhide", {
+      postId: post.id,
+    });
+    uni.showToast({ title: "设为公开成功", icon: "success", duration: 2000 });
+    getUserPosts();
+    fresh.value = !fresh.value;
+  } catch (error) {
+    console.log("设为公开失败", error);
+  }
+};
+
+// 点赞和取消
+const LikeOrDislike = async (post: Post, isLike: boolean) => {
+  try {
+    await http.post("post/likeOrDislike", {
+      postId: post.id,
+      isLike,
+    });
+    uni.showToast({
+      title: isLike ? "点赞成功" : "取消点赞",
+      icon: "success",
+      duration: 2000,
+    });
+    getUserPosts();
+    fresh.value = !fresh.value;
+  } catch (error) {
+    console.log(isLike ? "点赞失败" : "取消点赞失败", error);
+  }
 };
 
 onShow(() => {
@@ -185,14 +266,21 @@ onShow(() => {
 
       .poster-info {
         .poster-avatar {
-          width: 50rpx;
-          height: 50rpx;
+          width: 60rpx;
+          height: 60rpx;
           border-radius: 50%;
           background-color: pink;
         }
         .poster-name {
           margin-left: 20rpx;
           font-size: var(--fontSize-normal);
+        }
+
+        .hide {
+          margin: 0;
+          font-size: var(--fontSize-small);
+          background-color: var(--contrast-color);
+          color: var(--text-contrast-color);
         }
       }
 

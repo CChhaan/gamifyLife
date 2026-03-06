@@ -4,6 +4,9 @@ import { Transaction } from "sequelize";
 import chalk from "chalk";
 import type { Post, PostType } from "@/type/post.js";
 import websocketService from "../websocket/websocket.js";
+import PostInteractionService from "./postInteraction.js";
+
+const postInteractionService = new PostInteractionService();
 export default class PostService {
   // 系统生成动态
   async createSystemPost(
@@ -72,15 +75,31 @@ export default class PostService {
   }
 
   // 获取所有发布状态的动态
-  async getAllPublishedPosts(sort: string) {
+  async getAllPublishedPosts(sort: string, userId: any) {
+    const t = await sequelize.transaction();
     try {
-      const posts = await db.Posts.findAll({
+      const posts = (await db.Posts.findAll({
         where: { status: "PUBLISHED" },
-        order: [[sort, "DESC"]],
-      });
+        include: [
+          { model: db.UserInfo, as: "userInfo" },
+          {
+            model: db.PostInteractions,
+            as: "interactions",
+            where: { user_id: userId },
+            required: false, // 使用LEFT JOIN，即使没有互动记录也会返回帖子
+          },
+        ],
+        order: [[sequelize.literal("view_count + " + sort), "DESC"]],
+      }))!;
+      // 增加浏览量
+      for (const post of posts) {
+        await postInteractionService.viewPost(post.dataValues.id!, userId, t);
+      }
+      await t.commit();
       return posts;
     } catch (error) {
       console.error(chalk.red("获取所有发布状态的动态失败："), error);
+      await t.rollback();
       throw error;
     }
   }

@@ -8,7 +8,7 @@ import type { UserDailyLog, UserGrowth, UserInfo } from "@/type/user.js";
 import { Inventory, Item } from "@/type/item.js";
 import { Pet } from "@/type/pets.js";
 import chalk from "chalk";
-import type { Post } from "@/type/post.js";
+import type { Interaction, Post } from "@/type/post.js";
 
 type BaseModel<T extends {}> = ModelStatic<Model<T>> & {
   associate?: (db: Database) => void;
@@ -28,6 +28,7 @@ type ModelTypes = {
   Pets: BaseModel<Pet>;
   UserDailyLogs: BaseModel<UserDailyLog>;
   Posts: BaseModel<Post>;
+  PostInteractions: BaseModel<Interaction>;
   // ... 添加其他可能的模型
 };
 
