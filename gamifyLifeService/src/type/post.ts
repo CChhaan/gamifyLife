@@ -77,14 +77,3 @@ export interface Interaction {
   /** 最后更新时间 */
   updatedAt?: Date;
 }
-
-/**
- * 创建互动记录的参数类型（无需传 id/created_at/updated_at，由数据库自动生成）
- */
-export interface CreateInteractionDto {
-  user_id: number;
-  post_id: number;
-  interaction_type: InteractionType;
-  /** 可选，默认值 1 */
-  is_active?: 0 | 1;
-}

@@ -17,6 +17,7 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
       this.hasMany(models.PostInteractions, {
         foreignKey: "post_id",
         sourceKey: "id",
+        as: "interactions",
       });
     }
   }

@@ -59,4 +59,33 @@ export interface Post {
   /** 更新时间 */
   updatedAt?: Date;
   userInfo?: UserInfo;
+  interactions?: Interaction[];
+}
+/**
+ * 互动类型枚举（与数据库 ENUM 对应）
+ */
+export enum InteractionType {
+  LIKE = "点赞", // 点赞
+  DISLIKE = "点踩", // 点踩
+  VIEW = "浏览", // 浏览
+}
+
+/**
+ * 互动表基础类型（与数据库字段一一对应）
+ */
+export interface Interaction {
+  /** 记录ID */
+  id?: bigint;
+  /** 互动用户ID */
+  user_id: number;
+  /** 动态ID */
+  post_id: number;
+  /** 互动类型 */
+  interaction_type: "LIKE" | "DISLIKE" | "VIEW";
+  /** 是否有效（1：有效，0：取消） */
+  is_active: 0 | 1;
+  /** 首次互动时间 */
+  createdAt?: Date;
+  /** 最后更新时间 */
+  updatedAt?: Date;
 }

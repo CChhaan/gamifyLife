@@ -2,8 +2,6 @@ import Router from "koa-router";
 import { success } from "../shared/response.js";
 import { routerFnc } from "@/shared/commonFnc.js";
 import PostService from "@/services/post.js";
-import UserInfoService from "@/services/userInfo.js";
-import db from "@/shared/db.js";
 
 const router = new Router({ prefix: "/post" });
 

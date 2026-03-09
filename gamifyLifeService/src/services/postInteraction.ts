@@ -8,6 +8,19 @@ export default class PostInteractionService {
   // 点赞
   async likePost(postId: number, userId: number, transaction?: Transaction) {
     try {
+      // 如果已经点赞过不加
+      const existingInteraction = await db.PostInteractions.findOne({
+        where: {
+          post_id: postId,
+          user_id: userId,
+          interaction_type: "LIKE",
+          is_active: 1,
+        },
+        transaction,
+      });
+      if (existingInteraction) {
+        return;
+      }
       await db.PostInteractions.create(
         {
           post_id: postId,
@@ -19,10 +32,13 @@ export default class PostInteractionService {
       );
 
       // 帖子点赞数加一
-      await db.Posts.update(
-        { like_count: sequelize.literal("like_count + 1") },
+      await db.Posts.increment(
+        { like_count: 1 },
         { where: { id: postId }, transaction },
       );
+      // 取消点踩
+      await this.unDislikePost(postId, userId, transaction);
+      return { message: "点赞成功" };
     } catch (error) {
       console.error(chalk.red("点赞动态失败："), error);
       throw error;
@@ -32,6 +48,19 @@ export default class PostInteractionService {
   // 取消点赞
   async unlikePost(postId: number, userId: number, transaction?: Transaction) {
     try {
+      // 如果没有点赞过不减少
+      const existingInteraction = await db.PostInteractions.findOne({
+        where: {
+          post_id: postId,
+          user_id: userId,
+          interaction_type: "LIKE",
+          is_active: 1,
+        },
+        transaction,
+      });
+      if (!existingInteraction) {
+        return;
+      }
       await db.PostInteractions.update(
         { is_active: 0 },
         {
@@ -41,10 +70,11 @@ export default class PostInteractionService {
       );
 
       // 帖子点赞数减一
-      await db.Posts.update(
-        { like_count: sequelize.literal("like_count - 1") },
+      await db.Posts.decrement(
+        { like_count: 1 },
         { where: { id: postId }, transaction },
       );
+      return { message: "取消点赞成功" };
     } catch (error) {
       console.error(chalk.red("取消点赞动态失败："), error);
       throw error;
@@ -69,6 +99,9 @@ export default class PostInteractionService {
         { dislike_count: sequelize.literal("dislike_count + 1") },
         { where: { id: postId }, transaction },
       );
+      // 取消点赞
+      await this.unlikePost(postId, userId, transaction);
+      return { message: "点踩成功" };
     } catch (error) {
       console.error(chalk.red("点踩动态失败："), error);
       throw error;
@@ -76,7 +109,7 @@ export default class PostInteractionService {
   }
 
   // 取消点踩
-  async undislikePost(
+  async unDislikePost(
     postId: number,
     userId: number,
     transaction?: Transaction,
@@ -99,6 +132,7 @@ export default class PostInteractionService {
         { dislike_count: sequelize.literal("dislike_count - 1") },
         { where: { id: postId }, transaction },
       );
+      return { message: "取消点踩成功" };
     } catch (error) {
       console.error(chalk.red("取消点踩动态失败："), error);
       throw error;
@@ -132,8 +166,33 @@ export default class PostInteractionService {
         { view_count: sequelize.literal("view_count + 1") },
         { where: { id: postId }, transaction },
       );
+      return { message: "浏览成功" };
     } catch (error) {
       console.error(chalk.red("浏览动态失败："), error);
+      throw error;
+    }
+  }
+
+  // 获取用户的帖子点赞数据
+  async getUserPostInteractions(userId: number) {
+    try {
+      const interactions = await db.PostInteractions.findAll({
+        where: { user_id: userId },
+        include: [
+          { model: db.UserInfo, as: "userInfo" },
+          {
+            model: db.Posts,
+            as: "post",
+            where: { user_id: userId },
+            required: true,
+          },
+        ],
+      });
+      return interactions.filter(
+        (item) => item.dataValues.interaction_type == "LIKE",
+      );
+    } catch (error) {
+      console.error(chalk.red("获取用户帖子互动数据失败："), error);
       throw error;
     }
   }

@@ -4,7 +4,7 @@
       <button size="mini" @click="showPublishPost = true">
         发布动态 ( {{ userUnPublishedPosts.length }} )
       </button>
-      <button size="mini">通知</button>
+      <button size="mini" @click="showNotice = true">通知</button>
     </view>
     <view class="community_main w-full">
       <view class="community_main-tabbar flex flex-justify__between">
@@ -64,15 +64,23 @@
               <view class="flex comment-item">
                 <u-icon name="eye" class="comment-icon" />{{ item.view_count }}
               </view>
-              <view class="flex comment-item" @click="LikeOrDislike(item)">
-                <u-icon name="thumb-up" class="comment-icon" />{{
-                  item.like_count
-                }}
+              <view
+                class="flex comment-item"
+                @click="LikeOrDislike(item, isLiked(item))"
+              >
+                <u-icon
+                  :name="isLiked(item) ? 'thumb-up-fill' : 'thumb-up'"
+                  class="comment-icon"
+                />{{ item.like_count }}
               </view>
-              <view class="flex comment-item">
-                <u-icon name="thumb-down" class="comment-icon" />{{
-                  item.dislike_count
-                }}
+              <view
+                class="flex comment-item"
+                @click="DislikeOrUnDislike(item, isDisliked(item))"
+              >
+                <u-icon
+                  :name="isDisliked(item) ? 'thumb-down-fill' : 'thumb-down'"
+                  class="comment-icon"
+                />{{ item.dislike_count }}
               </view>
             </view>
           </view>
@@ -85,6 +93,7 @@
       :postsList="userUnPublishedPosts"
       @refresh="getUserPosts"
     />
+    <notice-cmp @close="closeNotice" v-if="showNotice" />
   </view>
 </template>
 
@@ -93,6 +102,8 @@ import type { Post } from "@/type/post";
 import http from "@/utils/http";
 import { onShow } from "@dcloudio/uni-app";
 import PublishPostCmp from "./publishPost.vue";
+import NoticeCmp from "./notice.vue";
+
 import { computed, ref, watch } from "vue";
 import dayjs from "dayjs";
 
@@ -158,6 +169,7 @@ watch(
 console.log(postsList.value);
 // 发布帖子
 const showPublishPost = ref(false);
+const showNotice = ref(false);
 
 // 判断是否是用户发的帖子
 const isUserPost = (post: Post) => {
@@ -167,6 +179,34 @@ const isUserPost = (post: Post) => {
 const closePublishPost = () => {
   showPublishPost.value = false;
   getUserPosts();
+};
+
+const closeNotice = () => {
+  showNotice.value = false;
+};
+
+// 判断帖子用户是否点赞过
+const isLiked = (post: Post) => {
+  console.log(post);
+  if (!post.interactions) {
+    return false;
+  } else {
+    return post.interactions.some(
+      (item) => item.interaction_type === "LIKE" && item.is_active === 1,
+    );
+  }
+};
+
+// 判断帖子用户是否点踩过
+const isDisliked = (post: Post) => {
+  console.log(post);
+  if (!post.interactions) {
+    return false;
+  } else {
+    return post.interactions.some(
+      (item) => item.interaction_type === "DISLIKE" && item.is_active === 1,
+    );
+  }
 };
 
 // 隐藏帖子
@@ -190,7 +230,6 @@ const unhidePost = async (post: Post) => {
       postId: post.id,
     });
     uni.showToast({ title: "设为公开成功", icon: "success", duration: 2000 });
-    getUserPosts();
     fresh.value = !fresh.value;
   } catch (error) {
     console.log("设为公开失败", error);
@@ -200,12 +239,13 @@ const unhidePost = async (post: Post) => {
 // 点赞和取消
 const LikeOrDislike = async (post: Post, isLike: boolean) => {
   try {
-    await http.post("post/likeOrDislike", {
+    const url = isLike ? "postInteraction/unlike" : "postInteraction/like";
+    await http.post(url, {
       postId: post.id,
       isLike,
     });
     uni.showToast({
-      title: isLike ? "点赞成功" : "取消点赞",
+      title: isLike ? "取消点赞" : "点赞成功",
       icon: "success",
       duration: 2000,
     });
@@ -213,6 +253,28 @@ const LikeOrDislike = async (post: Post, isLike: boolean) => {
     fresh.value = !fresh.value;
   } catch (error) {
     console.log(isLike ? "点赞失败" : "取消点赞失败", error);
+  }
+};
+
+// 点踩和取消
+const DislikeOrUnDislike = async (post: Post, isDislike: boolean) => {
+  try {
+    const url = isDislike
+      ? "postInteraction/unDislike"
+      : "postInteraction/dislike";
+    await http.post(url, {
+      postId: post.id,
+      isDislike,
+    });
+    uni.showToast({
+      title: isDislike ? "取消点踩" : "点踩成功",
+      icon: "success",
+      duration: 2000,
+    });
+    getUserPosts();
+    fresh.value = !fresh.value;
+  } catch (error) {
+    console.log(isDislike ? "点踩失败" : "取消点踩失败", error);
   }
 };
 
@@ -250,8 +312,8 @@ onShow(() => {
       }
 
       .selected {
-        background-color: var(--contrast-color);
-        color: #fff;
+        color: var(--primary-color);
+        border-bottom: 10rpx solid var(--primary-color);
       }
     }
 
