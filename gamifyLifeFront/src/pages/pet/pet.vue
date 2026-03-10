@@ -193,7 +193,7 @@ const feedPet = async () => {
 const text = ref();
 const finishGameShow = ref(false);
 const play = () => {
-  if (petInfo.value?.hunger && petInfo.value?.status == "HUNGRY") {
+  if (petInfo.value?.status && petInfo.value?.status == "HUNGRY") {
     uni.showToast({
       icon: "none",
       title: "宠物太饿了，不能玩耍",

@@ -70,6 +70,13 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
       charset: "utf8mb4",
       collate: "utf8mb4_unicode_ci",
       paranoid: true,
+      indexes: [
+        {
+          name: "post_interactions_user_id_post_id_interaction_type_unique", // 固定索引名称
+          unique: true,
+          fields: ["user_id", "post_id", "interaction_type"],
+        },
+      ],
     },
   );
 

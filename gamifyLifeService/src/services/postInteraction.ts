@@ -21,6 +21,8 @@ export default class PostInteractionService {
       if (existingInteraction) {
         return;
       }
+      // 如果没有点赞数据，创建
+      // 如果有点赞数据，更新is_active为1
       await db.PostInteractions.create(
         {
           post_id: postId,
@@ -28,7 +30,7 @@ export default class PostInteractionService {
           interaction_type: "LIKE",
           is_active: 1,
         },
-        { transaction },
+        { updateOnDuplicate: ["is_active"], transaction },
       );
 
       // 帖子点赞数加一
@@ -84,6 +86,19 @@ export default class PostInteractionService {
   // 点踩
   async dislikePost(postId: number, userId: number, transaction?: Transaction) {
     try {
+      // 如果已经点踩过不加
+      const existingInteraction = await db.PostInteractions.findOne({
+        where: {
+          post_id: postId,
+          user_id: userId,
+          interaction_type: "DISLIKE",
+          is_active: 1,
+        },
+        transaction,
+      });
+      if (existingInteraction) {
+        return;
+      }
       await db.PostInteractions.create(
         {
           post_id: postId,
@@ -91,12 +106,12 @@ export default class PostInteractionService {
           interaction_type: "DISLIKE",
           is_active: 1,
         },
-        { transaction },
+        { updateOnDuplicate: ["is_active"], transaction },
       );
 
       // 帖子点踩数加一
-      await db.Posts.update(
-        { dislike_count: sequelize.literal("dislike_count + 1") },
+      await db.Posts.increment(
+        { dislike_count: 1 },
         { where: { id: postId }, transaction },
       );
       // 取消点赞
@@ -115,6 +130,19 @@ export default class PostInteractionService {
     transaction?: Transaction,
   ) {
     try {
+      // 如果没有点踩过不减少
+      const existingInteraction = await db.PostInteractions.findOne({
+        where: {
+          post_id: postId,
+          user_id: userId,
+          interaction_type: "DISLIKE",
+          is_active: 1,
+        },
+        transaction,
+      });
+      if (!existingInteraction) {
+        return;
+      }
       await db.PostInteractions.update(
         { is_active: 0 },
         {
@@ -128,8 +156,8 @@ export default class PostInteractionService {
       );
 
       // 帖子点踩数减一
-      await db.Posts.update(
-        { dislike_count: sequelize.literal("dislike_count - 1") },
+      await db.Posts.decrement(
+        { dislike_count: 1 },
         { where: { id: postId }, transaction },
       );
       return { message: "取消点踩成功" };

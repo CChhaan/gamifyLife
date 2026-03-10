@@ -22,18 +22,17 @@
       </view>
       <view class="posts">
         <view v-for="item in noticeList" :key="item.id" class="post-item">
-          <view class="post-header">{{ item.title }}</view>
-          <view class="post-data">
-            <view class="post-time">
-              创建时间：{{
-                dayjs(item.createdAt).format("YYYY-MM-DD HH:mm:ss")
-              }}
-            </view>
-          </view>
-          <view>类型：{{ PostTypeTextMap[item.post_type!] }}</view>
-          <view class="flex flex-justify__end w-full">
-            <button size="mini" @click="publishPost(item)">发布</button>
-          </view>
+          <view
+            >用户
+            <text class="highlight">{{ item.userInfo.nickname }}</text>
+            点赞了你的帖子
+            <text class="highlight">{{ item.post.title }}</text></view
+          >
+          <view
+            >时间：{{
+              dayjs(item.updatedAt).format("YYYY-MM-DD HH:mm:ss")
+            }}</view
+          >
         </view>
       </view>
     </view>
@@ -41,13 +40,15 @@
 </template>
 
 <script lang="ts" setup>
-import { Interaction } from "@/type/post";
+import type { Interaction, Post } from "@/type/post";
+import type { UserInfo } from "@/type/user";
 import http from "@/utils/http";
+import dayjs from "dayjs";
 import { computed, ref, watch } from "vue";
 
 const selectedTab = ref("系统通知");
-
-const noticeList = ref<Interaction>();
+type InteractionWithUserInfo = Interaction & { userInfo: UserInfo; post: Post };
+const noticeList = ref<InteractionWithUserInfo[] | null>(null);
 // 获取互动通知
 const getUserInteractions = async () => {
   try {
@@ -57,9 +58,10 @@ const getUserInteractions = async () => {
     console.log(error);
   }
 };
-watch(selectedTab, (newVal, oldVal) => {
+watch(selectedTab, (newVal) => {
   if (newVal === "系统通知") {
-    uni.showToast({ title: "系统通知", icon: "success", duration: 2000 });
+    noticeList.value = [];
+    uni.showToast({ title: "系统通知", icon: "success", duration: 1000 });
   } else if (newVal === "互动通知") {
     getUserInteractions();
   }
@@ -106,6 +108,23 @@ watch(selectedTab, (newVal, oldVal) => {
       .selected {
         color: var(--primary-color);
         border-bottom: 10rpx solid var(--primary-color);
+      }
+    }
+
+    .posts {
+      height: calc(100vh - 350rpx);
+      overflow: auto;
+      font-size: var(--fontSize-normal);
+
+      .post-item {
+        margin: 20rpx;
+        padding: 20rpx;
+        border-radius: 20rpx;
+        background-color: var(--bg-color);
+        box-shadow: var(--shadow);
+      }
+      .highlight {
+        font-weight: bold;
       }
     }
   }

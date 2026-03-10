@@ -75,7 +75,7 @@ export enum InteractionType {
  */
 export interface Interaction {
   /** 记录ID */
-  id?: bigint;
+  id?: number;
   /** 互动用户ID */
   user_id: number;
   /** 动态ID */
