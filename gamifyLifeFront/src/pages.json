@@ -1,120 +1,126 @@
 {
-  "easycom": {
-    "autoscan": true,
-    "custom": {
-      "^u-(.*)": "uview-pro/components/u-$1/u-$1.vue"
-    }
-  },
-  "pages": [
-    {
-      "path": "pages/index/index",
-      "style": {
-        "navigationBarTitleText": "首页",
-        "navigationStyle": "custom"
-      }
-    },
-    {
-      "path": "pages/login/login",
-      "style": {
-        "navigationBarTitleText": "login",
-        "navigationStyle": "custom"
-      }
-    },
-    {
-      "path": "pages/personal/personal",
-      "style": {
-        "navigationBarTitleText": "个人中心",
-        "navigationStyle": "custom"
-      }
-    },
-    {
-      "path": "pages/setting/setting",
-      "style": {
-        "navigationBarTitleText": "设置"
-      }
-    },
-    {
-      "path": "pages/task/task",
-      "style": {
-        "navigationBarTitleText": "任务管理",
-        "navigationStyle": "custom"
-      }
-    },
-    {
-      "path": "pages/community/community",
-      "style": {
-        "navigationBarTitleText": "社区中心",
-        "navigationStyle": "custom"
-      }
-    },
-    {
-      "path": "pages/inventory/inventory",
-      "style": {
-        "navigationBarTitleText": "道具背包",
-        "navigationStyle": "custom"
-      }
-    },
-    {
-      "path": "pages/pet/pet",
-      "style": {
-        "navigationBarTitleText": "宠物",
-        "navigationStyle": "custom"
-      }
-    }
-  ],
-  "globalStyle": {
-    "navigationBarTextStyle": "black",
-    "navigationBarTitleText": "uni-app",
-    "navigationBarBackgroundColor": "#F8F8F8",
-    "backgroundColor": "#F8F8F8"
-  },
-  "tabBar": {
-    "color": "#666",
-    "selectedColor": "#fe7a24",
-    "fontSize": "28rpx",
-    "height": "140rpx",
-    "iconfontSrc": "static/icon/uniicons.ttf",
-    "list": [
-      {
-        "pagePath": "pages/index/index",
-        "text": "首页",
-        "iconfont": {
-          "color": "#666",
-          "selectedColor": "#fe7a24",
-          "text": "",
-          "selectedText": ""
-        }
-      },
-      {
-        "pagePath": "pages/task/task",
-        "text": "任务",
-        "iconfont": {
-          "color": "#666",
-          "selectedColor": "#fe7a24",
-          "text": "",
-          "selectedText": ""
-        }
-      },
-      {
-        "pagePath": "pages/community/community",
-        "text": "社区",
-        "iconfont": {
-          "color": "#666",
-          "selectedColor": "#fe7a24",
-          "text": "",
-          "selectedText": ""
-        }
-      },
-      {
-        "pagePath": "pages/personal/personal",
-        "text": "个人中心",
-        "iconfont": {
-          "color": "#666",
-          "selectedColor": "#fe7a24",
-          "text": "",
-          "selectedText": ""
-        }
-      }
-    ]
-  }
+	"easycom": {
+		"autoscan": true,
+		"custom": {
+			"^u-(.*)": "uview-pro/components/u-$1/u-$1.vue"
+		}
+	},
+	"pages": [
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "首页",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/login/login",
+			"style": {
+				"navigationBarTitleText": "login",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/personal/personal",
+			"style": {
+				"navigationBarTitleText": "个人中心",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/setting/setting",
+			"style": {
+				"navigationBarTitleText": "设置"
+			}
+		},
+		{
+			"path": "pages/task/task",
+			"style": {
+				"navigationBarTitleText": "任务管理",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/community/community",
+			"style": {
+				"navigationBarTitleText": "社区中心",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/inventory/inventory",
+			"style": {
+				"navigationBarTitleText": "道具背包",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/pet/pet",
+			"style": {
+				"navigationBarTitleText": "宠物",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/achievement/achievement",
+			"style": {
+				"navigationBarTitleText": "achievement"
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "uni-app",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8"
+	},
+	"tabBar": {
+		"color": "#666",
+		"selectedColor": "#fe7a24",
+		"fontSize": "28rpx",
+		"height": "140rpx",
+		"iconfontSrc": "static/icon/uniicons.ttf",
+		"list": [
+			{
+				"pagePath": "pages/index/index",
+				"text": "首页",
+				"iconfont": {
+					"color": "#666",
+					"selectedColor": "#fe7a24",
+					"text": "",
+					"selectedText": ""
+				}
+			},
+			{
+				"pagePath": "pages/task/task",
+				"text": "任务",
+				"iconfont": {
+					"color": "#666",
+					"selectedColor": "#fe7a24",
+					"text": "",
+					"selectedText": ""
+				}
+			},
+			{
+				"pagePath": "pages/community/community",
+				"text": "社区",
+				"iconfont": {
+					"color": "#666",
+					"selectedColor": "#fe7a24",
+					"text": "",
+					"selectedText": ""
+				}
+			},
+			{
+				"pagePath": "pages/personal/personal",
+				"text": "个人中心",
+				"iconfont": {
+					"color": "#666",
+					"selectedColor": "#fe7a24",
+					"text": "",
+					"selectedText": ""
+				}
+			}
+		]
+	}
 }

@@ -55,33 +55,26 @@
           </view>
         </view>
       </view>
-      <!-- 等级属性 -->
+      <!-- 属性 -->
       <view class="info-data w-full flex flex-justify__between">
-        <view class="attr flex flex-col">
-          <text class="attr-name">心智</text>
-          <text class="attr-value">{{ userGrowth?.mind }}</text>
-        </view>
-        <view class="attr flex flex-col">
-          <text class="attr-name">体魄</text>
-          <text class="attr-value">{{ userGrowth?.body }}</text>
-        </view>
-        <view class="level flex flex-col flex-justify__center">
-          <text class="level-value">{{ userGrowth?.level }}</text>
-          <text class="level-name">等级</text>
-        </view>
-        <view class="attr flex flex-col">
-          <text class="attr-name">社交</text>
-          <text class="attr-value">{{ userGrowth?.social }}</text>
-        </view>
-        <view class="attr flex flex-col">
-          <text class="attr-name">自律</text>
-          <text class="attr-value">{{ userGrowth?.discipline }}</text>
+        <view
+          class="attr flex flex-col"
+          v-for="(value, key) in InfluenceAttrTextMap"
+          :key="key"
+        >
+          <text class="attr-name">{{ value }}</text>
+          <text class="attr-value">{{ userGrowth?.[key] }}</text>
         </view>
       </view>
       <!-- 经验值 -->
       <view class="w-full">
-        <view class="exp-value">
-          exp: {{ userGrowth?.total_experience }}/{{ userGrowth?.nextLevelExp }}
+        <view class="flex le-value flex-justify__between">
+          <view class="level-value"> LV. {{ userGrowth?.level }} </view>
+          <view class="exp-value">
+            exp: {{ userGrowth?.total_experience }}/{{
+              userGrowth?.nextLevelExp
+            }}
+          </view>
         </view>
         <exp-line-cmp
           :total-experience="userGrowth?.total_experience"
@@ -188,6 +181,7 @@ import { useUser } from "@/composables/useUser";
 import ExpLineCmp from "@/components/ExpLine/ExpLine.vue";
 import { usePet } from "@/composables/usePet";
 import { PetStatus } from "@/type/pets";
+import { InfluenceAttrTextMap } from "@/type/task";
 
 const editInfoShow = ref(false);
 
@@ -296,13 +290,13 @@ const goToAchievement = () => {
   }
 }
 
-// 等级属性
+// 属性
 .info-data {
   padding: 40rpx 0;
 
   .attr {
     background-color: #eec;
-    padding: 10rpx 15rpx;
+    padding: 10rpx 20rpx;
     border-radius: 20rpx;
     box-shadow: inset 0 2rpx 5rpx 3rpx #ddc;
 
@@ -316,22 +310,18 @@ const goToAchievement = () => {
       margin-top: 5rpx;
     }
   }
-
-  .level {
-    .level-value {
-      font-size: var(--fontSize-big);
-    }
-
-    .level-name {
-      color: #a98;
-    }
-  }
+}
+.le-value {
+  margin-bottom: 10rpx;
 }
 
+.level-value {
+  font-size: var(--fontSize-normal);
+}
 // 经验值
 .exp-value {
+  margin-left: 10rpx;
   font-size: var(--fontSize-small);
-  margin-bottom: 10rpx;
 }
 
 .info-setting {
