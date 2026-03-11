@@ -80,6 +80,7 @@
       </view>
       <view class="task-list_tasks">
         <view
+          v-if="filterTaskList.length > 0"
           class="task-item w-full"
           v-for="task in filterTaskList"
           :key="task.id"
@@ -141,6 +142,9 @@
             </view>
           </view>
         </view>
+        <view v-else class="empty-list flex flex-justify__center"
+          >- 暂无任务 -</view
+        >
       </view>
     </view>
     <!-- 悬浮按钮 -->
@@ -648,6 +652,12 @@ onHide(() => {
         border: 3rpx solid #ff6b6b;
       }
     }
+  }
+
+  .empty-list {
+    margin-top: 80rpx;
+    font-size: var(--fontSize-normal);
+    color: var(--text-light-color);
   }
 }
 

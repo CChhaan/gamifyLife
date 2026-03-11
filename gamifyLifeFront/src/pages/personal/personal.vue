@@ -212,9 +212,12 @@ const gotoPet = () => {
 };
 
 const goToAchievement = () => {
-  uni.showToast({
-    title: "敬请期待",
-    icon: "none",
+  // uni.showToast({
+  //   title: "敬请期待",
+  //   icon: "none",
+  // });
+  uni.navigateTo({
+    url: "/pages/achievement/achievement",
   });
 };
 </script>

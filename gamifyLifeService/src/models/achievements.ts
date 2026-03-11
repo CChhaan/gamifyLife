@@ -1,9 +1,9 @@
 import { DataTypes as SequelizeDataTypes, Sequelize, Model } from "sequelize";
 import db from "../shared/db.js";
-import { Item } from "@/type/item.js";
+import { Achievement } from "@/type/achievement.js";
 
 export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
-  class Achievements extends Model<Item, Item> {}
+  class Achievements extends Model<Achievement, Achievement> {}
 
   Achievements.init(
     {
@@ -84,17 +84,10 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
     },
     {
       sequelize,
-      tableName: "items",
+      tableName: "achievements",
       charset: "utf8mb4",
       collate: "utf8mb4_unicode_ci",
       paranoid: true,
-      indexes: [
-        {
-          name: "items_name_unique", // 固定索引名称
-          unique: true,
-          fields: ["name"],
-        },
-      ],
     },
   );
 
