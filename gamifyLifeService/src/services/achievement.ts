@@ -6,11 +6,16 @@ import websocketService from "../websocket/websocket.js";
 import { Achievement } from "@/type/achievement.js";
 export default class AchievementService {
   // 获取对应数据表和字段的成就列表
-  async getAchievementsByType(achievementType: string, field: string) {
+  async getAchievementsByType(achievementType: string, fieldName: string) {
     try {
-      const achievements = await db.Achievements.findAll({
-        where: { type: achievementType, conditions: { field: field } },
-      });
+      const where = {
+        type: achievementType,
+        conditions: sequelize.literal(
+          `JSON_CONTAINS(conditions, '${JSON.stringify([{ type: fieldName }])}')`,
+        ),
+      };
+      console.log(chalk.yellow("获取成就列表条件:", JSON.stringify(where)));
+      const achievements = await db.Achievements.findAll({ where });
       return achievements;
     } catch (error: any) {
       console.error(chalk.red("获取成就列表失败:", error));
@@ -86,6 +91,14 @@ export default class AchievementService {
       const completedAchievement = await db.Achievements.findOne({
         where: { id: achievementId },
       });
+      console.log(
+        chalk.yellow("完成成就:", JSON.stringify(completedAchievement)),
+      );
+      // 发送完成成就通知
+      await websocketService.sendAchievementNotification(
+        userId,
+        completedAchievement!.dataValues,
+      );
       console.log(
         chalk.yellow("用户完成成就:", completedAchievement!.dataValues.title),
       );

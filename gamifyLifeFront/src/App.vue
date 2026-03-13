@@ -22,6 +22,7 @@ onLaunch((options) => {
       title: res.data,
       icon: "none",
       position: "top",
+      duration: 2000,
     });
   });
   // App 启动时校验 token
@@ -33,7 +34,6 @@ onLaunch((options) => {
     uni.redirectTo({
       url: "/pages/login/login?redirect=" + encodeURIComponent(path),
     });
-    toast.success("操作成功");
   }
 });
 </script>

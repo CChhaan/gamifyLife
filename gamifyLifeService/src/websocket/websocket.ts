@@ -65,10 +65,12 @@ class WebSocketService {
   // 向指定用户发送消息
   async sendToUser(userId: number, message: any) {
     if (this.connections[userId]) {
-      const jsonMessage = JSON.stringify(message);
       for (const ws of this.connections[userId]) {
         if (ws.readyState === WebSocket.OPEN) {
-          await ws.send(jsonMessage);
+          if (typeof message === "object") {
+            message = JSON.stringify(message);
+          }
+          await ws.send(message);
         }
       }
     }
@@ -76,11 +78,17 @@ class WebSocketService {
 
   // 发送草稿动态通知
   async sendDraftNotification(userId: number, draft: any) {
-    await this.sendToUser(userId, {
-      type: "DRAFT_POST_CREATED",
-      data: draft,
-      timestamp: new Date().toISOString(),
-    });
+    // await this.sendToUser(userId, {
+    //   type: "DRAFT_POST_CREATED",
+    //   data: draft,
+    //   timestamp: new Date().toISOString(),
+    // });
+    await this.sendToUser(userId, "有新的草稿动态被创建！");
+  }
+
+  // 完成成就通知
+  async sendAchievementNotification(userId: number, achievement: any) {
+    await this.sendToUser(userId, `恭喜完成成就：${achievement.title}`);
   }
 
   // 关闭 WebSocket 服务

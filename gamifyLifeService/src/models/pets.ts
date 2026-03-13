@@ -1,15 +1,13 @@
 import { DataTypes as SequelizeDataTypes, Sequelize, Model } from "sequelize";
 import db from "../shared/db.js";
 import { Pet } from "@/type/pets.js";
-// import AchievementService from "@/services/achievement.js";
 
-// const achievementService = new AchievementService();
 export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
-  // // 成就配置：属性名 -> (成就类型, 字段名) 的映射
-  // const ACHIEVEMENT_CONFIG: Record<any, [string, string]> = {
-  //   level: ["PET", "pet_level"],
-  //   evolution_count: ["PET", "pet_evolve"],
-  // };
+  // 成就配置：属性名 -> (成就类型, 字段名) 的映射
+  const ACHIEVEMENT_CONFIG: Record<any, [string, string]> = {
+    level: ["PET", "pet_level"],
+    evolution_count: ["PET", "pet_evolve"],
+  };
   class Pets extends Model<Pet, Pet> {
     static associate(models: typeof db) {
       this.belongsTo(models.UserAccounts, {
@@ -149,57 +147,63 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
       pet.setDataValue("status", newHunger < 50 ? "HUNGRY" : "NORMAL");
     }
 
-    // // 检查level变更
-    // if (pet.changed("level" as keyof Pets)) {
-    //   const newLevel = pet.dataValues.level;
-    //   console.log(`检测到 level 变更，新的 level 值: ${newLevel}`);
-    //   // 检查是否满足成就条件
-    //   const [achievementType, field] = ACHIEVEMENT_CONFIG["level"];
-    //   const achievements = await achievementService.getAchievementsByType(
-    //     achievementType,
-    //     field,
-    //   );
-    //   for (const achievement of achievements) {
-    //     const isAchieved =
-    //       await achievementService.checkAchievementRequirements(
-    //         achievement.dataValues,
-    //         newLevel as number,
-    //       );
-    //     if (isAchieved) {
-    //       await achievementService.completeAchievement(
-    //         pet.dataValues.user_id!,
-    //         achievement.dataValues.id,
-    //       );
-    //     }
-    //   }
-    // }
+    // 3. 检查 level 变更
+    if (pet.changed("level" as keyof Pets)) {
+      const newLevel = pet.dataValues.level;
+      console.log(`检测到 level 变更，新的 level 值: ${newLevel}`);
+      const { default: AchievementService } =
+        await import("@/services/achievement.js");
+      const achievementService = new AchievementService();
+      // 检查是否满足成就条件
+      const [achievementType, field] = ACHIEVEMENT_CONFIG["level"];
+      const achievements = await achievementService.getAchievementsByType(
+        achievementType,
+        field,
+      );
+      for (const achievement of achievements) {
+        const isAchieved =
+          await achievementService.checkAchievementRequirements(
+            achievement.dataValues,
+            newLevel as number,
+          );
+        if (isAchieved) {
+          await achievementService.completeAchievement(
+            pet.dataValues.user_id!,
+            achievement.dataValues.id,
+          );
+        }
+      }
+    }
 
-    // // 检查evolution_count变更
-    // if (pet.changed("evolution_count" as keyof Pets)) {
-    //   const newEvoCount = pet.dataValues.evolution_count;
-    //   console.log(
-    //     `检测到 evolution_count 变更，新的 evolution_count 值: ${newEvoCount}`,
-    //   );
-    //   // 检查是否满足成就条件
-    //   const [achievementType, field] = ACHIEVEMENT_CONFIG["evolution_count"];
-    //   const achievements = await achievementService.getAchievementsByType(
-    //     achievementType,
-    //     field,
-    //   );
-    //   for (const achievement of achievements) {
-    //     const isAchieved =
-    //       await achievementService.checkAchievementRequirements(
-    //         achievement.dataValues,
-    //         newEvoCount as number,
-    //       );
-    //     if (isAchieved) {
-    //       await achievementService.completeAchievement(
-    //         pet.dataValues.user_id!,
-    //         achievement.dataValues.id,
-    //       );
-    //     }
-    //   }
-    // }
+    // 检查evolution_count变更
+    if (pet.changed("evolution_count" as keyof Pets)) {
+      const newEvoCount = pet.dataValues.evolution_count;
+      console.log(
+        `检测到 evolution_count 变更，新的 evolution_count 值: ${newEvoCount}`,
+      );
+      const { default: AchievementService } =
+        await import("@/services/achievement.js");
+      const achievementService = new AchievementService();
+      // 检查是否满足成就条件
+      const [achievementType, field] = ACHIEVEMENT_CONFIG["evolution_count"];
+      const achievements = await achievementService.getAchievementsByType(
+        achievementType,
+        field,
+      );
+      for (const achievement of achievements) {
+        const isAchieved =
+          await achievementService.checkAchievementRequirements(
+            achievement.dataValues,
+            newEvoCount as number,
+          );
+        if (isAchieved) {
+          await achievementService.completeAchievement(
+            pet.dataValues.user_id!,
+            achievement.dataValues.id,
+          );
+        }
+      }
+    }
   });
   return Pets;
 };

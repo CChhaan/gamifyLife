@@ -14,6 +14,7 @@ import errorHandler from "./middlewares/errorHandler.js";
 import db, { syncDatabase } from "./shared/db.js";
 import tokenAuth from "./middlewares/tokenAuth.js";
 import items from "./shared/items.js";
+import achievements from "./shared/achievements.js";
 import websocketService from "./websocket/websocket.js";
 import http from "http";
 import {
@@ -102,6 +103,32 @@ async function loadItems() {
     console.error("加载道具失败:", error);
   }
 }
+
+// 动态加载系统成就
+async function loadAchievements() {
+  if (!Array.isArray(achievements) || achievements.length === 0) {
+    console.warn("achievements数组为空，跳过加载成就");
+    return;
+  }
+
+  try {
+    await db.Achievements.bulkCreate(achievements, {
+      // 关键：以title为唯一键，冲突时更新指定字段
+      updateOnDuplicate: [
+        "description",
+        "icon_url",
+        "type",
+        "condition_logic",
+        "conditions",
+      ],
+      // 强制忽略重复键错误（兜底）
+      ignoreDuplicates: true,
+    });
+    console.log("成就数据加载/更新完成");
+  } catch (error: any) {
+    console.error("加载成就失败:", error);
+  }
+}
 const server = http.createServer(app.callback());
 
 websocketService.initialize(server);
@@ -112,6 +139,7 @@ websocketService.initialize(server);
     await loadRoutes();
     await syncDatabase();
     await loadItems();
+    await loadAchievements();
     // 在应用启动时初始化调度器
     initializeScheduler();
 

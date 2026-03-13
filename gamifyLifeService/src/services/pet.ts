@@ -27,6 +27,7 @@ export default class ItemService {
         "PET",
         "pet",
       );
+      console.log(chalk.yellow("用户创建宠物，完成成就:", achievements));
       for (const achievement of achievements) {
         await achievementService.completeAchievement(
           user_id,
