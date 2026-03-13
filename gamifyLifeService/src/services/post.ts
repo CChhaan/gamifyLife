@@ -5,7 +5,9 @@ import chalk from "chalk";
 import type { Post, PostType } from "@/type/post.js";
 import websocketService from "../websocket/websocket.js";
 import PostInteractionService from "./postInteraction.js";
+import AchievementService from "@/services/achievement.js";
 
+const achievementService = new AchievementService();
 const postInteractionService = new PostInteractionService();
 export default class PostService {
   // 系统生成动态
@@ -106,6 +108,7 @@ export default class PostService {
 
   // 发布动态
   async publishPost(postId: any, userId: any) {
+    const t = await sequelize.transaction();
     try {
       await db.Posts.update(
         {
@@ -114,7 +117,28 @@ export default class PostService {
         },
         { where: { id: postId, user_id: userId } },
       );
+      const publishedPosts = await this.getUserPublishedPosts(userId);
+      // 检查是否完成了发布动态成就
+      const achievements = await achievementService.getAchievementsByType(
+        "SOCIAL",
+        "post",
+      );
+      for (const achievement of achievements) {
+        const isAchieved =
+          await achievementService.checkAchievementRequirements(
+            achievement.dataValues,
+            publishedPosts.length,
+          );
+        if (isAchieved) {
+          await achievementService.completeAchievement(
+            userId,
+            achievement.dataValues.id,
+          );
+        }
+      }
+      await t.commit();
     } catch (error) {
+      await t.rollback();
       console.error(chalk.red("发布动态失败："), error);
       throw error;
     }

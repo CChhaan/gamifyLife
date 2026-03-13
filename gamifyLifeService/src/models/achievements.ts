@@ -3,7 +3,15 @@ import db from "../shared/db.js";
 import { Achievement } from "@/type/achievement.js";
 
 export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
-  class Achievements extends Model<Achievement, Achievement> {}
+  class Achievements extends Model<Achievement, Achievement> {
+    static associate(models: typeof db) {
+      this.hasMany(models.UserAchievements, {
+        foreignKey: "achievement_id",
+        sourceKey: "id",
+        as: "userAchievements",
+      });
+    }
+  }
 
   Achievements.init(
     {
@@ -36,9 +44,8 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
       },
       // 成就大类（枚举）
       type: {
-        type: DataTypes.ENUM("TASK", "GROWTH", "PET", "SOCIAL", "MISC", "DIY"),
+        type: DataTypes.ENUM("TASK", "GROWTH", "PET", "SOCIAL", "GOLD", "DIY"),
         allowNull: false,
-        defaultValue: "MISC",
         comment: "成就大类",
       },
       // 混合条件逻辑（枚举）
@@ -74,19 +81,13 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
         defaultValue: 1,
         comment: "是否启用：0-禁用，1-启用",
       },
-      // 展示顺序
-      display_order: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        defaultValue: 0,
-        comment: "展示顺序",
-      },
     },
     {
       sequelize,
       tableName: "achievements",
       charset: "utf8mb4",
       collate: "utf8mb4_unicode_ci",
+      indexes: [{ name: "idx_achievements_id", fields: ["id"] }],
       paranoid: true,
     },
   );

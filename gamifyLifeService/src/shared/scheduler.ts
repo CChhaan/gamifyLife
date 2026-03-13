@@ -2,7 +2,7 @@ import schedule from "node-schedule";
 import UserDailyLogService from "../services/userDailyLog.js";
 import PetService from "../services/pet.js";
 import chalk from "chalk";
-import TaskService from "@/services/task.js";
+import TaskService from "../services/task.js";
 
 const userDailyLogService = new UserDailyLogService();
 const taskService = new TaskService();

@@ -1,8 +1,15 @@
 import { DataTypes as SequelizeDataTypes, Sequelize, Model } from "sequelize";
 import db from "../shared/db.js";
 import type { Post } from "@/type/post.js";
+// import AchievementService from "@/services/achievement.js";
 
+// const achievementService = new AchievementService();
 export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
+  // // 成就配置：属性名 -> (成就类型, 字段名) 的映射
+  // const ACHIEVEMENT_CONFIG: Record<any, [string, string]> = {
+  //   post: ["SOCIAL", "post"],
+  //   like: ["SOCIAL", "like"],
+  // };
   class Posts extends Model<Post, Post> {
     static associate(models: typeof db) {
       this.belongsTo(models.UserAccounts, {
@@ -113,6 +120,32 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
       paranoid: true,
     },
   );
+
+  // Posts.beforeUpdate(async (post: Posts) => {
+  //   // 检查点赞数是否改变
+  //   if (
+  //     post.changed("like_count" as keyof Posts) &&
+  //     post.dataValues.like_count !== undefined
+  //   ) {
+  //     const achievements = await achievementService.getAchievementsByType(
+  //       "SOCIAL",
+  //       "like",
+  //     );
+  //     for (const achievement of achievements) {
+  //       const isAchieved =
+  //         await achievementService.checkAchievementRequirements(
+  //           achievement.dataValues,
+  //           post.dataValues.like_count,
+  //         );
+  //       if (isAchieved) {
+  //         await achievementService.completeAchievement(
+  //           post.dataValues.user_id!,
+  //           achievement.dataValues.id,
+  //         );
+  //       }
+  //     }
+  //   }
+  // });
 
   return Posts;
 };

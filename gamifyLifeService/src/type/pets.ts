@@ -1,17 +1,17 @@
-export enum PetStage {
-  INFANT = "INFANT", // 幼年期
-  YOUTH = "YOUTH", // 青年期
-  ADULT = "ADULT", // 成年期
-  PERFECT = "PERFECT", // 完美期
-}
+export const PetStage = {
+  INFANT: "幼年期", // 幼年期
+  YOUTH: "青年期", // 青年期
+  ADULT: "成年期", // 成年期
+  PERFECT: "完美期", // 完美期
+};
 
 // 2. 宠物状态枚举
-export enum PetStatus {
-  NORMAL = "NORMAL", // 正常
-  HUNGRY = "HUNGRY", // 饥饿
-  SICK = "SICK", // 生病
-  SLEEPING = "SLEEPING", // 睡眠中
-}
+export const PetStatus = {
+  NORMAL: "健康", // 正常
+  HUNGRY: "饥饿", // 饥饿
+  SICK: "生病", // 生病
+  SLEEPING: "睡眠中", // 睡眠中
+};
 
 // 3. 宠物模型类型（对应数据库字段）
 export interface Pet {

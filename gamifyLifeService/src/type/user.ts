@@ -24,6 +24,7 @@ export interface UserGrowth {
   body: number;
   social: number;
   discipline: number;
+  consume: number;
   user_id?: number;
   nextLevelExp?: number;
   updatedAt?: Date;

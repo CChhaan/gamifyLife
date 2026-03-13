@@ -9,7 +9,7 @@ import { Inventory, Item } from "@/type/item.js";
 import { Pet } from "@/type/pets.js";
 import chalk from "chalk";
 import type { Interaction, Post } from "@/type/post.js";
-import { Achievement } from "@/type/achievement.js";
+import { Achievement, UserAchievementAttributes } from "@/type/achievement.js";
 
 type BaseModel<T extends {}> = ModelStatic<Model<T>> & {
   associate?: (db: Database) => void;
@@ -31,6 +31,7 @@ type ModelTypes = {
   Posts: BaseModel<Post>;
   PostInteractions: BaseModel<Interaction>;
   Achievements: BaseModel<Achievement>;
+  UserAchievements: BaseModel<UserAchievementAttributes>;
   // ... 添加其他可能的模型
 };
 

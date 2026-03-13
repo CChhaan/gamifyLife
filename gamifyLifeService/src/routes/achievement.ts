@@ -7,7 +7,13 @@ const router = new Router({ prefix: "/achievement" });
 
 const achievementService = new AchievementService();
 
-// 获取成就大类
-router.get("/types", async (ctx) => {});
+// 获取所有成就
+router.get("/", async (ctx) => {
+  await routerFnc(ctx, async () => {
+    const userId = ctx.state.user.userId;
+    const achievements = await achievementService.getAllAchievements(userId);
+    ctx.body = success(achievements, "成就获取成功");
+  });
+});
 
 export default router;

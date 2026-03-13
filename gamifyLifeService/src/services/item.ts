@@ -43,6 +43,11 @@ export default class ItemService {
           { gold: itemInfo.dataValues.price * item.quantity },
           { transaction: t },
         );
+        // 增加用户的消费金额
+        await user.increment(
+          { consume: itemInfo.dataValues.price * item.quantity },
+          { transaction: t },
+        );
         if (existingItem) {
           // 道具已存在，累加数量
           await existingItem.increment(

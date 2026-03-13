@@ -3,8 +3,11 @@ import sequelize from "@/shared/sequelize.js";
 import { Transaction } from "sequelize";
 import chalk from "chalk";
 import PostService from "./post.js";
+import { PetStage } from "@/type/pets.js";
 const postService = new PostService();
+import AchievementService from "@/services/achievement.js";
 
+const achievementService = new AchievementService();
 export default class ItemService {
   // 获取当前宠物信息
   async getPetInfo(user_id: any) {
@@ -14,8 +17,30 @@ export default class ItemService {
 
   // 创建宠物
   async createPet(user_id: any, pet_name: any) {
-    const petInfo = await db.Pets.create({ user_id, nickname: pet_name });
-    return petInfo;
+    const t = await sequelize.transaction();
+    try {
+      const petInfo = await db.Pets.create(
+        { user_id, nickname: pet_name },
+        { transaction: t },
+      );
+      const achievements = await achievementService.getAchievementsByType(
+        "PET",
+        "pet",
+      );
+      for (const achievement of achievements) {
+        await achievementService.completeAchievement(
+          user_id,
+          achievement.dataValues.id,
+          t,
+        );
+      }
+      await t.commit();
+      return petInfo;
+    } catch (error) {
+      await t.rollback();
+      console.log(chalk.red("创建宠物失败"));
+      throw error;
+    }
   }
 
   // 增加宠物亲密度
@@ -52,8 +77,9 @@ export default class ItemService {
     }
     // 当前宠物亲密度是否合格：<50
     const isAffectionLow = pet.dataValues.affection! < 50;
+    const isHungerLow = pet.dataValues.hunger! < 50;
 
-    if (isAffectionLow) {
+    if (isAffectionLow || isHungerLow) {
       return null; // 亲密度不足，不增加经验值
     }
     // 计算新的经验值
@@ -67,18 +93,61 @@ export default class ItemService {
     await pet.update({ exp: finalExp, level: newLevel }, { transaction: t });
 
     if (newLevel > pet.dataValues.level!) {
-      await postService.createSystemPost(
-        user_id,
-        "PET",
-        pet.dataValues.id,
-        `我的宠物「${pet.dataValues.nickname}」升级了！现在等级是${newLevel}级！`,
-        t,
-      );
+      // 如果新的等级是25/50/75，宠物成长
+      if (newLevel === 25 || newLevel === 50 || newLevel === 75) {
+        switch (newLevel) {
+          case 25:
+            await pet.update(
+              { stage: "YOUTH", evolution_count: 1 },
+              { transaction: t },
+            );
+            break;
+          case 50:
+            await pet.update(
+              { stage: "ADULT", evolution_count: 2 },
+              { transaction: t },
+            );
+            break;
+          case 75:
+            await pet.update(
+              { stage: "PERFECT", evolution_count: 3 },
+              { transaction: t },
+            );
+            break;
+        }
+        await postService.createSystemPost(
+          user_id,
+          "PET",
+          pet.dataValues.id,
+          `我的宠物「${pet.dataValues.nickname}」进化到了${PetStage[pet.dataValues.stage!]}阶段！`,
+          t,
+        );
+      } else {
+        await postService.createSystemPost(
+          user_id,
+          "PET",
+          pet.dataValues.id,
+          `我的宠物「${pet.dataValues.nickname}」升级了！现在等级是${newLevel}级！`,
+          t,
+        );
+      }
     }
   }
 
   // 减少宠物饱食度
   async decreasePetSatiety(pet: any, satiety: any, t?: Transaction) {
+    if (pet.dataValues.hunger == 0) {
+      // 宠物经验值减少，如果减少到0，等级减少
+      // 计算总经验值（等级 * 100 + 当前经验）
+      const totalExp = pet.dataValues.level! * 100 + pet.dataValues.exp!;
+      // 减少经验值
+      const newTotalExp = Math.max(0, totalExp - Math.abs(satiety));
+      // 计算新的等级和经验
+      const newLevel = Math.floor(newTotalExp / 100);
+      const finalExp = newTotalExp % 100;
+      // 更新宠物的经验值和等级
+      await pet.update({ exp: finalExp, level: newLevel }, { transaction: t });
+    }
     await pet.update(
       { hunger: Math.max(0, pet.dataValues.hunger! - Math.abs(satiety)) },
       { transaction: t },
