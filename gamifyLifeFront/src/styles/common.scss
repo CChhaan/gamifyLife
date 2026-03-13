@@ -4,6 +4,8 @@ page {
   --third-color: #ff9b5b;
   --contrast-color: #5789d3;
 
+  --success-color: #03db6c;
+
   --text-light-color: #666;
   --text-color: #000;
   --text-contrast-color: #fff;
@@ -135,4 +137,10 @@ page {
   transform: translate(-50%, -50%);
   background-color: var(--bg-color);
   box-shadow: var(--shadow-modal);
+}
+
+.empty-list {
+  margin-top: 80rpx;
+  font-size: var(--fontSize-normal);
+  color: var(--text-light-color);
 }

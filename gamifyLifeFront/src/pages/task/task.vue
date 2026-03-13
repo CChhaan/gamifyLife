@@ -653,12 +653,6 @@ onHide(() => {
       }
     }
   }
-
-  .empty-list {
-    margin-top: 80rpx;
-    font-size: var(--fontSize-normal);
-    color: var(--text-light-color);
-  }
 }
 
 // 悬浮按钮
