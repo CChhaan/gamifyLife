@@ -344,7 +344,7 @@ export default class TaskService {
       );
 
       // 4. 获取用户growth数据
-      const userGrowth = (await db.UserGrowth.findByPk(userId, {
+      const userInfo = (await db.UserInfo.findByPk(userId, {
         transaction: t,
       }))!;
 
@@ -425,6 +425,29 @@ export default class TaskService {
         task.dataValues.id,
         `我完成了「${task.dataValues.title}」任务`,
         t,
+      );
+
+      // // 11. 更新用户信息
+      // await userInfo.increment(
+      //   {
+      //     total_task_count: 1,
+      //     total_difficulty: highValueValidation ? 1 : 0,
+      //     total_ai_task_count: task.dataValues.ai_job_id ? 1 : 0,
+      //   },
+      //   { transaction: t },
+      // );
+
+      await userInfo.update(
+        {
+          total_task_count: userInfo.dataValues.total_task_count! + 1,
+          total_difficulty:
+            userInfo.dataValues.total_difficulty! +
+            (highValueValidation ? 1 : 0),
+          total_ai_task_count:
+            userInfo.dataValues.total_ai_task_count! +
+            (task.dataValues.ai_job_id ? 1 : 0),
+        },
+        { transaction: t },
       );
 
       await t.commit();

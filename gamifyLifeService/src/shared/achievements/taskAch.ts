@@ -311,7 +311,7 @@ const taskAiAch: Achievement[] = [
     description: "使用 AI 生成并完成 5 个任务",
     type: "TASK",
     condition_logic: "AND",
-    conditions: [{ type: "task_total", count: 5 }],
+    conditions: [{ type: "task_ai_total", count: 5 }],
     rewards: [
       { type: "exp", amount: 12800 },
       { type: "coin", amount: 12800 },
@@ -325,7 +325,7 @@ const taskAiAch: Achievement[] = [
     description: "使用 AI 生成并完成 20 个任务",
     type: "TASK",
     condition_logic: "AND",
-    conditions: [{ type: "task_total", count: 20 }],
+    conditions: [{ type: "task_ai_total", count: 20 }],
     rewards: [
       { type: "exp", amount: 25600 },
       { type: "coin", amount: 25600 },
@@ -339,7 +339,7 @@ const taskAiAch: Achievement[] = [
     description: "使用 AI 生成并完成 50 个任务",
     type: "TASK",
     condition_logic: "AND",
-    conditions: [{ type: "task_total", count: 50 }],
+    conditions: [{ type: "task_ai_total", count: 50 }],
     rewards: [
       { type: "exp", amount: 51200 },
       { type: "coin", amount: 51200 },
@@ -381,11 +381,11 @@ const taskSingleAch: Achievement[] = [
 ];
 
 export default [
-  ...taskDayAch,
-  ...taskDayCompleteAch,
+  // ...taskDayAch,
+  // ...taskDayCompleteAch,
   ...taskHighLevelAch,
-  ...taskRecurAch,
-  ...taskCategoryAch,
+  // ...taskRecurAch,
+  // ...taskCategoryAch,
   ...taskTotalAch,
   ...taskAiAch,
   ...taskSingleAch,

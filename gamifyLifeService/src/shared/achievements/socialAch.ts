@@ -65,7 +65,7 @@ const postAch: Achievement[] = [
     id: 105,
     title: "内容创作者",
     description: "累计发布 500 条动态，成为社区核心分享者",
-    type: "TASK",
+    type: "SOCIAL",
     condition_logic: "AND",
     conditions: [{ type: "post", count: 500 }],
     rewards: [

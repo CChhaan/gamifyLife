@@ -26,10 +26,7 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
       user_id: {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
-        references: {
-          model: "user_accounts",
-          key: "id",
-        },
+        references: { model: "user_accounts", key: "id" },
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
         comment: "所属用户",
@@ -55,10 +52,7 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: true,
         defaultValue: null,
-        references: {
-          model: "task_categories",
-          key: "id",
-        },
+        references: { model: "task_categories", key: "id" },
         onDelete: "SET NULL",
         onUpdate: "CASCADE",
         comment: "任务分类ID",
@@ -69,10 +63,7 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
         type: DataTypes.STRING(200),
         allowNull: true,
         defaultValue: null,
-        references: {
-          model: "tasks",
-          key: "id",
-        },
+        references: { model: "tasks", key: "id" },
         onDelete: "SET NULL",
         onUpdate: "CASCADE",
         comment: "父任务ID（完成任务 A 才能进行任务 B）",
@@ -160,10 +151,7 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: true,
         defaultValue: null,
-        references: {
-          model: "task_tags",
-          key: "id",
-        },
+        references: { model: "task_tags", key: "id" },
         onDelete: "SET NULL",
         onUpdate: "CASCADE",
         comment: "标签1",
@@ -174,10 +162,7 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: true,
         defaultValue: null,
-        references: {
-          model: "task_tags",
-          key: "id",
-        },
+        references: { model: "task_tags", key: "id" },
         onDelete: "SET NULL",
         onUpdate: "CASCADE",
         comment: "标签2",
@@ -210,10 +195,7 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
         type: DataTypes.STRING(64),
         allowNull: true,
         defaultValue: null,
-        references: {
-          model: "ai_work_orders",
-          key: "id",
-        },
+        references: { model: "ai_work_orders", key: "id" },
         onDelete: "SET NULL",
         onUpdate: "CASCADE",
         comment: "关联的AI工单ID",
@@ -235,6 +217,35 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
       paranoid: true,
     },
   );
-
+  Tasks.beforeUpdate(async (task: Tasks) => {
+    if (task.changed("recurring_completed_count" as keyof Tasks)) {
+      const newRecurringCompletedCount =
+        task.dataValues.recurring_completed_count;
+      console.log(
+        `检测到 recurring_completed_count 变更，新的 recurring_completed_count 值: ${newRecurringCompletedCount}`,
+      );
+      const { default: AchievementService } =
+        await import("@/services/achievement.js");
+      const achievementService = new AchievementService();
+      // 检查是否满足成就条件
+      const achievements = await achievementService.getAchievementsByType(
+        "TASK",
+        "task_total",
+      );
+      for (const achievement of achievements) {
+        const isAchieved =
+          await achievementService.checkAchievementRequirements(
+            achievement.dataValues,
+            newRecurringCompletedCount as number,
+          );
+        if (isAchieved) {
+          await achievementService.completeAchievement(
+            task.dataValues.user_id!,
+            achievement.dataValues.id,
+          );
+        }
+      }
+    }
+  });
   return Tasks;
 };

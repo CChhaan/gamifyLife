@@ -14,6 +14,9 @@ export interface UserInfo {
   createdAt?: Date; // 创建时间，默认当前时间戳
   updatedAt?: Date; // 更新时间，默认当前时间戳，更新时自动刷新
   today_use_ai_count?: number; // 今日AI功能使用次数，默认0，每日0点重置
+  total_difficulty?: number; // 完成困难任务总数，默认0
+  total_task_count?: number; // 完成任务总数，默认0
+  total_ai_task_count?: number; // 完成AI生成任务总数，默认0
 }
 
 export interface UserGrowth {

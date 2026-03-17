@@ -59,6 +59,24 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
         defaultValue: 0,
         comment: "AI功能使用次数",
       },
+      total_difficulty: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        allowNull: false,
+        defaultValue: 0,
+        comment: "完成困难任务总数",
+      },
+      total_task_count: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        allowNull: false,
+        defaultValue: 0,
+        comment: "完成任务总数",
+      },
+      total_ai_task_count: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        allowNull: false,
+        defaultValue: 0,
+        comment: "完成AI生成任务总数",
+      },
     },
     {
       sequelize,
@@ -67,6 +85,90 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
       collate: "utf8mb4_general_ci",
     },
   );
-
+  UserInfo.beforeUpdate(async (userInfo: UserInfo) => {
+    console.log("beforeUpdate 钩子被触发");
+    console.log("变更的字段:", userInfo.changed());
+    if (userInfo.changed("total_difficulty" as keyof UserInfo)) {
+      const newTotalDifficulty = userInfo.dataValues.total_difficulty;
+      console.log(
+        `检测到 total_difficulty 变更，新的 total_difficulty 值: ${newTotalDifficulty}`,
+      );
+      const { default: AchievementService } =
+        await import("@/services/achievement.js");
+      const achievementService = new AchievementService();
+      // 检查是否满足成就条件
+      const achievements = await achievementService.getAchievementsByType(
+        "TASK",
+        "task_high_level",
+      );
+      for (const achievement of achievements) {
+        const isAchieved =
+          await achievementService.checkAchievementRequirements(
+            achievement.dataValues,
+            newTotalDifficulty as number,
+          );
+        if (isAchieved) {
+          await achievementService.completeAchievement(
+            userInfo.dataValues.user_id!,
+            achievement.dataValues.id,
+          );
+        }
+      }
+    }
+    if (userInfo.changed("total_task_count" as keyof UserInfo)) {
+      const newTotalTaskCount = userInfo.dataValues.total_task_count;
+      console.log(
+        `检测到 total_task_count 变更，新的 total_task_count 值: ${newTotalTaskCount}`,
+      );
+      const { default: AchievementService } =
+        await import("@/services/achievement.js");
+      const achievementService = new AchievementService();
+      // 检查是否满足成就条件
+      const achievements = await achievementService.getAchievementsByType(
+        "TASK",
+        "task_total",
+      );
+      for (const achievement of achievements) {
+        const isAchieved =
+          await achievementService.checkAchievementRequirements(
+            achievement.dataValues,
+            newTotalTaskCount as number,
+          );
+        if (isAchieved) {
+          await achievementService.completeAchievement(
+            userInfo.dataValues.user_id!,
+            achievement.dataValues.id,
+          );
+        }
+      }
+    }
+    if (userInfo.changed("total_ai_task_count" as keyof UserInfo)) {
+      const newTotalAiTaskCount = userInfo.dataValues.total_ai_task_count;
+      console.log(
+        `检测到 total_ai_task_count 变更，新的 total_ai_task_count 值: ${newTotalAiTaskCount}`,
+      );
+      const { default: AchievementService } =
+        await import("@/services/achievement.js");
+      const achievementService = new AchievementService();
+      // 检查是否满足成就条件
+      const achievements = await achievementService.getAchievementsByType(
+        "TASK",
+        "task_ai_total",
+      );
+      for (const achievement of achievements) {
+        const isAchieved =
+          await achievementService.checkAchievementRequirements(
+            achievement.dataValues,
+            newTotalAiTaskCount as number,
+          );
+        if (isAchieved) {
+          await achievementService.completeAchievement(
+            userInfo.dataValues.user_id!,
+            achievement.dataValues.id,
+          );
+        }
+      }
+    }
+  });
   return UserInfo;
 };

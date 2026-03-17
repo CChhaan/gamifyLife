@@ -88,7 +88,9 @@ class WebSocketService {
 
   // 完成成就通知
   async sendAchievementNotification(userId: number, achievement: any) {
-    await this.sendToUser(userId, `恭喜完成成就：${achievement.title}`);
+    setTimeout(async () => {
+      await this.sendToUser(userId, `恭喜完成成就：${achievement.title}`);
+    }, 1000);
   }
 
   // 关闭 WebSocket 服务

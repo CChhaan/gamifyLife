@@ -16,4 +16,14 @@ router.get("/", async (ctx) => {
   });
 });
 
+// 领取成就奖励
+router.post("/reward", async (ctx) => {
+  await routerFnc(ctx, async () => {
+    const userId = ctx.state.user.userId;
+    const { achievementId } = ctx.request.body as any;
+    await achievementService.getAchievementReward(userId, achievementId);
+    ctx.body = success({}, "成就奖励领取成功");
+  });
+});
+
 export default router;

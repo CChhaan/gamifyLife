@@ -397,7 +397,8 @@ const filterTaskList = computed(() => {
       break;
     case "today":
       list = list.filter(
-        (task) => task.due_time && new Date(task.due_time) >= new Date(),
+        (task) =>
+          task.due_time && dayjs(task.due_time) >= dayjs().startOf("day"),
       );
       break;
     case "week":

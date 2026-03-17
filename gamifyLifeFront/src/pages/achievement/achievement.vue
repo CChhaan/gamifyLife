@@ -65,8 +65,8 @@
           <view class="detail-btn" size="mini" @click="selectedItem = item"
             >详情</view
           >
-          <view class="get-gift" v-if="isGiftGot(item)">
-            <button>领取奖励</button>
+          <view class="get-gift" v-if="!isGiftGot(item) && isUnlocked(item)">
+            <button class="flex" @click="getGift(item)">领取奖励</button>
           </view>
           <view class="checked" v-else-if="isUnlocked(item)">
             <u-icon name="checkbox-mark"></u-icon>
@@ -75,6 +75,11 @@
           <view class="unget" v-else>未达成</view>
         </view>
       </view>
+      <view
+        class="empty-list flex flex-justify__center"
+        v-else-if="selectedType == 'DIY'"
+        >- 暂不支持自定义成就，尽情期待 -</view
+      >
       <view class="empty-list flex flex-justify__center" v-else>- 暂无 -</view>
     </view>
     <achDetail
@@ -130,6 +135,20 @@ const goBack = () => {
     });
   }
 };
+
+// 领取奖励
+const getGift = async (item: Achievement) => {
+  try {
+    await http.post("achievement/reward", {
+      achievementId: item.id,
+    });
+    uni.showToast({ title: "领取奖励成功", icon: "success", duration: 2000 });
+    getAllAchievements();
+  } catch (error) {
+    console.log("领取奖励失败", error);
+  }
+};
+
 const isGiftGot = (item: Achievement) => {
   if (!item.userAchievements) return false;
   return item.userAchievements.some((userItem) => userItem.gift_got === 1);
@@ -193,6 +212,7 @@ const isUnlocked = (item: Achievement) => {
       font-size: var(--fontSize-mini);
       padding: 0 15rpx;
       border-radius: 50rpx;
+      border: 2rpx solid #fff;
     }
   }
   .selected {
@@ -249,12 +269,12 @@ const isUnlocked = (item: Achievement) => {
       }
       .get-gift {
         button {
-          font-size: var(--fontSize-mini);
-          height: 50rpx;
+          font-size: var(--fontSize-small);
+          height: 60rpx;
           line-height: 50rpx;
           border-radius: 25rpx;
           background-color: var(--primary-color);
-          padding: 0 15rpx;
+          padding: 0 20rpx;
           color: #fff;
         }
       }

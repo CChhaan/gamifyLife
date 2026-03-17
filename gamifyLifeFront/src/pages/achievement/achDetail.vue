@@ -38,7 +38,7 @@ const rewardName = (key: string) => {
       return "经验值";
     case "coin":
       return "金币";
-    case "pet_exp":
+    case "pet_level":
       return "宠物经验值";
     case "social":
       return "社交";
@@ -57,13 +57,14 @@ const rewardName = (key: string) => {
 <style scoped lang="scss">
 .ach-detail {
   width: 50vw;
-  padding: 20rpx;
+  padding: 20rpx 30rpx;
   border-radius: 10rpx;
   z-index: 10;
   align-items: start;
 
   .title {
     font-size: var(--fontSize-big);
+    font-weight: bold;
   }
 
   .confirm-btn {

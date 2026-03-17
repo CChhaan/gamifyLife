@@ -4,6 +4,11 @@ import { Transaction } from "sequelize";
 import chalk from "chalk";
 import websocketService from "../websocket/websocket.js";
 import { Achievement } from "@/type/achievement.js";
+import UserGrowthService from "./userGrowth.js";
+import PetService from "./pet.js";
+
+const userGrowthService = new UserGrowthService();
+
 export default class AchievementService {
   // 获取对应数据表和字段的成就列表
   async getAchievementsByType(achievementType: string, fieldName: string) {
@@ -106,6 +111,98 @@ export default class AchievementService {
     } catch (error: any) {
       console.error(chalk.red("完成成就失败:", error));
       throw new Error(error.message || "完成成就失败");
+    }
+  }
+
+  // 领取成就奖励
+  async getAchievementReward(userId: number, achievementId: number) {
+    const t = await sequelize.transaction();
+    try {
+      const achievement = await db.Achievements.findOne({
+        where: { id: achievementId },
+        transaction: t,
+      });
+      if (!achievement) {
+        throw new Error("成就不存在");
+      }
+      // 检查用户是否已完成该成就
+      const userAchievement = await db.UserAchievements.findOne({
+        where: {
+          user_id: userId,
+          achievement_id: achievementId,
+          is_unlocked: 1,
+        },
+        transaction: t,
+      });
+      if (!userAchievement) {
+        throw new Error("用户未完成该成就");
+      }
+      // 检查用户是否已领取奖励
+      if (userAchievement.dataValues.gift_got) {
+        throw new Error("用户已领取该成就奖励");
+      }
+      // 更新用户成就记录，标记为已领取奖励
+      await userAchievement.update({ gift_got: 1 }, { transaction: t });
+      // 遍历奖励数组
+      for (const reward of achievement.dataValues.rewards) {
+        switch (reward.type) {
+          case "exp":
+            await userGrowthService.upgradeUserGrowth(
+              userId,
+              { total_experience: reward.amount },
+              t,
+            );
+            break;
+          case "coin":
+            await userGrowthService.upgradeUserGrowth(
+              userId,
+              { gold: reward.amount },
+              t,
+            );
+            break;
+          case "pet_level":
+            const petService = new PetService();
+            await petService.addPetExp(userId, reward.amount || 0, t);
+            break;
+          case "social":
+            await userGrowthService.upgradeUserGrowth(
+              userId,
+              { attrGains: { social: reward.amount || 0 } },
+              t,
+            );
+            break;
+          case "mind":
+            await userGrowthService.upgradeUserGrowth(
+              userId,
+              { attrGains: { mind: reward.amount || 0 } },
+              t,
+            );
+            break;
+          case "body":
+            await userGrowthService.upgradeUserGrowth(
+              userId,
+              { attrGains: { body: reward.amount || 0 } },
+              t,
+            );
+            break;
+          case "discipline":
+            await userGrowthService.upgradeUserGrowth(
+              userId,
+              { attrGains: { discipline: reward.amount || 0 } },
+              t,
+            );
+            break;
+          default:
+            return "";
+        }
+      }
+      // 返回成就奖励信息
+      await t.commit();
+      return userAchievement;
+    } catch (error: any) {
+      await t.rollback();
+      console.error(chalk.red("领取成就奖励失败:", error));
+      throw new Error(error.message || "领取成就奖励失败");
     }
   }
 }
