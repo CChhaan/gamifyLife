@@ -1,8 +1,10 @@
 import type { UserGrowth } from "@/type/user.js";
 import db from "../shared/db.js";
 import { nextLevelExp } from "../shared/growthCalc.js";
+import UserAccLogService from "../services/userAccLog.js";
 import { Transaction } from "sequelize";
 import PostService from "./post.js";
+const userAccLogService = new UserAccLogService();
 
 interface growthDataType {
   total_experience?: number;
@@ -70,6 +72,13 @@ export default class UserGrowthService {
           { transaction: t },
         );
 
+        await userAccLogService.updateAccLog(
+          userId,
+          "experience",
+          growthData.total_experience!,
+          t,
+        );
+
         if (newLevel > existingGrowth.dataValues.level!) {
           const postService = new PostService();
 
@@ -87,6 +96,12 @@ export default class UserGrowthService {
         await existingGrowth.increment(
           { gold: growthData.gold },
           { transaction: t },
+        );
+        await userAccLogService.updateAccLog(
+          userId,
+          "gold",
+          growthData.gold!,
+          t,
         );
       }
       if (growthData.attrGains) {

@@ -4,12 +4,18 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import type { Task, TaskCategory, TaskTag, Ticket } from "@/type/task.js";
-import type { UserDailyLog, UserGrowth, UserInfo } from "@/type/user.js";
+import type {
+  UserAccLog,
+  UserDailyLog,
+  UserGrowth,
+  UserInfo,
+} from "@/type/user.js";
 import { Inventory, Item } from "@/type/item.js";
 import { Pet } from "@/type/pets.js";
 import chalk from "chalk";
 import type { Interaction, Post } from "@/type/post.js";
 import { Achievement, UserAchievementAttributes } from "@/type/achievement.js";
+import type { IRankingDetail, IRankingSnapshot } from "@/type/ranking.js";
 
 type BaseModel<T extends {}> = ModelStatic<Model<T>> & {
   associate?: (db: Database) => void;
@@ -32,6 +38,9 @@ type ModelTypes = {
   PostInteractions: BaseModel<Interaction>;
   Achievements: BaseModel<Achievement>;
   UserAchievements: BaseModel<UserAchievementAttributes>;
+  UserAccLogs: BaseModel<UserAccLog>;
+  RankingSnapshots: BaseModel<IRankingSnapshot>;
+  RankingDetails: BaseModel<IRankingDetail>;
   // ... 添加其他可能的模型
 };
 

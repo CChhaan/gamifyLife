@@ -93,31 +93,26 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
         defaultValue: "NORMAL",
         comment: "当前状态",
       },
-      // 上次互动时间
-      last_interaction_at: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        defaultValue: null,
-        comment: "上次互动时间",
-      },
-      // 上次进化时间
-      last_evolution_at: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        defaultValue: null,
-        comment: "上次进化时间",
-      },
-      // 上周宠物等级快照
-      last_weekly_snapshot_level: {
+      // 本周经验累积
+      weekly_exp: {
         type: DataTypes.INTEGER.UNSIGNED,
-        allowNull: true,
-        comment: "上周宠物等级快照",
+        allowNull: false,
+        defaultValue: 0,
+        comment: "本周经验累积",
       },
-      // 上周好感度快照
-      last_weekly_snapshot_affection: {
+      // 本月经验累积
+      monthly_exp: {
         type: DataTypes.INTEGER.UNSIGNED,
-        allowNull: true,
-        comment: "上周好感度快照",
+        allowNull: false,
+        defaultValue: 0,
+        comment: "本月经验累积",
+      },
+      // 本年经验累积
+      yearly_exp: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        allowNull: false,
+        defaultValue: 0,
+        comment: "本年经验累积",
       },
     },
     {

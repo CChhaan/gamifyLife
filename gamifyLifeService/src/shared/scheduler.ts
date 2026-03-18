@@ -1,12 +1,17 @@
 import schedule from "node-schedule";
 import UserDailyLogService from "../services/userDailyLog.js";
 import PetService from "../services/pet.js";
+import UserAccLogService from "../services/userAccLog.js";
 import chalk from "chalk";
 import TaskService from "../services/task.js";
+import RankingService from "../services/ranking.js";
 
 const userDailyLogService = new UserDailyLogService();
+const userAccLogService = new UserAccLogService();
 const taskService = new TaskService();
 const petService = new PetService();
+const rankingService = new RankingService();
+
 // 设置每天凌晨2点执行的定时任务
 const dailyRefreshJob = schedule.scheduleJob("0 2 * * *", async () => {
   console.log(chalk.blue(`[${new Date()}] 执行每日日志刷新任务`));
@@ -15,6 +20,41 @@ const dailyRefreshJob = schedule.scheduleJob("0 2 * * *", async () => {
     await taskService.updateRepeatTask();
   } catch (error) {
     console.error("定时任务执行失败:", error);
+  }
+});
+
+// 设置每周周日12点执行的定时任务，重置排行榜相关累计值
+const accLogsResetJob = schedule.scheduleJob("0 0 * * SUN", async () => {
+  console.log(chalk.blue(`[${new Date()}] 执行账户日志重置任务`));
+  try {
+    await rankingService.genWeeklyRank();
+    await petService.resetPetExp("weekly");
+    await userAccLogService.resetAccLogs("weekly");
+  } catch (error) {
+    console.error("宠物经验重置任务执行失败:", error);
+  }
+});
+
+// 设置每月1号0点执行的定时任务，重置排行榜相关累计值
+const accLogsResetJobMonthly = schedule.scheduleJob("0 0 1 * *", async () => {
+  console.log(chalk.blue(`[${new Date()}] 执行账户日志重置任务`));
+  try {
+    await rankingService.genMonthlyRank();
+    await petService.resetPetExp("monthly");
+    await userAccLogService.resetAccLogs("monthly");
+  } catch (error) {
+    console.error("宠物经验重置任务执行失败:", error);
+  }
+});
+
+// 设置每年1月1号0点执行的定时任务，重置排行榜相关累计值
+const accLogsResetJobYearly = schedule.scheduleJob("0 0 1 1 *", async () => {
+  console.log(chalk.blue(`[${new Date()}] 执行账户日志重置任务`));
+  try {
+    await petService.resetPetExp("yearly");
+    await userAccLogService.resetAccLogs("yearly");
+  } catch (error) {
+    console.error("宠物经验重置任务执行失败:", error);
   }
 });
 
@@ -48,5 +88,17 @@ export function cancelDailyRefreshJob() {
   if (petStatusDecreaseJob) {
     petStatusDecreaseJob.cancel();
     console.log("宠物状态下降定时任务已取消");
+  }
+  if (accLogsResetJob) {
+    accLogsResetJob.cancel();
+    console.log("账户日志重置定时任务已取消");
+  }
+  if (accLogsResetJobMonthly) {
+    accLogsResetJobMonthly.cancel();
+    console.log("账户日志重置定时任务已取消");
+  }
+  if (accLogsResetJobYearly) {
+    accLogsResetJobYearly.cancel();
+    console.log("账户日志重置定时任务已取消");
   }
 }

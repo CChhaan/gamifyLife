@@ -41,6 +41,10 @@ export default class UserAuthService {
         { user_id: newUser.dataValues.id, date: new Date() },
         { transaction: t },
       );
+      await db.UserAccLogs.create(
+        { user_id: newUser.dataValues.id },
+        { transaction: t },
+      );
       console.log("注册用户成功：", newUser.get("UserDailyLogs"));
       const result = newUser.toJSON();
       await t.commit();

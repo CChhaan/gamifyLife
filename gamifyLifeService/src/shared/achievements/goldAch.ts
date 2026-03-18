@@ -9,8 +9,8 @@ const goldHaveAch: Achievement[] = [
     condition_logic: "AND",
     conditions: [{ type: "gold", count: 1000 }],
     rewards: [
-      { type: "exp", amount: 10 },
-      { type: "coin", amount: 10 },
+      { type: "exp", amount: 100 },
+      { type: "coin", amount: 100 },
     ],
     is_hidden: 0,
     is_active: 1,
@@ -23,8 +23,8 @@ const goldHaveAch: Achievement[] = [
     condition_logic: "AND",
     conditions: [{ type: "gold", count: 5000 }],
     rewards: [
-      { type: "exp", amount: 20 },
-      { type: "coin", amount: 20 },
+      { type: "exp", amount: 500 },
+      { type: "coin", amount: 500 },
     ],
     is_hidden: 0,
     is_active: 1,
@@ -37,8 +37,8 @@ const goldHaveAch: Achievement[] = [
     condition_logic: "AND",
     conditions: [{ type: "gold", count: 10000 }],
     rewards: [
-      { type: "exp", amount: 30 },
-      { type: "coin", amount: 30 },
+      { type: "exp", amount: 1000 },
+      { type: "coin", amount: 1000 },
     ],
     is_hidden: 0,
     is_active: 1,
@@ -51,8 +51,8 @@ const goldHaveAch: Achievement[] = [
     condition_logic: "AND",
     conditions: [{ type: "gold", count: 50000 }],
     rewards: [
-      { type: "exp", amount: 40 },
-      { type: "coin", amount: 40 },
+      { type: "exp", amount: 5000 },
+      { type: "coin", amount: 5000 },
     ],
     is_hidden: 0,
     is_active: 1,

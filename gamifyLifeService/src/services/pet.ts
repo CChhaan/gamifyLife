@@ -92,7 +92,14 @@ export default class ItemService {
 
     // 更新宠物的经验值和等级
     await pet.update({ exp: finalExp, level: newLevel }, { transaction: t });
-
+    await pet.increment(
+      {
+        weekly_exp: Math.abs(exp),
+        monthly_exp: Math.abs(exp),
+        yearly_exp: Math.abs(exp),
+      },
+      { transaction: t },
+    );
     if (newLevel > pet.dataValues.level!) {
       // 如果新的等级是25/50/75，宠物成长
       if (newLevel === 25 || newLevel === 50 || newLevel === 75) {
@@ -148,6 +155,15 @@ export default class ItemService {
       const finalExp = newTotalExp % 100;
       // 更新宠物的经验值和等级
       await pet.update({ exp: finalExp, level: newLevel }, { transaction: t });
+      // 减少周、月、年经验积累值
+      await pet.decrement(
+        {
+          weekly_exp: Math.abs(satiety),
+          monthly_exp: Math.abs(satiety),
+          yearly_exp: Math.abs(satiety),
+        },
+        { transaction: t },
+      );
     }
     await pet.update(
       { hunger: Math.max(0, pet.dataValues.hunger! - Math.abs(satiety)) },
@@ -191,6 +207,42 @@ export default class ItemService {
     }
   }
 
+  // 定时任务：根据参数将所有宠物的周、月、年经验积累值置零
+  async resetPetExp(cycle: any, t?: Transaction) {
+    try {
+      // 获取所有宠物
+      const pets = await db.Pets.findAll();
+      if (pets.length === 0) {
+        console.log("没有找到任何宠物，跳过经验重置");
+        return;
+      }
+      switch (cycle) {
+        case "weekly":
+          await db.Pets.update(
+            { weekly_exp: 0 },
+            { where: {}, transaction: t },
+          );
+          break;
+        case "monthly":
+          await db.Pets.update(
+            { monthly_exp: 0 },
+            { where: {}, transaction: t },
+          );
+          break;
+        case "yearly":
+          await db.Pets.update(
+            { yearly_exp: 0 },
+            { where: {}, transaction: t },
+          );
+          break;
+      }
+    } catch (error: any) {
+      console.error(chalk.red("定时任务执行失败:", error));
+      throw new Error(error.message || "重置宠物经验失败");
+    }
+  }
+
+  // 玩耍接口
   async play(user_id: any, count: number) {
     const t = await sequelize.transaction();
     try {

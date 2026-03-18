@@ -25,11 +25,10 @@ export interface Pet {
   hunger?: number; // 饥饿值(0-100)
   affection?: number; // 好感度(0-100)
   status?: "NORMAL" | "HUNGRY" | "SICK" | "SLEEPING"; // 当前状态
-  last_interaction_at?: Date | null; // 上次互动时间
-  last_evolution_at?: Date | null; // 上次进化时间
-  last_weekly_snapshot_level?: number; // 上周等级快照
-  last_weekly_snapshot_affection?: number; // 上周好感度快照
-  last_hunger_update_at?: Date; // 上次饥饿值更新时间
+  weekly_exp?: number; // 本周经验累积
+  monthly_exp?: number; // 本月经验累积
+  yearly_exp?: number; // 本年经验累积
+
   created_at?: Date; // 创建时间
   updated_at?: Date; // 更新时间
 }

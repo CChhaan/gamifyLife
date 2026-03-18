@@ -41,7 +41,7 @@ export default (sequelize: Sequelize, DataTypes: typeof SequelizeDataTypes) => {
           key: "id", // 关联的字段名
         },
         onUpdate: "CASCADE", // 更新时级联
-        onDelete: "RESTRICT", // 删除时限制
+        onDelete: "CASCADE", // 删除时限制
       },
       // 成就ID
       achievement_id: {
