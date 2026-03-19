@@ -50,7 +50,7 @@
               >
                 喂食
               </view>
-              <view class="action-item flex flex-justify__center"> 洗澡 </view>
+              <!-- <view class="action-item flex flex-justify__center"> 洗澡 </view> -->
               <view class="action-item flex flex-justify__center" @click="play">
                 玩耍
               </view>

@@ -104,10 +104,14 @@ page {
   flex: 1;
 }
 
+.flex-2 {
+  flex: 2;
+}
+
 .tab-page {
   @include full-screen;
   background-color: var(--bg-color-page);
-  padding-bottom: 145rpx;
+  padding-bottom: 140rpx;
 }
 
 .img {

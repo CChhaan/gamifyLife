@@ -67,6 +67,13 @@
         "navigationBarTitleText": "achievement",
         "navigationStyle": "custom"
       }
+    },
+    {
+      "path": "pages/ranking/ranking",
+      "style": {
+        "navigationBarTitleText": "ranking",
+        "navigationStyle": "custom"
+      }
     }
   ],
   "globalStyle": {

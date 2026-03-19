@@ -164,12 +164,13 @@ export default class RankingService {
       const where = userId ? { user_id: userId } : {};
       // 获取最新的排行榜快照
       const snapshots = await db.RankingSnapshots.findAll({
-        where: { ...where, ranking_type: rankingType, cycle_type: cycleType },
+        where: { ranking_type: rankingType, cycle_type: cycleType },
         order: [["snapshot_time", "DESC"]],
         include: [
           {
             model: db.RankingDetails,
             as: "details",
+            where: { ...where },
             include: [{ model: db.UserInfo, as: "userInfo" }],
           },
         ],

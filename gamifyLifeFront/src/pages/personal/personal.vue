@@ -134,35 +134,72 @@
       <image class="pet-img" src="/static/pet_baby.png" mode="scaleToFill" />
     </view>
     <!-- 排行榜 -->
-    <view class="ranks flex flex-justify__around flex-1 w-full">
-      <div>排行榜功能待开发</div>
-      <!-- <div class="rank-item flex flex-col flex-justify__center">
-        <text class="title">XXX排行榜</text>
-        <image
+    <view class="ranks w-full">
+      <view class="flex flex-justify__around flex-1 w-full">
+        <!-- <view>排行榜功能待开发</view> -->
+        <view class="rank-item flex flex-col flex-justify__center">
+          <text class="title">金币榜</text>
+          <view class="flex position flex-justify__around">
+            <view class="rank-type">周榜</view>
+            <view v-if="rankList && rankList.GOLD.weekly"
+              >第 {{ rankList.GOLD.weekly.rank }} 名</view
+            >
+            <view v-else>待公布</view>
+          </view>
+          <view class="flex position">
+            <view class="rank-type">月榜</view>
+            <view v-if="rankList && rankList.GOLD.monthly"
+              >第 {{ rankList.GOLD.monthly.rank }} 名</view
+            >
+            <view v-else>待公布</view>
+          </view>
+        </view>
+        <view class="rank-item flex flex-col flex-justify__center">
+          <text class="title">个人经验榜</text>
+          <!-- <image
           class="rank-icon"
           src="/static/imgs/icons/medal.png"
           mode="widthFix"
-        />
-        <text class="position">第XXX名</text>
-      </div>
-      <div class="rank-item flex flex-col flex-justify__center">
-        <text class="title">XXX排行榜</text>
-        <image
+        /> -->
+          <view class="flex position flex-justify__around">
+            <view class="rank-type">周榜</view>
+            <view v-if="rankList && rankList.EXP.weekly"
+              >第 {{ rankList.EXP.weekly.rank }} 名</view
+            >
+            <view v-else>待公布</view>
+          </view>
+          <view class="flex position">
+            <view class="rank-type">月榜</view>
+            <view v-if="rankList && rankList.EXP.monthly"
+              >第 {{ rankList.EXP.monthly.rank }} 名</view
+            >
+            <view v-else>待公布</view>
+          </view>
+        </view>
+        <view class="rank-item flex flex-col flex-justify__center">
+          <text class="title">宠物经验榜</text>
+          <!-- <image
           class="rank-icon"
           src="/static/imgs/icons/medal.png"
           mode="widthFix"
-        />
-        <text class="position">第XXX名</text>
-      </div>
-      <div class="rank-item flex flex-col flex-justify__center">
-        <text class="title">XXX排行榜</text>
-        <image
-          class="rank-icon"
-          src="/static/imgs/icons/medal.png"
-          mode="widthFix"
-        />
-        <text class="position">第XXX名</text>
-      </div> -->
+        /> -->
+          <view class="flex position flex-justify__around">
+            <view class="rank-type">周榜</view>
+            <view v-if="rankList && rankList.EXP_PET.weekly"
+              >第 {{ rankList.EXP_PET.weekly.rank }} 名</view
+            >
+            <view v-else>待公布</view>
+          </view>
+          <view class="flex position">
+            <view class="rank-type">月榜</view>
+            <view v-if="rankList && rankList.EXP_PET.monthly"
+              >第 {{ rankList.EXP_PET.monthly.rank }} 名</view
+            >
+            <view v-else>待公布</view>
+          </view>
+        </view>
+      </view>
+      <view class="rank-more" @click="goToRanking">查看全部</view>
     </view>
     <edit-user-info-cmp
       @close="editInfoShow = false"
@@ -182,8 +219,21 @@ import ExpLineCmp from "@/components/ExpLine/ExpLine.vue";
 import { usePet } from "@/composables/usePet";
 import { PetStatus } from "@/type/pets";
 import { InfluenceAttrTextMap } from "@/type/task";
+import http from "@/utils/http";
+import type {
+  IRankingDetail,
+  IRankingSnapshot,
+  RankingType,
+  RankingTypes,
+} from "@/type/ranking";
+
+type RankingItem = IRankingSnapshot & { details: IRankingDetail[] };
 
 const editInfoShow = ref(false);
+const rankList = ref<Record<
+  RankingTypes,
+  { weekly: any; monthly: any }
+> | null>(null);
 
 const { userInfo, userGrowth, loadUserData, getUserInfo } = useUser();
 // 获取宠物信息
@@ -191,6 +241,8 @@ const { petInfo, getPet } = usePet();
 onShow(async () => {
   await loadUserData();
   await getPet();
+  await getRank();
+  console.log(rankList.value);
 });
 
 const goToSetting = () => {
@@ -212,12 +264,50 @@ const gotoPet = () => {
 };
 
 const goToAchievement = () => {
-  // uni.showToast({
-  //   title: "敬请期待",
-  //   icon: "none",
-  // });
   uni.navigateTo({
     url: "/pages/achievement/achievement",
+  });
+};
+
+const getRank = async () => {
+  try {
+    const res = await http.get("/ranking/getUserRankings");
+    // 初始化排行榜数据结构
+    const rankData: Record<RankingTypes, { weekly: any; monthly: any }> = {
+      GOLD: { weekly: null, monthly: null },
+      EXP: { weekly: null, monthly: null },
+      EXP_PET: { weekly: null, monthly: null },
+    };
+
+    // 遍历所有排行榜快照
+    res.forEach((snapshotArray: RankingItem[]) => {
+      if (!snapshotArray || snapshotArray.length === 0) return;
+
+      const snapshot = snapshotArray[0];
+      const type = snapshot.ranking_type;
+      const cycle = snapshot.cycle_type;
+
+      // 根据类型和周期填充数据
+      if (rankData[type]) {
+        if (cycle === "WEEKLY") {
+          rankData[type].weekly = snapshot.details[0];
+        } else if (cycle === "MONTHLY") {
+          rankData[type].monthly = snapshot.details[0];
+        }
+      }
+    });
+
+    // 转换为数组形式便于模板遍历
+    rankList.value = rankData;
+    // console.log("获取排行榜成功", res);
+  } catch (error) {
+    console.log("获取排行榜失败", error);
+  }
+};
+
+const goToRanking = () => {
+  uni.navigateTo({
+    url: "/pages/ranking/ranking",
   });
 };
 </script>
@@ -399,7 +489,7 @@ const goToAchievement = () => {
   background-size: 100% 100%;
   margin: -120rpx 0 0 0;
   z-index: 1;
-  padding: 120rpx 0 40rpx;
+  padding: 120rpx 0 20rpx;
   border-radius: 20rpx 20rpx 0 0;
 
   .rank-item {
@@ -410,7 +500,7 @@ const goToAchievement = () => {
     height: 250rpx;
 
     .rank-icon {
-      width: 50%;
+      width: 30%;
       margin: 10rpx 0;
     }
 
@@ -419,8 +509,29 @@ const goToAchievement = () => {
     }
 
     .position {
-      color: #cdb271;
+      background-color: #eed9;
+      border-radius: 10rpx;
+      padding: 5rpx 15rpx;
+      margin: 10rpx 0;
+      color: #000;
+      // width: 80%;
+
+      .rank-type {
+        font-weight: bold;
+        margin-right: 10rpx;
+      }
     }
+  }
+  .rank-more {
+    font-size: var(--fontSize-normal);
+    color: #eee;
+    text-align: center;
+    margin: 20rpx auto 0;
+    background-color: #0009;
+    padding: 10rpx 20rpx;
+    border-radius: 10rpx;
+    width: 50%;
+    cursor: pointer;
   }
 }
 </style>
