@@ -6,8 +6,15 @@
           <view class="pet-pic w-full">
             <image
               class="img"
-              src="../../static/pet_baby.png"
+              src="/static/pet_baby.png"
               mode="aspectFit"
+              v-if="petInfo?.status! != 'HUNGRY'"
+            />
+            <image
+              class="img"
+              src="/static/pet_baby_hungry.png"
+              mode="aspectFit"
+              v-else
             />
             <view class="pet-shadow"></view>
           </view>

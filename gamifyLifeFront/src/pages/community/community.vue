@@ -166,7 +166,6 @@ watch(
   },
   { immediate: true },
 );
-console.log(postsList.value);
 // 发布帖子
 const showPublishPost = ref(false);
 const showNotice = ref(false);
@@ -187,7 +186,6 @@ const closeNotice = () => {
 
 // 判断帖子用户是否点赞过
 const isLiked = (post: Post) => {
-  console.log(post);
   if (!post.interactions) {
     return false;
   } else {
@@ -199,7 +197,6 @@ const isLiked = (post: Post) => {
 
 // 判断帖子用户是否点踩过
 const isDisliked = (post: Post) => {
-  console.log(post);
   if (!post.interactions) {
     return false;
   } else {
@@ -239,6 +236,9 @@ const unhidePost = async (post: Post) => {
 // 点赞和取消
 const LikeOrDislike = async (post: Post, isLike: boolean) => {
   try {
+    if (!post.interactions) {
+      return;
+    }
     const url = isLike ? "postInteraction/unlike" : "postInteraction/like";
     await http.post(url, {
       postId: post.id,
@@ -259,6 +259,9 @@ const LikeOrDislike = async (post: Post, isLike: boolean) => {
 // 点踩和取消
 const DislikeOrUnDislike = async (post: Post, isDislike: boolean) => {
   try {
+    if (!post.interactions) {
+      return;
+    }
     const url = isDislike
       ? "postInteraction/unDislike"
       : "postInteraction/dislike";

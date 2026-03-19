@@ -36,19 +36,26 @@
         </view>
       </view>
       <view class="rank-main" v-if="rankData.length > 0">
-        <view class="rank-item rank-th flex">
-          <view class="flex-1">排名</view>
-          <view class="flex-2">玩家</view>
-          <view class="flex-2">数值</view>
-        </view>
-        <view
-          class="rank-item rank-td flex"
-          v-for="rank in rankData"
-          :key="rank.id"
+        <view class="rank-update"
+          >榜单更新时间：{{
+            dayjs(rankData[0].createdAt).format("YYYY-MM-DD HH:mm:ss")
+          }}</view
         >
-          <view class="flex-1">{{ rank.rank }}</view>
-          <view class="flex-2">{{ rank.userInfo.nickname }}</view>
-          <view class="flex-2">{{ rank.score }}</view>
+        <view class="rank-table">
+          <view class="rank-item rank-th flex">
+            <view class="flex-1">排名</view>
+            <view class="flex-2">玩家</view>
+            <view class="flex-2">数值</view>
+          </view>
+          <view
+            class="rank-item rank-td flex"
+            v-for="rank in rankData"
+            :key="rank.id"
+          >
+            <view class="flex-1">{{ rank.rank }}</view>
+            <view class="flex-2">{{ rank.userInfo.nickname }}</view>
+            <view class="flex-2">{{ rank.score }}</view>
+          </view>
         </view>
       </view>
       <view class="rank-empty" v-else>- 暂无数据 -</view>
@@ -67,6 +74,7 @@ import type { IRankingDetail, IRankingSnapshot } from "@/type/ranking";
 import type { UserInfo } from "@/type/user";
 import http from "@/utils/http";
 import { onShow } from "@dcloudio/uni-app";
+import dayjs from "dayjs";
 import { computed, ref } from "vue";
 
 type RankingItem = (IRankingSnapshot & {
@@ -106,7 +114,6 @@ const getRankings = async () => {
 
 const rankData = computed(() => {
   if (!allRanks.value) return [];
-  console.log("allRanks.value", allRanks.value);
   const filtered = allRanks.value.filter((item) => {
     if (!item || item.length === 0) return false;
 
@@ -146,19 +153,28 @@ onShow(async () => {
   width: 15%;
   .tab-item {
     text-align: center;
-    margin: 20rpx;
+    margin: 20rpx 0;
     font-size: var(--fontSize-normal);
+    border-radius: 10rpx;
   }
   .selected {
-    color: var(--primary-color);
+    background-color: var(--primary-color);
+    color: #fff;
   }
 }
 
 .rank-main {
   width: 85%;
-  border: 2rpx solid #ccc;
-  border-radius: 20rpx;
-  overflow: hidden;
+  padding: 0 20rpx;
+
+  .rank-update {
+    padding: 10rpx 0;
+  }
+  .rank-table {
+    border: 2rpx solid #ccc;
+    border-radius: 20rpx;
+    overflow: hidden;
+  }
 
   .rank-item {
     width: 100%;

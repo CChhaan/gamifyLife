@@ -103,7 +103,7 @@
     </view>
     <!-- 任务列表 -->
     <view class="index_card task-data flex flex-col flex-justify__between">
-      <view class="task-data_task-list w-full">
+      <view class="task-data_task-list w-full" v-if="filterTaskList.length > 0">
         <view
           class="task flex flex-justify__between w-full"
           v-for="task in filterTaskList"
@@ -113,6 +113,9 @@
           <text class="task-text text-ellipsis w-full">{{ task.title }}</text>
           <u-icon name="arrow-right-double" color="#aaa" size="28"></u-icon>
         </view>
+      </view>
+      <view class="task-data_task-list-empty w-full" v-else>
+        - 暂无待完成任务 -
       </view>
       <button size="mini" class="task-data_more" @click="gotoTask">
         查看更多
@@ -136,11 +139,13 @@ const { taskCategories, taskList, loadTaskData } = useTask();
 const filterTaskList = computed(() => {
   if (!taskList.value) return [];
   // 按照分类筛选
-  let list = taskList.value!.filter(
-    (task) =>
-      selectedCategory.value == "all" ||
-      task.category_id == selectedCategory.value,
-  );
+  let list = taskList
+    .value!.filter(
+      (task) =>
+        selectedCategory.value == "all" ||
+        task.category_id == selectedCategory.value,
+    )
+    .filter((task) => task.status == "PENDING");
 
   return list;
 });
@@ -281,6 +286,13 @@ const gotoTask = () => {
           margin-right: 20rpx;
         }
       }
+    }
+
+    &-empty {
+      text-align: center;
+      margin-top: 100rpx;
+      font-size: var(--fontSize-normal);
+      color: #aaa;
     }
   }
   &_more {

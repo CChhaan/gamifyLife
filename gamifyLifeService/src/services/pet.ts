@@ -257,7 +257,7 @@ export default class ItemService {
       switch (Math.floor(count / 5)) {
         // 小于1的话宠物不满意，亲密度减少
         case 0:
-          await pet.decrement({ affection: 5 });
+          await this.decreasePetLove(pet, 5, t);
           break;
         // 1-2的话宠物满意，亲密度增加
         case 1:

@@ -131,7 +131,18 @@
           <view>饱食度：{{ petInfo?.hunger }}/100</view>
         </view>
       </view>
-      <image class="pet-img" src="/static/pet_baby.png" mode="scaleToFill" />
+      <image
+        class="pet-img"
+        src="/static/pet_baby.png"
+        mode="scaleToFill"
+        v-if="petInfo?.status! != 'HUNGRY'"
+      />
+      <image
+        class="pet-img"
+        src="/static/pet_baby_hungry.png"
+        mode="scaleToFill"
+        v-else
+      />
     </view>
     <!-- 排行榜 -->
     <view class="ranks w-full">
