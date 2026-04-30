@@ -61,10 +61,12 @@
         </button>
       </view>
     </div>
+    <BeianFooter />
   </div>
 </template>
 
 <script lang="ts" setup>
+import BeianFooter from "@/components/BeianFooter/BeianFooter.vue";
 import AuthForm from "@/components/Form/AuthForm.vue";
 import { setToken } from "@/utils/auth";
 import http from "@/utils/http";

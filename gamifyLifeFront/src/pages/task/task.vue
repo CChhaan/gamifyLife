@@ -322,10 +322,12 @@
         </view>
       </template>
     </confirm-modal-cmp>
+    <BeianFooter />
   </view>
 </template>
 
 <script setup lang="ts">
+import BeianFooter from "@/components/BeianFooter/BeianFooter.vue";
 import TaskCategoryCmp from "@/pages/task/components/taskCategory.vue";
 import TaskTagCmp from "@/pages/task/components/taskTag.vue";
 import TaskCreateCmp from "@/pages/task/components/taskCreate.vue";

@@ -94,10 +94,12 @@
       @refresh="getUserPosts"
     />
     <notice-cmp @close="closeNotice" v-if="showNotice" />
+    <BeianFooter />
   </view>
 </template>
 
 <script lang="ts" setup>
+import BeianFooter from "@/components/BeianFooter/BeianFooter.vue";
 import type { Post } from "@/type/post";
 import http from "@/utils/http";
 import { onShow } from "@dcloudio/uni-app";

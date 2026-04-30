@@ -218,10 +218,12 @@
       v-if="editInfoShow"
       :userInfo="userInfo"
     />
+    <BeianFooter />
   </view>
 </template>
 
 <script setup lang="ts">
+import BeianFooter from "@/components/BeianFooter/BeianFooter.vue";
 import { onShow } from "@dcloudio/uni-app";
 import { ref } from "vue";
 import EditUserInfoCmp from "./editUserInfo.vue";

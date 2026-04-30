@@ -122,10 +122,12 @@
       </button>
     </view>
     <FloatPet />
+    <BeianFooter />
   </movable-area>
 </template>
 
 <script setup lang="ts">
+import BeianFooter from "@/components/BeianFooter/BeianFooter.vue";
 import FloatPet from "@/components/FloatPet/FloatPet.vue";
 import ExpLineCmp from "@/components/ExpLine/ExpLine.vue";
 import { InfluenceAttrTextMap } from "@/type/task";
