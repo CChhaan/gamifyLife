@@ -61,7 +61,10 @@
         </button>
       </view>
     </div>
-    <BeianFooter />
+    <BeianFooter bottom="20rpx" />
+    <view class="bot-field">
+      <input name="bot_check" v-model="botCheck" />
+    </view>
   </div>
 </template>
 
@@ -70,9 +73,15 @@ import BeianFooter from "@/components/BeianFooter/BeianFooter.vue";
 import AuthForm from "@/components/Form/AuthForm.vue";
 import { setToken } from "@/utils/auth";
 import http from "@/utils/http";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 
 const page = ref<string>("login");
+const botCheck = ref("");
+const pageLoadTime = ref(0);
+
+onMounted(() => {
+  pageLoadTime.value = Date.now();
+});
 const commonRules = {
   account: [
     {
@@ -99,6 +108,14 @@ const loginFormData = ref({
 });
 
 const handleLogin = async () => {
+  if (botCheck.value) {
+    uni.showToast({ title: "检测到异常行为", icon: "none" });
+    return;
+  }
+  if (Date.now() - pageLoadTime.value < 3000) {
+    uni.showToast({ title: "操作过快，请稍后再试", icon: "none" });
+    return;
+  }
   try {
     const data = {
       [loginFormData.value.account.includes("@") ? "email" : "account"]:
@@ -155,6 +172,14 @@ const registerRules = {
 };
 
 const handleRegister = async () => {
+  if (botCheck.value) {
+    uni.showToast({ title: "检测到异常行为", icon: "none" });
+    return;
+  }
+  if (Date.now() - pageLoadTime.value < 3000) {
+    uni.showToast({ title: "操作过快，请稍后再试", icon: "none" });
+    return;
+  }
   try {
     await http({
       url: "/auth/register",
@@ -203,5 +228,12 @@ const handleRegister = async () => {
       color: var(--contrast-color);
     }
   }
+}
+
+.bot-field {
+  position: absolute;
+  left: -9999px;
+  opacity: 0;
+  pointer-events: none;
 }
 </style>

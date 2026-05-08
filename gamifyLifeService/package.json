@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": " nodemon --exec tsx src/index.js",
+    "cron": "cross-env NODE_ENV=production node dist/cron/job.js",
     "build": "tsc && tsc-alias",
     "start": "cross-env NODE_ENV=production node dist/index.js"
   },

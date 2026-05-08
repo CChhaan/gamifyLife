@@ -4,7 +4,7 @@ import { initRouterGuard } from "./utils/routerGuard";
 import { getToken, isTokenValid, whiteList } from "./utils/auth";
 
 const ws = uni.connectSocket({
-  url: `ws://localhost:3000/token=${getToken()}`,
+  url: `/ws/?token=${getToken()}`,
   complete: () => {
     console.log("WebSocket连接");
   },

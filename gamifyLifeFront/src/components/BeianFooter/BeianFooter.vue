@@ -1,3 +1,9 @@
+<script setup lang="ts">
+defineProps<{
+  bottom?: string;
+}>();
+</script>
+
 <template>
   <view class="beian-footer">
     <!-- #ifdef H5 -->
@@ -16,7 +22,6 @@
 </template>
 
 <style scoped lang="scss">
-/* 固定在底部 Tab 栏上方，与 pages.json 中 tabBar.height 一致 */
 .beian-footer {
   position: fixed;
   left: 0;

@@ -23,13 +23,13 @@ class WebSocketService {
       try {
         const token = req.url?.split("token=")[1];
         if (!token) {
-          ws.close(401, "Unauthorized: No token provided");
+          ws.close(4001, "Unauthorized: No token provided");
           return;
         }
         // 验证 token
         const decoded = jwt.verify(
           token,
-          process.env.JWT_SECRET || "my_app_secret",
+          process.env.JWT_SECRET || "my_app_secret"
         ) as any;
         const userId = decoded.userId;
         if (!this.connections[userId]) {
@@ -40,7 +40,7 @@ class WebSocketService {
         // 监听连接关闭
         ws.on("close", () => {
           this.connections[userId] = this.connections[userId].filter(
-            (conn) => conn !== ws,
+            (conn) => conn !== ws
           );
           if (this.connections[userId].length === 0) {
             delete this.connections[userId];

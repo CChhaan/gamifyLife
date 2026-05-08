@@ -7,11 +7,7 @@
         :key="item.id"
       >
         <view class="icon">
-          <image
-            class="img"
-            :src="'http://localhost:3000' + item.icon_url"
-            mode="scaleToFill"
-          />
+          <image class="img" :src="item.icon_url" mode="scaleToFill" />
         </view>
         <view class="flex-1">
           <view class="name">{{ item.name }}</view>

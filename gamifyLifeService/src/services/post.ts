@@ -78,7 +78,6 @@ export default class PostService {
 
   // 获取所有发布状态的动态
   async getAllPublishedPosts(sort: string, userId: any) {
-    const t = await sequelize.transaction();
     try {
       const posts = (await db.Posts.findAll({
         where: { status: "PUBLISHED" },
@@ -88,20 +87,29 @@ export default class PostService {
             model: db.PostInteractions,
             as: "interactions",
             where: { user_id: userId },
-            required: false, // 使用LEFT JOIN，即使没有互动记录也会返回帖子
+            required: false,
           },
         ],
         order: [[sequelize.literal("view_count + " + sort), "DESC"]],
       }))!;
-      // 增加浏览量
-      for (const post of posts) {
-        await postInteractionService.viewPost(post.dataValues.id!, userId, t);
+
+      if (posts.length > 0) {
+        const postIds = posts.map(p => p.dataValues.id!);
+        const placeholders = postIds.map((_, i) => `(${userId}, ${postIds[i]}, 'VIEW', 1)`).join(', ');
+        await sequelize.query(`
+          INSERT INTO post_interactions (user_id, post_id, interaction_type, is_active, created_at, updated_at)
+          VALUES ${placeholders}
+          ON DUPLICATE KEY UPDATE updated_at = NOW()
+        `);
+        const idList = postIds.join(',');
+        await sequelize.query(`
+          UPDATE posts SET view_count = view_count + 1 WHERE id IN (${idList})
+        `);
       }
-      await t.commit();
+
       return posts;
     } catch (error) {
       console.error(chalk.red("获取所有发布状态的动态失败："), error);
-      await t.rollback();
       throw error;
     }
   }

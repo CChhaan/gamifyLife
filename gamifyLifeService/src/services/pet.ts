@@ -181,28 +181,24 @@ export default class ItemService {
 
   // 定时任务，每30分钟，让宠物饱食度和亲密度下降5点
   async decreasePetStatus() {
-    const t = await sequelize.transaction();
     try {
-      const pets = await db.Pets.findAll();
-      if (pets.length === 0) {
-        console.log("没有找到任何宠物，跳过状态更新");
-        return;
-      }
-      // 对每个宠物减少饱食度和亲密度
-      for (const pet of pets) {
-        // 确保饱食度和亲密度不低于0
-        await this.decreasePetSatiety(pet, 5, t);
-        await this.decreasePetLove(pet, 5, t);
-      }
+      await sequelize.query(`
+        UPDATE pets 
+        SET hunger = GREATEST(hunger - 5, 0)
+        WHERE hunger > 0
+      `);
+      await sequelize.query(`
+        UPDATE pets 
+        SET affection = GREATEST(affection - 5, 0)
+        WHERE affection > 0
+      `);
       console.log(
         chalk.yellow(
           `[${new Date()}] 定时任务执行：所有宠物的饱食度和亲密度已下降5点`,
         ),
       );
-      await t.commit();
     } catch (error: any) {
-      await t.rollback();
-      console.error(chalk.red("定时任务执行失败:", error));
+      console.error(chalk.red("批量更新宠物状态失败:", error));
       throw new Error(error.message || "批量更新宠物状态失败");
     }
   }
